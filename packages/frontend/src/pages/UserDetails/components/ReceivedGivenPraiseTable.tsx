@@ -79,7 +79,7 @@ export const ReceivedGivenPraiseTable = ({
   return (
     <>
       <div className="w-full sm:flex">
-        <div className="mt-2 ml-4 sm:ml-8">
+        <div className="ml-4 sm:ml-8">
           <FontAwesomeIcon
             icon={userAccountType === 1 ? faPrayingHands : faHandHoldingHeart}
             className="mr-2"

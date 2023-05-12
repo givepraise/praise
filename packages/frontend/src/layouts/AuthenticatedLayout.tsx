@@ -1,10 +1,9 @@
 /* This example requires Tailwind CSS v2.0+ */
 import React, { Fragment, useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
-import { faX, faBars } from '@fortawesome/free-solid-svg-icons';
+import { faX, faBars, faPrayingHands } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useRecoilValue } from 'recoil';
-import { SingleSetting } from '@/model/settings/settings';
 import { Nav } from '@/navigation/Nav';
 import { AuthenticatedRoutes } from '@/navigation/AuthenticatedRoutes';
 import { ApiAuthGet } from '@/model/api';
@@ -16,7 +15,6 @@ import { HeaderBanner } from '@/components/ui/HeaderBanner';
 export const AuthenticatedLayout = (): JSX.Element | null => {
   useRecoilValue(ApiAuthGet({ url: '/settings' })); //Pre-loading settings to force `ApiAuthGet` to initialise properly. Weird.
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const siteNameSetting = useRecoilValue(SingleSetting('NAME'));
   const activeUserRoles = useRecoilValue(ActiveUserRoles);
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
   const appVersion = usePraiseAppVersion();
@@ -115,13 +113,17 @@ export const AuthenticatedLayout = (): JSX.Element | null => {
       </div>
 
       <div className="flex flex-col flex-1 lg:pl-64">
-        <div className="sticky top-0 z-10 w-full text-center border-b shadow-sm h-14 lg:hidden dark:bg-slate-900 bg-warm-gray-50">
-          {siteNameSetting && (
-            <h1 className="mt-3 text-xl">{siteNameSetting.value}</h1>
-          )}
+        <div className="sticky top-0 z-10 flex justify-center w-full border-b shadow-sm h-14 lg:hidden dark:bg-slate-900 bg-warm-gray-50">
+          <div className="p-4 h-14 w-14">
+            <FontAwesomeIcon
+              icon={faPrayingHands}
+              size="1x"
+              className="w-full h-full"
+            />
+          </div>
           <button
             type="button"
-            className="absolute top-0 left-0 z-20 inline-flex w-12 h-12 p-4 text-warm-gray-500 hover:text-warm-gray-900 focus:outline-none "
+            className="absolute top-0 left-0 z-20 inline-flex p-4 w-14 h-14 text-warm-gray-500 hover:text-warm-gray-900 focus:outline-none "
             onClick={(): void => setSidebarOpen(true)}
           >
             <span className="sr-only">Open sidebar</span>

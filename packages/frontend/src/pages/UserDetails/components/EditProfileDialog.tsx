@@ -29,7 +29,7 @@ const validate = (
       const pattern = /^[a-z0-9][a-z0-9_.-]{1,18}[a-z0-9]$/;
       if (!pattern.test(values.username)) {
         errors.username =
-          'Usernames can only contain letters, numbers, dots, dashes and underscores';
+          'Usernames can only contain lowercase letters, numbers, dots, dashes and underscores';
       }
     }
   } else {
