@@ -6,6 +6,7 @@ import {
 
 import { UserAccount } from './api-schema';
 import { apiClient } from './api';
+import { logger } from './logger';
 
 export const createPraise = async (
   interaction: ChatInputCommandInteraction,
@@ -47,7 +48,7 @@ export const createPraise = async (
     })
     .then((res) => res.status === 201)
     .catch((err) => {
-      console.log(err);
+      logger.error(err?.response?.data || err.message);
       return false;
     });
 
