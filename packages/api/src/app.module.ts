@@ -21,6 +21,7 @@ import { PingMiddleware } from './shared/middlewares/ping.middleware';
 import { DomainCheckMiddleware } from './shared/middlewares/domainCheck.middleware';
 import { ReportsModule } from './reports/reports.module';
 import { CacheModule } from '@nestjs/cache-manager';
+import { ConnectionCacheService } from './database/services/connection-cache.service';
 
 @Module({
   imports: [
@@ -50,6 +51,7 @@ import { CacheModule } from '@nestjs/cache-manager';
     ReportsModule,
   ],
   providers: [
+    ConnectionCacheService,
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,

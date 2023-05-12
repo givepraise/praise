@@ -24,7 +24,7 @@ import {
 } from './shared/nest';
 import { databaseExists } from '../src/database/utils/database-exists';
 import { MongoClient } from 'mongodb';
-import { dbNameCommunity } from '../src/database/utils/db-name-community';
+import { hostNameToDbName } from '../src/database/utils/host-name-to-db-name';
 import { errorMessages } from '../src/shared/exceptions/error-messages';
 import { faker } from '@faker-js/faker';
 
@@ -291,7 +291,7 @@ describe('Communities (E2E)', () => {
       expect(rb.discordLinkNonce.length).toBe(10);
       expect(rb.isPublic).toBe(true);
 
-      const communityDbName = dbNameCommunity(rb);
+      const communityDbName = hostNameToDbName(rb.hostname);
       expect(await databaseExists(communityDbName, mongodb)).toBe(true);
 
       const communityDb = mongodb.db(communityDbName);
@@ -309,7 +309,7 @@ describe('Communities (E2E)', () => {
 
     beforeEach(async () => {
       const hostname = `test.patch.community`;
-      const dbName = dbNameCommunity({ hostname });
+      const dbName = hostNameToDbName(hostname);
       await communityService.getModel().deleteMany({});
       if (await databaseExists(dbName, mongodb)) {
         // Delete community db if exists (We create db after linking discord to community)
