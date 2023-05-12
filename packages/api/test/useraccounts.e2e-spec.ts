@@ -190,7 +190,7 @@ describe('UserAccountsController (E2E)', () => {
 
     // Fail when name is too long
     test('400 when name is too long', async () => {
-      await createUserAccount({ name: 'a'.repeat(30) }).expect(400);
+      await createUserAccount({ name: 'a'.repeat(35) }).expect(400);
     });
 
     // Fail when avatarId is too short
