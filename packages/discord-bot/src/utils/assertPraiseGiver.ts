@@ -24,15 +24,10 @@ export const assertPraiseGiver = async (
     return false;
   }
 
-  const praiseGiverRoleIDRequired = (await getSetting(
-    'PRAISE_GIVER_ROLE_ID_REQUIRED',
-    host
-  )) as boolean;
-
-  const praiseGiverRoleIDList = (await getSetting(
-    'PRAISE_GIVER_ROLE_ID',
-    host
-  )) as string[];
+  const [praiseGiverRoleIDRequired, praiseGiverRoleIDList] = await Promise.all([
+    getSetting('PRAISE_GIVER_ROLE_ID_REQUIRED', host) as Promise<boolean>,
+    getSetting('PRAISE_GIVER_ROLE_ID', host) as Promise<string[]>,
+  ]);
 
   if (!praiseGiverRoleIDRequired) {
     return true;
