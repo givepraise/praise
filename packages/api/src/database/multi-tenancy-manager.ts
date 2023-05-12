@@ -8,7 +8,7 @@ import {
 } from '../constants/constants.provider';
 import { databaseExists } from './utils/database-exists';
 import mongoose, { ConnectOptions } from 'mongoose';
-import { dbNameCommunity } from './utils/db-name-community';
+import { hostNameToDbName } from './utils/host-name-to-db-name';
 import {
   Community,
   CommunitySchema,
@@ -21,9 +21,9 @@ export class MultiTenancyManager {
   private readonly singleSetupHostname: string =
     process.env.NODE_ENV === 'testing' ? HOSTNAME_TEST : process.env.HOST || '';
 
-  private singleSetupCommunityDbName: string = dbNameCommunity({
-    hostname: this.singleSetupHostname,
-  });
+  private singleSetupCommunityDbName: string = hostNameToDbName(
+    this.singleSetupHostname,
+  );
 
   private communityModel: mongoose.Model<Community>;
 
@@ -134,7 +134,7 @@ export class MultiTenancyManager {
 
       // Loop through all communities
       for (const community of communities) {
-        const db = this.mongodb.db(dbNameCommunity(community));
+        const db = this.mongodb.db(hostNameToDbName(community.hostname));
 
         // Create or get users collection
         let users = db.collection('users');
@@ -151,8 +151,8 @@ export class MultiTenancyManager {
           }
           if (user) {
             logger.info(
-              `${dbNameCommunity(
-                community,
+              `${hostNameToDbName(
+                community.hostname,
               )}: Setting admin and user role for ${eth}`,
             );
             if (!user.roles.includes(AuthRole.ADMIN)) {
@@ -169,7 +169,9 @@ export class MultiTenancyManager {
             }
           } else {
             logger.info(
-              `${dbNameCommunity(community)}: Creating admin user ${eth}`,
+              `${hostNameToDbName(
+                community.hostname,
+              )}: Creating admin user ${eth}`,
             );
             await users.insertOne({
               ethereumAddress: eth, // For backwards compatibility

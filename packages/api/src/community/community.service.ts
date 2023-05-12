@@ -17,7 +17,7 @@ import { logger } from '../shared/logger';
 import { MongoClient } from 'mongodb';
 import { MigrationsManager } from '../database/migrations-manager';
 import { databaseExists } from '../database/utils/database-exists';
-import { dbNameCommunity } from '../database/utils/db-name-community';
+import { hostNameToDbName } from '../database/utils/host-name-to-db-name';
 import { PaginateModel } from '../shared/interfaces/paginate-model.interface';
 import { IsNameAvailableResponseDto } from './dto/is-name-available-response-dto';
 
@@ -89,14 +89,14 @@ export class CommunityService {
     if (community.name) {
       await this.assertCommunityNameAvailable(community.name);
     }
-    const oldDbName = dbNameCommunity(communityDocument);
+    const oldDbName = hostNameToDbName(communityDocument.hostname);
 
     for (const [k, v] of Object.entries(community)) {
       communityDocument.set(k, v);
     }
 
     await communityDocument.save();
-    const newDbName = dbNameCommunity(communityDocument);
+    const newDbName = hostNameToDbName(communityDocument.hostname);
     if (oldDbName !== newDbName) {
       await this.renameDbOfCommunityIfExists({ oldDbName, newDbName });
     }
