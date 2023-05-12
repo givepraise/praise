@@ -8,6 +8,9 @@ export class MongoServerErrorFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
 
+    // Save exception response object for logging purposes
+    (response as any).exception = exception;
+
     if (exception.code === 11000) {
       return response.status(409).json({
         statusCode: 409,
