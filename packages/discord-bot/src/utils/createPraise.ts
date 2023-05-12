@@ -11,7 +11,7 @@ import { logger } from './logger';
 export const createPraise = async (
   interaction: ChatInputCommandInteraction,
   giverAccount: UserAccount,
-  receiverAccount: UserAccount,
+  receiverAccounts: UserAccount[],
   reason: string,
   host: string
 ): Promise<boolean> => {
@@ -35,7 +35,7 @@ export const createPraise = async (
       avatarId: giverAccount.avatarId,
       platform: giverAccount.platform,
     },
-    receiverIds: [receiverAccount.accountId],
+    receiverIds: receiverAccounts.map((receiver) => receiver.accountId),
     sourceId: `DISCORD:${guild.id}:${interaction.channelId}`,
     sourceName: `DISCORD:${encodeURIComponent(guild.name)}:${encodeURIComponent(
       channelName

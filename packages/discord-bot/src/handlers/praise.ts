@@ -1,5 +1,5 @@
 import { GuildMember, User } from 'discord.js';
-import { getReceiverData } from '../utils/getReceiverData';
+import { parseReceivers } from '../utils/parseReceivers';
 import { praiseSuccessDM } from '../utils/embeds/praiseEmbeds';
 import { renderMessage } from '../utils/renderMessage';
 import { assertPraiseGiver } from '../utils/assertPraiseGiver';
@@ -65,11 +65,11 @@ export const praiseHandler: CommandHandler = async (
       return;
     }
 
-    const receiverData = getReceiverData(receiverOptions);
+    const parsedReceivers = parseReceivers(receiverOptions);
 
     if (
-      !receiverData.validReceiverIds ||
-      receiverData.validReceiverIds?.length === 0
+      !parsedReceivers.validReceiverIds ||
+      parsedReceivers.validReceiverIds?.length === 0
     ) {
       await interaction.editReply(
         await renderMessage('PRAISE_INVALID_RECEIVERS_ERROR', host)
@@ -89,17 +89,11 @@ export const praiseHandler: CommandHandler = async (
       return;
     }
 
-    const praiseItemsCount = await apiClient
-      .get(`/praise?limit=1&giver=${giverAccount._id}`, {
-        headers: { host },
-      })
-      .then((res) => (res.data as PraisePaginatedResponseDto).totalPages)
-      .catch(() => 0);
-
-    const receivers: string[] = [];
-    const receiverIds: string[] = [
+    const validReceiverIds: string[] = [
       ...new Set(
-        receiverData.validReceiverIds.map((id: string) => id.replace(/\D/g, ''))
+        parsedReceivers.validReceiverIds.map((id: string) =>
+          id.replace(/\D/g, '')
+        )
       ),
     ];
 
@@ -109,57 +103,64 @@ export const praiseHandler: CommandHandler = async (
     )) as boolean;
 
     let warnSelfPraise = false;
-    if (!selfPraiseAllowed && receiverIds.includes(giverAccount.accountId)) {
+    if (
+      !selfPraiseAllowed &&
+      validReceiverIds.includes(giverAccount.accountId)
+    ) {
       warnSelfPraise = true;
-      receiverIds.splice(receiverIds.indexOf(giverAccount.accountId), 1);
+      validReceiverIds.splice(
+        validReceiverIds.indexOf(giverAccount.accountId),
+        1
+      );
     }
 
-    const Receivers = (await guild.members.fetch({ user: receiverIds })).map(
-      (u) => u
+    const receivers = await Promise.all(
+      (
+        await guild.members.fetch({ user: validReceiverIds })
+      ).map(async (guildMember) => {
+        const userAccount = await getUserAccount(guildMember.user, host);
+        return {
+          guildMember,
+          userAccount,
+        };
+      })
     );
 
-    for (const receiver of Receivers) {
-      const receiverAccount = await getUserAccount(receiver.user, host);
+    await createPraise(
+      interaction,
+      giverAccount,
+      receivers.map((receiver) => receiver.userAccount),
+      reason,
+      host
+    );
 
-      const praiseRegistered = await createPraise(
-        interaction,
-        giverAccount,
-        receiverAccount,
-        reason,
-        host
-      );
-
-      if (praiseRegistered) {
+    await Promise.all(
+      receivers.map(async (receiver) => {
         try {
-          await receiver.send({
+          await receiver.guildMember.send({
             embeds: [
               await praiseSuccessDM(
                 responseUrl,
                 host,
-                receiverAccount.user ? true : false
+                receiver.userAccount.user ? true : false
               ),
             ],
           });
         } catch (err) {
           logger.warn(
-            `Can't DM user - ${receiverAccount.name} [${receiverAccount.accountId}]`
+            `Can't DM user - ${receiver.userAccount.name} [${receiver.userAccount.accountId}]`
           );
         }
-        receivers.push(receiverAccount.accountId);
-      } else {
-        logger.error(
-          `Praise not registered for [${giverAccount.accountId}] -> [${receiverAccount.accountId}] for [${reason}]`
-        );
-      }
-    }
+      })
+    );
 
-    if (Receivers.length !== 0 && receivers.length !== 0) {
+    if (receivers.length !== 0) {
       await interaction.editReply('Praise given!');
       await interaction.followUp({
         embeds: [
           await praiseSuccessEmbed(
             interaction.user,
-            receivers.map((id) => `<@!${id}>`),
+            validReceiverIds.map((id) => `<@!${id}>`),
             reason,
             host
           ),
@@ -170,7 +171,7 @@ export const praiseHandler: CommandHandler = async (
       await interaction.editReply(
         await renderMessage('SELF_PRAISE_WARNING', host)
       );
-    } else if (!Receivers.length) {
+    } else if (!receivers.length) {
       await interaction.editReply(
         await renderMessage('PRAISE_INVALID_RECEIVERS_ERROR', host)
       );
@@ -178,28 +179,47 @@ export const praiseHandler: CommandHandler = async (
       await interaction.editReply('Praise failed :(');
     }
 
-    const warningMsg =
-      (receiverData.undefinedReceivers
-        ? (await renderMessage('PRAISE_UNDEFINED_RECEIVERS_WARNING', host, {
-            receivers: receiverData.undefinedReceivers.map((id) =>
-              id.replace(/[<>]/, '')
-            ),
-            user: member.user as User,
-          })) + '\n'
-        : '') +
-      (receiverData.roleMentions
-        ? (await renderMessage('PRAISE_TO_ROLE_WARNING', host, {
-            user: member.user as User,
-            receivers: receiverData.roleMentions,
-          })) + '\n'
-        : '') +
-      (Receivers.length !== 0 && warnSelfPraise
-        ? (await renderMessage('SELF_PRAISE_WARNING', host)) + '\n'
-        : '');
+    const warningMsgParts: string[] = [];
+
+    if (parsedReceivers.undefinedReceivers) {
+      const warning = await renderMessage(
+        'PRAISE_UNDEFINED_RECEIVERS_WARNING',
+        host,
+        {
+          receivers: parsedReceivers.undefinedReceivers.map((id) =>
+            id.replace(/[<>]/, '')
+          ),
+          user: member.user as User,
+        }
+      );
+      warningMsgParts.push(warning);
+    }
+
+    if (parsedReceivers.roleMentions) {
+      const warning = await renderMessage('PRAISE_TO_ROLE_WARNING', host, {
+        user: member.user as User,
+        receivers: parsedReceivers.roleMentions,
+      });
+      warningMsgParts.push(warning);
+    }
+
+    if (receivers.length !== 0 && warnSelfPraise) {
+      const warning = await renderMessage('SELF_PRAISE_WARNING', host);
+      warningMsgParts.push(warning);
+    }
+
+    const warningMsg = warningMsgParts.join('\n');
 
     if (warningMsg && warningMsg.length !== 0) {
       await interaction.followUp({ content: warningMsg, ephemeral: true });
     }
+
+    const praiseItemsCount = await apiClient
+      .get(`/praise?limit=1&giver=${giverAccount._id}`, {
+        headers: { host },
+      })
+      .then((res) => (res.data as PraisePaginatedResponseDto).totalPages)
+      .catch(() => 0);
 
     if (
       receivers.length &&
