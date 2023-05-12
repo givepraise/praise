@@ -12,16 +12,6 @@ import { hostNameToDbName } from './host-name-to-db-name';
  * like the setupweb.
  */
 export const getDbUrl = (hostname: string) => {
-  if (
-    hostname !== 'localhost' &&
-    (hostname === 'api' || hostname === process.env.HOST)
-  ) {
-    return (process.env.MONGO_URI as string).replace(
-      '{DB}',
-      process.env.MONGO_DB as string,
-    );
-  }
-
   return (process.env.MONGO_URI as string).replace(
     '{DB}',
     hostNameToDbName(hostname),
