@@ -4,9 +4,10 @@ import { logger } from '../logger';
 
 function debugLogException(res: Response) {
   const exception = (res as any).exception;
+  if (!exception) return;
   const errorJson = JSON.stringify({
     ...exception,
-    message: exception.message || '',
+    message: exception.message,
   });
   logger.debug(`Exception: ${errorJson}`);
 }
