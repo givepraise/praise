@@ -11,9 +11,10 @@ import { praiseSuccessEmbed } from '../utils/embeds/praiseSuccessEmbed';
 import { apiClient } from '../utils/api';
 import { PraisePaginatedResponseDto } from '../utils/api-schema';
 import { getSetting } from '../utils/settingsUtil';
+import { ephemeralWarning } from '../utils/renderMessage';
 
 import { logger } from '../utils/logger';
-import { ephemeralReply } from 'src/utils/ephemeralReply';
+
 /**
  * Execute command /praise
  *  Creates praises with a given receiver and reason
@@ -31,11 +32,7 @@ export const praiseHandler: CommandHandler = async (
   const { guild, channel, member } = interaction;
 
   if (!guild || !member || !channel) {
-    await interaction.followUp({
-      content: await renderMessage('DM_ERROR'),
-      ephemeral: true,
-    });
-    await interaction.deleteReply();
+    await ephemeralWarning(interaction, 'DM_ERROR');
     return;
   }
 
@@ -49,30 +46,22 @@ export const praiseHandler: CommandHandler = async (
     const receiverOptions = interaction.options.getString('receivers');
 
     if (!receiverOptions || receiverOptions.length === 0) {
-      await interaction.followUp({
-        content: await renderMessage('PRAISE_INVALID_RECEIVERS_ERROR', host),
-        ephemeral: true,
-      });
-      await interaction.deleteReply();
+      await ephemeralWarning(
+        interaction,
+        'PRAISE_INVALID_RECEIVERS_ERROR',
+        host
+      );
       return;
     }
 
     const reason = interaction.options.getString('reason', true);
     if (!reason || reason.length === 0) {
-      await interaction.followUp({
-        content: await renderMessage('PRAISE_REASON_MISSING_ERROR', host),
-        ephemeral: true,
-      });
-      await interaction.deleteReply();
+      await ephemeralWarning(interaction, 'PRAISE_REASON_MISSING_ERROR', host);
       return;
     }
 
     if (reason.length < 5 || reason.length > 280) {
-      await interaction.followUp({
-        content: '⚠️ The praise reason should be between 5 to 280 characters.',
-        ephemeral: true,
-      });
-      await interaction.deleteReply();
+      await ephemeralWarning(interaction, 'INVALID_REASON_LENGTH', host);
       return;
     }
 
@@ -82,11 +71,7 @@ export const praiseHandler: CommandHandler = async (
       !receiverData.validReceiverIds ||
       receiverData.validReceiverIds?.length === 0
     ) {
-      await interaction.followUp({
-        content: await renderMessage('PRAISE_INVALID_RECEIVERS_ERROR', host),
-        ephemeral: true,
-      });
-      await interaction.deleteReply();
+      await ephemeralWarning(interaction, 'INVALID_REASON_LENGTH', host);
       return;
     }
 
@@ -96,14 +81,11 @@ export const praiseHandler: CommandHandler = async (
     );
 
     if (!giverAccount || !giverAccount.user || giverAccount.user === null) {
-      await interaction.followUp({
-        content: await renderMessage(
-          'PRAISE_ACCOUNT_NOT_ACTIVATED_ERROR',
-          host
-        ),
-        ephemeral: true,
-      });
-      await interaction.deleteReply();
+      await ephemeralWarning(
+        interaction,
+        'PRAISE_ACCOUNT_NOT_ACTIVATED_ERROR',
+        host
+      );
       return;
     }
 
@@ -183,23 +165,15 @@ export const praiseHandler: CommandHandler = async (
         ],
       });
     } else if (warnSelfPraise) {
-      await interaction.followUp({
-        content: await renderMessage('SELF_PRAISE_WARNING', host),
-        ephemeral: true,
-      });
-      await interaction.deleteReply();
+      await ephemeralWarning(interaction, 'SELF_PRAISE_WARNING', host);
     } else if (!Receivers.length) {
-      await interaction.followUp({
-        content: await renderMessage('PRAISE_INVALID_RECEIVERS_ERROR', host),
-        ephemeral: true,
-      });
-      await interaction.deleteReply();
+      await ephemeralWarning(
+        interaction,
+        'PRAISE_INVALID_RECEIVERS_ERROR',
+        host
+      );
     } else {
-      await interaction.followUp({
-        content: 'Praise failed :(',
-        ephemeral: true,
-      });
-      await interaction.deleteReply();
+      await ephemeralWarning(interaction, 'PRAISE_FAILED', host);
     }
 
     const warningMsg =

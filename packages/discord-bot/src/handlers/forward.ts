@@ -1,5 +1,3 @@
-/* TODO - Replace db access with api2 calls */
-
 import { GuildMember } from 'discord.js';
 import { getReceiverData } from '../utils/getReceiverData';
 import { getUserAccount } from '../utils/getUserAccount';
@@ -212,7 +210,7 @@ export const forwardHandler: CommandHandler = async (
     }
   } catch (err) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    logger.error((err as any).message);
+    logger.error(`(forward) ${(err as any).message as string}`);
     throw err;
   }
 };

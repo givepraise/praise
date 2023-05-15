@@ -17,11 +17,11 @@ export const ephemeralWarning = async (
   host?: string,
   subs?: substitutionParams
 ): Promise<void> => {
+  await interaction.deleteReply();
   await interaction.followUp({
     content: await renderMessage(key, host, subs),
     ephemeral: true,
   });
-  await interaction.deleteReply();
 };
 
 export const renderMessage = async (
