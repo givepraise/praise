@@ -25,8 +25,8 @@ export const forwardHandler: CommandHandler = async (
 ) => {
   if (!responseUrl) return;
 
-  const { guild, channel, member } = interaction;
-  if (!guild || !member || !channel) {
+  const { guild, member } = interaction;
+  if (!guild || !member) {
     await ephemeralWarning(interaction, 'DM_ERROR');
     return;
   }

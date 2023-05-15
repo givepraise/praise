@@ -29,9 +29,9 @@ export const praiseHandler: CommandHandler = async (
 ) => {
   if (!responseUrl) return;
 
-  const { guild, channel, member } = interaction;
+  const { guild, member } = interaction;
 
-  if (!guild || !member || !channel) {
+  if (!guild || !member) {
     await ephemeralWarning(interaction, 'DM_ERROR');
     return;
   }
