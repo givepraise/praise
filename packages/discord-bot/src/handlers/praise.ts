@@ -71,7 +71,11 @@ export const praiseHandler: CommandHandler = async (
       !parsedReceivers.validReceiverIds ||
       parsedReceivers.validReceiverIds?.length === 0
     ) {
-      await ephemeralWarning(interaction, 'INVALID_REASON_LENGTH', host);
+      await ephemeralWarning(
+        interaction,
+        'PRAISE_INVALID_RECEIVERS_ERROR',
+        host
+      );
       return;
     }
 
@@ -154,7 +158,6 @@ export const praiseHandler: CommandHandler = async (
       })
     );
 
-
     if (receivers.length !== 0) {
       await interaction.editReply({
         embeds: [
@@ -220,11 +223,7 @@ export const praiseHandler: CommandHandler = async (
       .then((res) => (res.data as PraisePaginatedResponseDto).totalPages)
       .catch(() => 0);
 
-    if (
-      receivers.length &&
-      receiverOptions.length &&
-      praiseItemsCount === 0
-    ) {
+    if (receivers.length && receiverOptions.length && praiseItemsCount === 0) {
       await interaction.followUp({
         content: await renderMessage('FIRST_TIME_PRAISER', host),
         ephemeral: true,
