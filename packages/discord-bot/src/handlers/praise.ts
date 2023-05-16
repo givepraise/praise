@@ -1,7 +1,7 @@
 import { GuildMember, User } from 'discord.js';
 import { parseReceivers } from '../utils/parseReceivers';
 import { praiseSuccessDM } from '../utils/embeds/praiseEmbeds';
-import { renderMessage } from '../utils/renderMessage';
+import { renderMessage, ephemeralWarning } from '../utils/renderMessage';
 import { assertPraiseGiver } from '../utils/assertPraiseGiver';
 import { assertPraiseAllowedInChannel } from '../utils/assertPraiseAllowedInChannel';
 import { CommandHandler } from '../interfaces/CommandHandler';
@@ -11,7 +11,6 @@ import { praiseSuccessEmbed } from '../utils/embeds/praiseSuccessEmbed';
 import { apiClient } from '../utils/api';
 import { PraisePaginatedResponseDto } from '../utils/api-schema';
 import { getSetting } from '../utils/settingsUtil';
-import { ephemeralWarning } from '../utils/renderMessage';
 
 import { logger } from '../utils/logger';
 

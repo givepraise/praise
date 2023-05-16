@@ -1,6 +1,5 @@
-import { User, Role } from 'discord.js';
+import { User, Role, ChatInputCommandInteraction } from 'discord.js';
 import { getSetting } from './settingsUtil';
-import { ChatInputCommandInteraction } from 'discord.js';
 
 interface substitutionParams {
   praiseGiver?: User;
@@ -10,19 +9,6 @@ interface substitutionParams {
   roles?: Role[];
   praiseUrl?: string;
 }
-
-export const ephemeralWarning = async (
-  interaction: ChatInputCommandInteraction,
-  key: string,
-  host?: string,
-  subs?: substitutionParams
-): Promise<void> => {
-  await interaction.deleteReply();
-  await interaction.followUp({
-    content: await renderMessage(key, host, subs),
-    ephemeral: true,
-  });
-};
 
 export const renderMessage = async (
   key: string,
@@ -65,4 +51,17 @@ export const renderMessage = async (
   }
 
   return msg;
+};
+
+export const ephemeralWarning = async (
+  interaction: ChatInputCommandInteraction,
+  key: string,
+  host?: string,
+  subs?: substitutionParams
+): Promise<void> => {
+  await interaction.deleteReply();
+  await interaction.followUp({
+    content: await renderMessage(key, host, subs),
+    ephemeral: true,
+  });
 };
