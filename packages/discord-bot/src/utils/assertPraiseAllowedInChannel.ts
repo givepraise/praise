@@ -17,17 +17,12 @@ export const assertPraiseAllowedInChannel = async (
 
   if (!channel || !guild) return false;
 
-  const allowedInAllChannels = (await getSetting(
-    'PRAISE_ALLOWED_IN_ALL_CHANNELS',
-    host
-  )) as boolean;
+  const [allowedInAllChannels, allowedChannelsList] = await Promise.all([
+    getSetting('PRAISE_ALLOWED_IN_ALL_CHANNELS', host) as Promise<boolean>,
+    getSetting('PRAISE_ALLOWED_CHANNEL_IDS', host) as Promise<string[]>,
+  ]);
 
   if (allowedInAllChannels) return true;
-
-  const allowedChannelsList = (await getSetting(
-    'PRAISE_ALLOWED_CHANNEL_IDS',
-    host
-  )) as string[];
 
   if (!channel) {
     await interaction.editReply({

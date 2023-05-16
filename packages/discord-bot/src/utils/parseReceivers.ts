@@ -1,10 +1,10 @@
-interface ReceiverData {
+interface ParsedReceivers {
   validReceiverIds: RegExpMatchArray | null;
   undefinedReceivers: RegExpMatchArray | null;
   roleMentions: RegExpMatchArray | null;
 }
 
-export const getReceiverData = (receivers: string): ReceiverData => {
+export const parseReceivers = (receivers: string): ParsedReceivers => {
   return {
     validReceiverIds: receivers?.match(/<@!?(\d+)>/g),
     undefinedReceivers: receivers?.match(/[^<]@(\w+)/gi),

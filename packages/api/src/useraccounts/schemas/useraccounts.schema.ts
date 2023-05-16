@@ -57,10 +57,10 @@ export class UserAccount {
     example: 'darth#6755',
     type: 'string',
     minLength: 4,
-    maxLength: 20,
+    maxLength: 32,
   })
   @IsString()
-  @Prop({ required: true, minlength: 4, maxlength: 20 })
+  @Prop({ required: true, minlength: 4, maxlength: 32 })
   name: string;
 
   @ApiProperty({

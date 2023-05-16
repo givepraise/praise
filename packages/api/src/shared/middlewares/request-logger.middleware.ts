@@ -2,6 +2,16 @@ import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import { logger } from '../logger';
 
+function debugLogException(res: Response) {
+  const exception = (res as any).exception;
+  if (!exception) return;
+  const errorJson = JSON.stringify({
+    ...exception,
+    message: exception.message,
+  });
+  logger.debug(`Exception: ${errorJson}`);
+}
+
 @Injectable()
 export class RequestLoggerMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
@@ -19,8 +29,10 @@ export class RequestLoggerMiddleware implements NestMiddleware {
       const statusCode = res.statusCode;
       if (statusCode >= 400 && statusCode < 500) {
         logger.warn(`[${req.method}] ${req.url} - ${statusCode}`);
+        debugLogException(res);
       } else if (statusCode >= 500) {
         logger.error(`[${req.method}] ${req.url} - ${statusCode}`);
+        debugLogException(res);
       } else {
         logger.info(`[${req.method}] ${req.url} - ${statusCode}`);
       }

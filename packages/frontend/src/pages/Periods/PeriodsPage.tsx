@@ -19,7 +19,7 @@ const PeriodsPage = (): JSX.Element | null => {
 
       <Box className="px-0">
         <AdminOnly>
-          <div className="px-5 mb-2 text-right">
+          <div className="px-5 mb-5 text-right">
             <Link to="/periods/createupdate">
               <Button id="create-period-button">
                 <FontAwesomeIcon icon={faPlus} size="1x" className="mr-2" />

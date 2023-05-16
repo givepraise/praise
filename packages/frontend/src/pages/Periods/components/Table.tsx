@@ -23,10 +23,14 @@ export const PeriodsTable = (): JSX.Element => {
       {
         Header: 'End date',
         accessor: 'endDate',
-        className: 'text-left',
+        className: 'text-right',
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        Cell: (data: any): string => {
-          return formatIsoDateUTC(data.value, DATE_FORMAT);
+        Cell: (data: any): JSX.Element => {
+          return (
+            <div className="whitespace-nowrap">
+              {formatIsoDateUTC(data.value, DATE_FORMAT)}
+            </div>
+          );
         },
       },
       {
@@ -100,7 +104,7 @@ export const PeriodsTable = (): JSX.Element => {
                 const className = (column as any).className as string;
                 return (
                   <th
-                    className={classNames(className, 'pb-2')}
+                    className={classNames(className, 'pb-2 px-2')}
                     key={key}
                     {...restColumn}
                   >
@@ -133,7 +137,7 @@ export const PeriodsTable = (): JSX.Element => {
                 const className = (cell.column as any).className as string;
                 return (
                   <td
-                    className={classNames(className, 'py-3')}
+                    className={classNames(className, 'py-3 px-2')}
                     key={key}
                     {...restCellProps}
                   >

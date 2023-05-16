@@ -1,5 +1,5 @@
 import { GuildMember } from 'discord.js';
-import { getReceiverData } from '../utils/getReceiverData';
+import { parseReceivers } from '../utils/parseReceivers';
 import { getUserAccount } from '../utils/getUserAccount';
 import { getUser } from '../utils/getUser';
 import { praiseSuccessDM } from '../utils/embeds/praiseEmbeds';
@@ -86,7 +86,7 @@ export const forwardHandler: CommandHandler = async (
       return;
     }
 
-    const receiverData = getReceiverData(receiverOptions);
+    const receiverData = parseReceivers(receiverOptions);
     if (
       !receiverData.validReceiverIds ||
       receiverData.validReceiverIds?.length === 0

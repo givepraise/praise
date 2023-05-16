@@ -10,7 +10,7 @@ import { SettingsService } from '../settings/settings.service';
 import { logger } from '../shared/logger';
 import { UsersService } from '../users/users.service';
 import { AppMigrationsModule } from './modules/app-migrations.module';
-import { dbUrlCommunity } from './utils/db-url-community';
+import { getDbUrl } from './utils/get-db-url';
 import mongoose, { ConnectOptions } from 'mongoose';
 import { AuthRole } from '../auth/enums/auth-role.enum';
 
@@ -25,7 +25,7 @@ export class MigrationsManager {
       logger.info(`🆙 Starting migrations for: ${community.hostname}`);
 
       try {
-        await mongoose.connect(dbUrlCommunity(community), {
+        await mongoose.connect(getDbUrl(community.hostname), {
           useNewUrlParser: true,
         } as ConnectOptions);
       } catch (err) {
@@ -35,7 +35,7 @@ export class MigrationsManager {
 
       // Create a dynamic app module for the community
       const app = await NestFactory.createApplicationContext(
-        AppMigrationsModule.forRoot(dbUrlCommunity(community)),
+        AppMigrationsModule.forRoot(getDbUrl(community.hostname)),
       );
 
       // Init the app
