@@ -491,4 +491,9 @@ export const errorMessages: { [key: string]: ErrorMessage } = {
     httpStatusCode: 500,
     code: 1101,
   },
+  IPFS_UPLOAD_ERROR: {
+    message: 'Failed to upload file to IPFS Pinata',
+    httpStatusCode: 500,
+    code: 1102,
+  },
 };

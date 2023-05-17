@@ -14,6 +14,7 @@ import { SetPeriodSettingDto } from './dto/set-periodsetting.dto';
 import { Period } from '../periods/schemas/periods.schema';
 import { PeriodStatusType } from '../periods/enums/status-type.enum';
 import { logger } from '../shared/logger';
+import { deleteFromIpfs, uploadToIpfs } from './utils/pinata-ipfs';
 
 @Injectable()
 export class SettingsService {
@@ -140,14 +141,24 @@ export class SettingsService {
 
     const originalValue = setting.value;
 
-    // Remove previous file
+    // Remove previous file if exists
     try {
       await this.utils.removeFile(setting.value);
+      await deleteFromIpfs(setting.value);
     } catch (err) {
       // Ignore error
     }
 
-    setting.value = file.filename;
+    const ipfsHash = await uploadToIpfs(file);
+
+    // Remove temporary file
+    try {
+      await this.utils.removeFile(file.filename);
+    } catch (err) {
+      // Ignore error
+    }
+
+    setting.value = ipfsHash;
 
     logger.info(
       `Updated global setting "${setting.label}" from "${
