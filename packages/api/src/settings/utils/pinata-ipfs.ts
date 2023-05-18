@@ -1,9 +1,9 @@
 import axios, { AxiosRequestConfig } from 'axios';
-import { ApiException } from 'src/shared/exceptions/api-exception';
-import { errorMessages } from 'src/shared/exceptions/error-messages';
+import { ApiException } from '../../shared/exceptions/api-exception';
+import { errorMessages } from '../../shared/exceptions/error-messages';
 import fs from 'fs';
 import FormData from 'form-data';
-import { logger } from 'src/shared/logger';
+import { logger } from '../../shared/logger';
 
 const JWT_TOKEN = process.env.PINATA_JWT_TOKEN;
 const PINATA_API_URL = process.env.PINATA_API_URL;
