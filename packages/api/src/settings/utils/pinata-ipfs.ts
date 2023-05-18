@@ -3,8 +3,10 @@ import { ApiException } from 'src/shared/exceptions/api-exception';
 import { errorMessages } from 'src/shared/exceptions/error-messages';
 import fs from 'fs';
 import FormData from 'form-data';
+import { logger } from 'src/shared/logger';
 
 const JWT_TOKEN = process.env.PINATA_JWT_TOKEN;
+const PINATA_API_URL = process.env.PINATA_API_URL;
 
 /**
  * Uploads a file to IPFS via Pinata
@@ -30,6 +32,7 @@ export const uploadToIpfs = async (
     formData.append('pinataOptions', options);
 
     const config: AxiosRequestConfig = {
+      maxContentLength: -1,
       headers: {
         'Content-Type': `multipart/form-data`,
         Authorization: `Bearer ${JWT_TOKEN}`,
@@ -37,13 +40,17 @@ export const uploadToIpfs = async (
     };
 
     const response = await axios.post(
-      'https://api.pinata.cloud/pinning/pinFileToIPFS',
+      `${PINATA_API_URL}pinning/pinFileToIPFS`,
       formData,
       config,
     );
 
     return response.data.IpfsHash;
   } catch (error) {
+    logger.info(
+      `Error uploading file to IPFS via Pinata: ${JSON.stringify(error)}`,
+    );
+
     throw new ApiException(errorMessages.IPFS_UPLOAD_ERROR);
   }
 };
@@ -64,7 +71,7 @@ export const deleteFromIpfs = async (ipfsHash: string): Promise<void> => {
     };
 
     return await axios.delete(
-      `https://api.pinata.cloud/pinning/unpin/${ipfsHash}`,
+      `${PINATA_API_URL}pinning/unpin/${ipfsHash}`,
       config,
     );
   } catch (error) {
