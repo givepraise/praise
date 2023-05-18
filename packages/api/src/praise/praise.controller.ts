@@ -248,7 +248,7 @@ export class PraiseController {
     await this.eventLogService.logEventWithAuthContext({
       authContext: request.authContext,
       typeKey: EventLogTypeKey.PRAISE,
-      description: `Giver ${data.giver} created an Praise item with receiver IDS ${data.receiverIds}`,
+      description: `Giver ${data.giver._id} created an Praise item with receiver IDS ${data.receiverIds}`,
     });
 
     return praiseItem;
