@@ -72,7 +72,6 @@ export const TopPraise = ({
         createdAt: new Date(row.createdAt).toISOString(),
         updatedAt: row.updatedAt,
       } as PraiseDto;
-      console.log(praise);
       return praise;
     });
   }, [report]);
