@@ -149,35 +149,17 @@ export class SettingsService {
       // Ignore error
     }
 
+    const ipfsHash = await uploadToIpfs(file);
+
+    // Remove temporary file
     try {
-      const ipfsHash = await uploadToIpfs(file);
-
-      // Remove temporary file
-      try {
-        await this.utils.removeFile(file.filename);
-      } catch (err) {
-        // Ignore error
-      }
-
-      setting.value = ipfsHash;
-
-      logger.info(
-        `Updated global setting "${setting.label}" from "${
-          originalValue || ''
-        }" to "${setting.value || ''}"`,
-      );
-
-      await setting.save();
+      await this.utils.removeFile(file.filename);
     } catch (err) {
-      // Remove temporary file
-      try {
-        await this.utils.removeFile(file.filename);
-      } catch (err) {
-        // Ignore error
-      }
-
-      throw err;
+      // Ignore error
     }
+
+    setting.value = ipfsHash;
+    await setting.save();
 
     return this.findOneById(_id);
   }
