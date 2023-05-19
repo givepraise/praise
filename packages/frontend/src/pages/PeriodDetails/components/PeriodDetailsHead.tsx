@@ -54,7 +54,7 @@ export const PeriodDetailsHead = (): JSX.Element | null => {
       </div>
       {!isAdmin ? (
         <>
-          <div>Period end: {formatIsoDateUTC(period.endDate)}</div>
+          <div>Period end: {formatIsoDateUTC(period.endDate, DATE_FORMAT)}</div>
           <div>Number of praise: {period.numberOfPraise}</div>
         </>
       ) : (
