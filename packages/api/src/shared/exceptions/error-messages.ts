@@ -496,4 +496,9 @@ export const errorMessages: { [key: string]: ErrorMessage } = {
     httpStatusCode: 500,
     code: 1102,
   },
+  IPFS_DELETE_ERROR: {
+    message: 'Failed to delete file from IPFS Pinata',
+    httpStatusCode: 500,
+    code: 1103,
+  },
 };
