@@ -45,6 +45,14 @@ export const getDefaultSetting = (
       return false;
     case 'PRAISE_ACCOUNT_NOT_ACTIVATED_ERROR_DM':
       return 'In order to claim your praise, link your discord account to your ethereum wallet using the `/activate` command';
+    case 'FORWARDER_ROLE_WARNING':
+      return "**❌ You don't have the permission to use this command.**";
+    case 'INVALID_REASON_LENGTH':
+      return 'Reason should be between 5 to 280 characters';
+    case 'FORWARD_FORWARD_FAILED':
+      return 'Forward Failed :(';
+    case 'PRAISE_FAILED':
+      return 'Praise Failed :(';
   }
 };
 

@@ -12,6 +12,7 @@ export const activate: Command = {
   async execute(client, interaction, host) {
     if (!interaction.isCommand() || interaction.commandName !== 'activate')
       return;
+    await interaction.deferReply({ ephemeral: true });
     await activationHandler(client, interaction, host);
   },
 

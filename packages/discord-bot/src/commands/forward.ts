@@ -26,9 +26,11 @@ export const forward: Command = {
         .setRequired(true)
     ),
 
-  async execute(client, interaction, host, msg) {
+  async execute(client, interaction, host) {
     if (!interaction.isCommand() || interaction.commandName !== 'forward')
       return;
+
+    const msg = await interaction.deferReply({ fetchReply: true });
 
     await forwardHandler(
       client,

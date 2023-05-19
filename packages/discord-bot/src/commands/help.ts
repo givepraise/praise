@@ -19,7 +19,7 @@ export const help: HelpCommandBuilder = (commands) => {
       async execute(client, interaction) {
         if (!interaction.isCommand() || interaction.commandName !== 'help')
           return;
-
+        await interaction.deferReply({ ephemeral: true });
         await helpHandler(interaction, commands);
       },
     } as Command,

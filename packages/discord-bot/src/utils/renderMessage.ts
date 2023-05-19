@@ -1,4 +1,4 @@
-import { User, Role } from 'discord.js';
+import { User, Role, ChatInputCommandInteraction } from 'discord.js';
 import { getSetting } from './settingsUtil';
 
 interface substitutionParams {
@@ -51,4 +51,17 @@ export const renderMessage = async (
   }
 
   return msg;
+};
+
+export const ephemeralWarning = async (
+  interaction: ChatInputCommandInteraction,
+  key: string,
+  host?: string,
+  subs?: substitutionParams
+): Promise<void> => {
+  await interaction.deleteReply();
+  await interaction.followUp({
+    content: await renderMessage(key, host, subs),
+    ephemeral: true,
+  });
 };

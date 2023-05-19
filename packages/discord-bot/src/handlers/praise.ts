@@ -1,7 +1,7 @@
 import { GuildMember, User } from 'discord.js';
 import { parseReceivers } from '../utils/parseReceivers';
 import { praiseSuccessDM } from '../utils/embeds/praiseEmbeds';
-import { renderMessage } from '../utils/renderMessage';
+import { renderMessage, ephemeralWarning } from '../utils/renderMessage';
 import { assertPraiseGiver } from '../utils/assertPraiseGiver';
 import { assertPraiseAllowedInChannel } from '../utils/assertPraiseAllowedInChannel';
 import { CommandHandler } from '../interfaces/CommandHandler';
@@ -13,6 +13,7 @@ import { PraisePaginatedResponseDto } from '../utils/api-schema';
 import { getSetting } from '../utils/settingsUtil';
 
 import { logger } from '../utils/logger';
+
 /**
  * Execute command /praise
  *  Creates praises with a given receiver and reason
@@ -27,10 +28,10 @@ export const praiseHandler: CommandHandler = async (
 ) => {
   if (!responseUrl) return;
 
-  const { guild, channel, member } = interaction;
+  const { guild, member } = interaction;
 
-  if (!guild || !member || !channel) {
-    await interaction.editReply(await renderMessage('DM_ERROR'));
+  if (!guild || !member) {
+    await ephemeralWarning(interaction, 'DM_ERROR');
     return;
   }
 
@@ -44,24 +45,22 @@ export const praiseHandler: CommandHandler = async (
     const receiverOptions = interaction.options.getString('receivers');
 
     if (!receiverOptions || receiverOptions.length === 0) {
-      await interaction.editReply(
-        await renderMessage('PRAISE_INVALID_RECEIVERS_ERROR', host)
+      await ephemeralWarning(
+        interaction,
+        'PRAISE_INVALID_RECEIVERS_ERROR',
+        host
       );
       return;
     }
 
     const reason = interaction.options.getString('reason', true);
     if (!reason || reason.length === 0) {
-      await interaction.editReply(
-        await renderMessage('PRAISE_REASON_MISSING_ERROR', host)
-      );
+      await ephemeralWarning(interaction, 'PRAISE_REASON_MISSING_ERROR', host);
       return;
     }
 
     if (reason.length < 5 || reason.length > 280) {
-      await interaction.editReply(
-        '⚠️ The praise reason should be between 5 to 280 characters.'
-      );
+      await ephemeralWarning(interaction, 'INVALID_REASON_LENGTH', host);
       return;
     }
 
@@ -71,8 +70,10 @@ export const praiseHandler: CommandHandler = async (
       !parsedReceivers.validReceiverIds ||
       parsedReceivers.validReceiverIds?.length === 0
     ) {
-      await interaction.editReply(
-        await renderMessage('PRAISE_INVALID_RECEIVERS_ERROR', host)
+      await ephemeralWarning(
+        interaction,
+        'PRAISE_INVALID_RECEIVERS_ERROR',
+        host
       );
       return;
     }
@@ -83,8 +84,10 @@ export const praiseHandler: CommandHandler = async (
     );
 
     if (!giverAccount || !giverAccount.user || giverAccount.user === null) {
-      await interaction.editReply(
-        await renderMessage('PRAISE_ACCOUNT_NOT_ACTIVATED_ERROR', host)
+      await ephemeralWarning(
+        interaction,
+        'PRAISE_ACCOUNT_NOT_ACTIVATED_ERROR',
+        host
       );
       return;
     }
@@ -134,6 +137,29 @@ export const praiseHandler: CommandHandler = async (
       host
     );
 
+    if (receivers.length !== 0) {
+      await interaction.editReply({
+        embeds: [
+          await praiseSuccessEmbed(
+            interaction.user,
+            validReceiverIds.map((id) => `<@!${id}>`),
+            reason,
+            host
+          ),
+        ],
+      });
+    } else if (warnSelfPraise) {
+      await ephemeralWarning(interaction, 'SELF_PRAISE_WARNING', host);
+    } else if (!receivers.length) {
+      await ephemeralWarning(
+        interaction,
+        'PRAISE_INVALID_RECEIVERS_ERROR',
+        host
+      );
+    } else {
+      await ephemeralWarning(interaction, 'PRAISE_FAILED', host);
+    }
+
     await Promise.all(
       receivers.map(async (receiver) => {
         try {
@@ -153,31 +179,6 @@ export const praiseHandler: CommandHandler = async (
         }
       })
     );
-
-    if (receivers.length !== 0) {
-      await interaction.editReply('Praise given!');
-      await interaction.followUp({
-        embeds: [
-          await praiseSuccessEmbed(
-            interaction.user,
-            validReceiverIds.map((id) => `<@!${id}>`),
-            reason,
-            host
-          ),
-        ],
-        ephemeral: false,
-      });
-    } else if (warnSelfPraise) {
-      await interaction.editReply(
-        await renderMessage('SELF_PRAISE_WARNING', host)
-      );
-    } else if (!receivers.length) {
-      await interaction.editReply(
-        await renderMessage('PRAISE_INVALID_RECEIVERS_ERROR', host)
-      );
-    } else {
-      await interaction.editReply('Praise failed :(');
-    }
 
     const warningMsgParts: string[] = [];
 
@@ -221,12 +222,7 @@ export const praiseHandler: CommandHandler = async (
       .then((res) => (res.data as PraisePaginatedResponseDto).totalPages)
       .catch(() => 0);
 
-    if (
-      receivers.length &&
-      receiverOptions.length &&
-      receiverOptions.length !== 0 &&
-      praiseItemsCount === 0
-    ) {
+    if (receivers.length && receiverOptions.length && praiseItemsCount === 0) {
       await interaction.followUp({
         content: await renderMessage('FIRST_TIME_PRAISER', host),
         ephemeral: true,

@@ -27,6 +27,7 @@ export const praiseAdmin: Command = {
     if (!interaction.isCommand() || interaction.commandName !== 'admin') return;
 
     const subCommand = interaction.options.getSubcommand();
+    await interaction.deferReply({ ephemeral: true });
 
     switch (subCommand) {
       case 'announce': {

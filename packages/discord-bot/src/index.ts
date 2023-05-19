@@ -47,11 +47,6 @@ discordClient.once('ready', async () => {
 discordClient.on('interactionCreate', async (interaction): Promise<void> => {
   if (!interaction.isChatInputCommand()) return;
 
-  const msg = await interaction.deferReply({
-    ephemeral: true,
-    fetchReply: true,
-  });
-
   const command = discordClient.commands.get(interaction.commandName);
 
   if (!command) return;
@@ -71,7 +66,7 @@ discordClient.on('interactionCreate', async (interaction): Promise<void> => {
     );
 
     const host = await getHost(discordClient, interaction.guild.id);
-    if (host) await command.execute(discordClient, interaction, host, msg);
+    if (host) await command.execute(discordClient, interaction, host);
     else
       await interaction.editReply({
         embeds: [communityNotCreatedError(process.env.WEB_URL as string)],
