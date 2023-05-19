@@ -18,9 +18,7 @@ export function valueToValueRealized(
     case SettingType.STRINGLIST:
       return value.split(',').map((v: string) => v.trim()) as string[];
     case SettingType.IMAGE:
-      return process.env.PINATA_DEDICATED_GATEWAY
-        ? `${process.env.PINATA_DEDICATED_GATEWAY as string}${value}`
-        : `https://cloudflare-ipfs.com/ipfs/${value}`;
+      return `${process.env.PINATA_DEDICATED_GATEWAY as string}${value}`;
     case SettingType.JSON:
       return value ? JSON.parse(value) : [];
     default:
