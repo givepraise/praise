@@ -39,8 +39,11 @@ const WrappedUserName = ({
 
   let name = 'Unknown username';
 
-  if (usePseudonym && periodId && userId) {
-    return <UserPseudonym userId={userId} periodId={periodId} />;
+  if (usePseudonym) {
+    if (!userAccount || !periodId) {
+      return <div className={className}>{name}</div>;
+    }
+    return <UserPseudonym userId={userAccount?._id} periodId={periodId} />;
   }
 
   if (userAccount && userAccount.name) {
