@@ -47,7 +47,7 @@ export const uploadToIpfs = async (
 
     return response.data.IpfsHash;
   } catch (error) {
-    logger.info(
+    logger.debug(
       `Error uploading file to IPFS via Pinata: ${JSON.stringify(error)}`,
     );
 
@@ -75,6 +75,10 @@ export const deleteFromIpfs = async (ipfsHash: string): Promise<void> => {
       config,
     );
   } catch (error) {
+    logger.debug(
+      `Unable to delete file from IPFS via Pinata: ${JSON.stringify(error)}`,
+    );
+
     throw new ApiException(errorMessages.IPFS_DELETE_ERROR);
   }
 };
