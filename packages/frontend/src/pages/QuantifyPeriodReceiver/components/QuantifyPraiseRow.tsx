@@ -65,7 +65,7 @@ export const QuantifyPraiseRow = ({
           showScore={false}
         />
       </td>
-      <td className="pr-5">
+      <td className="pr-5 text-right">
         {duplicate ? (
           <Notice type="info" className="w-40 py-2">
             <>
@@ -82,7 +82,7 @@ export const QuantifyPraiseRow = ({
           />
         )}
       </td>
-      <td className="pr-5">
+      <td>
         <div className="w-3">
           <button
             className="hidden cursor-pointer text-warm-gray-400 group-hover:block hover:text-warm-gray-500"
