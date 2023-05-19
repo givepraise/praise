@@ -139,8 +139,6 @@ export class SettingsService {
       throw new ApiException(errorMessages.UPLOADED_FILE_IS_NOT_AN_IMAGE);
     }
 
-    const originalValue = setting.value;
-
     // Remove previous file if exists
     try {
       await deleteFromIpfs(setting.value);
