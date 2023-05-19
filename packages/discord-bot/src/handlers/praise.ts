@@ -137,26 +137,6 @@ export const praiseHandler: CommandHandler = async (
       host
     );
 
-    await Promise.all(
-      receivers.map(async (receiver) => {
-        try {
-          await receiver.guildMember.send({
-            embeds: [
-              await praiseSuccessDM(
-                responseUrl,
-                host,
-                receiver.userAccount.user ? true : false
-              ),
-            ],
-          });
-        } catch (err) {
-          logger.warn(
-            `Can't DM user - ${receiver.userAccount.name} [${receiver.userAccount.accountId}]`
-          );
-        }
-      })
-    );
-
     if (receivers.length !== 0) {
       await interaction.editReply({
         embeds: [
@@ -179,6 +159,26 @@ export const praiseHandler: CommandHandler = async (
     } else {
       await ephemeralWarning(interaction, 'PRAISE_FAILED', host);
     }
+
+    await Promise.all(
+      receivers.map(async (receiver) => {
+        try {
+          await receiver.guildMember.send({
+            embeds: [
+              await praiseSuccessDM(
+                responseUrl,
+                host,
+                receiver.userAccount.user ? true : false
+              ),
+            ],
+          });
+        } catch (err) {
+          logger.warn(
+            `Can't DM user - ${receiver.userAccount.name} [${receiver.userAccount.accountId}]`
+          );
+        }
+      })
+    );
 
     const warningMsgParts: string[] = [];
 
