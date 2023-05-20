@@ -1,6 +1,6 @@
 import { GuildMember, User } from 'discord.js';
 import { parseReceivers } from '../utils/parseReceivers';
-import { praiseSuccessDM } from '../utils/embeds/praiseEmbeds';
+import { sendReceiverDM } from './sendReceiverDM';
 import { renderMessage, ephemeralWarning } from '../utils/renderMessage';
 import { assertPraiseGiver } from '../utils/assertPraiseGiver';
 import { assertPraiseAllowedInChannel } from '../utils/assertPraiseAllowedInChannel';
@@ -9,9 +9,8 @@ import { getUserAccount } from '../utils/getUserAccount';
 import { createPraise } from '../utils/createPraise';
 import { praiseSuccessEmbed } from '../utils/embeds/praiseSuccessEmbed';
 import { apiClient } from '../utils/api';
-import { PraisePaginatedResponseDto } from '../utils/api-schema';
+import { PraisePaginatedResponseDto, UserAccount } from '../utils/api-schema';
 import { getSetting } from '../utils/settingsUtil';
-
 import { logger } from '../utils/logger';
 
 /**
@@ -117,17 +116,18 @@ export const praiseHandler: CommandHandler = async (
       );
     }
 
-    const receivers = await Promise.all(
-      (
-        await guild.members.fetch({ user: validReceiverIds })
-      ).map(async (guildMember) => {
-        const userAccount = await getUserAccount(guildMember.user, host);
-        return {
-          guildMember,
-          userAccount,
-        };
-      })
-    );
+    const receivers: { guildMember: GuildMember; userAccount: UserAccount }[] =
+      await Promise.all(
+        (
+          await guild.members.fetch({ user: validReceiverIds })
+        ).map(async (guildMember) => {
+          const userAccount = await getUserAccount(guildMember.user, host);
+          return {
+            guildMember,
+            userAccount,
+          };
+        })
+      );
 
     await createPraise(
       interaction,
@@ -160,23 +160,24 @@ export const praiseHandler: CommandHandler = async (
       await ephemeralWarning(interaction, 'PRAISE_FAILED', host);
     }
 
+    const hostUrl =
+      process.env.NODE_ENV === 'development'
+        ? process.env?.FRONTEND_URL || 'undefined:/'
+        : `https://${(await client.hostCache.get(guild.id)) as string}`;
+
     await Promise.all(
       receivers.map(async (receiver) => {
-        try {
-          await receiver.guildMember.send({
-            embeds: [
-              await praiseSuccessDM(
-                responseUrl,
-                host,
-                receiver.userAccount.user ? true : false
-              ),
-            ],
-          });
-        } catch (err) {
-          logger.warn(
-            `Can't DM user - ${receiver.userAccount.name} [${receiver.userAccount.accountId}]`
-          );
-        }
+        await sendReceiverDM(
+          receiver,
+          member,
+          reason,
+          responseUrl,
+          host,
+          hostUrl,
+          guild.name,
+          `<#${interaction.channelId}>`,
+          interaction.guild?.icon || undefined
+        );
       })
     );
 
