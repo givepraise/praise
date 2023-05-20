@@ -37,20 +37,12 @@ export const praiseWelcomeEmbed = (
 };
 
 export const praiseSuccessDM = async (
-  giver: string,
-  giverAvatar: string,
-  praiseReason: string,
   praiseUrl: string,
-  guildIcon: string,
-  channelName: string,
   host: string,
   isActivated = true
 ): Promise<EmbedBuilder> => {
-  const embed = new EmbedBuilder()
-    .setColor('#696969')
-    .setDescription(praiseReason)
-    .setAuthor({ name: giver, iconURL: giverAvatar })
-    .setFooter({ text: channelName, iconURL: guildIcon });
+  const msg = await renderMessage('PRAISE_SUCCESS_DM', host, { praiseUrl });
+  const embed = new EmbedBuilder().setColor('#696969').setDescription(msg);
 
   if (!isActivated) {
     const notActivatedMsg = await renderMessage(

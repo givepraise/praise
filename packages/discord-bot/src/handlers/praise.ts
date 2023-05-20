@@ -1,6 +1,12 @@
-import { GuildMember, User } from 'discord.js';
+import {
+  DMChannel,
+  Guild,
+  GuildMember,
+  TextBasedChannel,
+  User,
+} from 'discord.js';
 import { parseReceivers } from '../utils/parseReceivers';
-import { sendReceiverDM } from './sendReceiverDM';
+import { sendReceiverDM } from '../utils/embeds/sendReceiverDM';
 import { renderMessage, ephemeralWarning } from '../utils/renderMessage';
 import { assertPraiseGiver } from '../utils/assertPraiseGiver';
 import { assertPraiseAllowedInChannel } from '../utils/assertPraiseAllowedInChannel';
@@ -169,14 +175,12 @@ export const praiseHandler: CommandHandler = async (
       receivers.map(async (receiver) => {
         await sendReceiverDM(
           receiver,
-          member,
+          member as GuildMember,
           reason,
           responseUrl,
           host,
           hostUrl,
-          guild.name,
-          `<#${interaction.channelId}>`,
-          interaction.guild?.icon || undefined
+          interaction.channelId
         );
       })
     );
