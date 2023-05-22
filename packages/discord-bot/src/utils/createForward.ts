@@ -1,5 +1,3 @@
-/* TODO - fix forwards */
-
 import {
   ChannelType,
   ChatInputCommandInteraction,
@@ -8,11 +6,12 @@ import {
 
 import { UserAccount } from './api-schema';
 import { apiClient } from './api';
+import { logger } from './logger';
 
 export const createForward = async (
   interaction: ChatInputCommandInteraction,
   giverAccount: UserAccount,
-  receiverAccount: UserAccount,
+  receiverAccounts: UserAccount[],
   forwarderAccount: UserAccount,
   reason: string,
   host: string
@@ -37,7 +36,7 @@ export const createForward = async (
       avatarId: giverAccount.avatarId,
       platform: giverAccount.platform,
     },
-    receiverIds: [receiverAccount.accountId],
+    receiverIds: receiverAccounts.map((receiver) => receiver.accountId),
     sourceId: `DISCORD:${guild.id}:${interaction.channelId}`,
     sourceName: `DISCORD:${encodeURIComponent(guild.name)}:${encodeURIComponent(
       channelName
@@ -55,7 +54,10 @@ export const createForward = async (
       headers: { host },
     })
     .then((res) => res.status === 201)
-    .catch(() => false);
+    .catch((err) => {
+      logger.error(err?.response?.data || err.message);
+      return false;
+    });
 
   return response;
 };

@@ -6,12 +6,11 @@ import { assertPraiseGiver } from '../utils/assertPraiseGiver';
 import { assertPraiseAllowedInChannel } from '../utils/assertPraiseAllowedInChannel';
 import { CommandHandler } from '../interfaces/CommandHandler';
 import { praiseForwardEmbed } from '../utils/embeds/praiseForwardEmbed';
-// import { createForward } from '../utils/createForward';
+import { createForward } from '../utils/createForward';
 import { getSetting } from '../utils/settingsUtil';
 import { logger } from '../utils/logger';
 import { renderMessage, ephemeralWarning } from '../utils/renderMessage';
 import { UserAccount } from '../utils/api-schema';
-import { createPraise } from '../utils/createPraise';
 import { sendReceiverDM } from '../utils/embeds/sendReceiverDM';
 
 /**
@@ -151,10 +150,11 @@ export const forwardHandler: CommandHandler = async (
         })
       );
 
-    await createPraise(
+    await createForward(
       interaction,
       giverAccount,
       receivers.map((receiver) => receiver.userAccount),
+      forwarderAccount,
       reason,
       host
     );

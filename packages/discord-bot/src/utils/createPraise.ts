@@ -44,7 +44,7 @@ export const createPraise = async (
 
   const response = await apiClient
     .post('/praise', praiseData, {
-      headers: { host: host },
+      headers: { host },
     })
     .then((res) => res.status === 201)
     .catch((err) => {
