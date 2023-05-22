@@ -51,8 +51,8 @@ export const createForward = async (
   };
 
   const response = await apiPost('/praise/forward', praiseData, {
-      headers: { host },
-    })
+    headers: { host },
+  });
 
   return response.status === 201;
 };

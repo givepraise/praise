@@ -14,8 +14,9 @@ export const cacheHosts = async (
   let currPage = 1;
   let totalPages = 1;
   while (currPage <= totalPages) {
-    const communityList = await apiGet<CommunityPaginatedResponseDto>(`/communities?page=${currPage}`)
-      .then((res) => res.data);
+    const communityList = await apiGet<CommunityPaginatedResponseDto>(
+      `/communities?page=${currPage}`
+    ).then((res) => res.data);
 
     for (const community of communityList.docs) {
       if (community.discordGuildId) {

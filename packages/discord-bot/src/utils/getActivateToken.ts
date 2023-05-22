@@ -14,9 +14,13 @@ export const getActivateToken = async (
     activateToken: randomBytes(10).toString('hex'),
   };
 
-  const response = await apiPatch<UpdateUserAccountResponseDto, typeof ua>(`/useraccounts/${userAccount._id}`, ua, {
+  const response = await apiPatch<UpdateUserAccountResponseDto, typeof ua>(
+    `/useraccounts/${userAccount._id}`,
+    ua,
+    {
       headers: { host: host },
-    })
+    }
+  )
     .then((res) => res.data)
     .catch(() => undefined);
 

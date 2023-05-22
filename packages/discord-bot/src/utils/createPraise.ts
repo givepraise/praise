@@ -6,7 +6,6 @@ import {
 
 import { UserAccount } from './api-schema';
 import { apiPost } from './api';
-import { logger } from './logger';
 
 export const createPraise = async (
   interaction: ChatInputCommandInteraction,
@@ -43,8 +42,8 @@ export const createPraise = async (
   };
 
   const response = await apiPost('/praise', praiseData, {
-      headers: { host: host },
-    });
+    headers: { host: host },
+  });
 
   return response.status === 201;
 };

@@ -10,8 +10,8 @@ export const getUser = async (
   host: string
 ): Promise<User | undefined> => {
   return await apiGet<User>(`/users/${id}`, {
-      headers: { host },
-    })
+    headers: { host },
+  })
     .then((res) => res.data)
     .catch(() => undefined);
 };

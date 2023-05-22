@@ -117,8 +117,8 @@ discordClient.on('guildCreate', async (guild): Promise<void> => {
     }
 
     const community = await apiGet<Community>(`/communities/${hostId}`, {
-        headers: { host },
-      })
+      headers: { host },
+    })
       .then((res) => res.data)
       .catch((err) => {
         console.log(err);
