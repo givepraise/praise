@@ -1,5 +1,5 @@
-import { UserAccount } from './api-schema';
-import { apiClient } from './api';
+import { UpdateUserAccountResponseDto, UserAccount } from './api-schema';
+import { apiPatch } from './api';
 import { randomBytes } from 'crypto';
 
 /**
@@ -14,8 +14,7 @@ export const getActivateToken = async (
     activateToken: randomBytes(10).toString('hex'),
   };
 
-  const response = await apiClient
-    .patch<typeof ua>(`/useraccounts/${userAccount._id}`, ua, {
+  const response = await apiPatch<UpdateUserAccountResponseDto, typeof ua>(`/useraccounts/${userAccount._id}`, ua, {
       headers: { host: host },
     })
     .then((res) => res.data)

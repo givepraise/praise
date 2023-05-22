@@ -1,10 +1,12 @@
 import { User } from 'discord.js';
 import {
   CreateUserAccountInputDto,
+  CreateUserAccountResponseDto,
   UpdateUserAccountInputDto,
+  UpdateUserAccountResponseDto,
   UserAccount,
 } from './api-schema';
-import { apiClient } from './api';
+import { apiGet, apiPatch, apiPost } from './api';
 
 const createUserAccount = async (
   user: User,
@@ -16,7 +18,7 @@ const createUserAccount = async (
     platform: 'DISCORD',
   };
   if (user.avatar) newUserAccount.avatarId = user.avatar;
-  const response = await apiClient.post('/useraccounts', newUserAccount, {
+  const response = await apiPost<CreateUserAccountResponseDto, CreateUserAccountInputDto>('/useraccounts', newUserAccount, {
     headers: { host: host },
   });
   return response.data;
@@ -35,7 +37,7 @@ const updateUserAccount = async (
       name: user.username + '#' + user.discriminator,
     };
     if (user.avatar) updatedUserAccount.avatarId = user.avatar;
-    const response = await apiClient.patch<UserAccount>(
+    const response = await apiPatch<UpdateUserAccountResponseDto, UpdateUserAccountInputDto>(
       `/useraccounts/${ua._id}`,
       updatedUserAccount,
       {
@@ -57,8 +59,7 @@ export const getUserAccount = async (
   user: User,
   host: string
 ): Promise<UserAccount> => {
-  const data = await apiClient
-    .get<UserAccount[]>(`/useraccounts/?accountId=${user.id}`, {
+  const data = await apiGet<UserAccount[]>(`/useraccounts/?accountId=${user.id}`, {
       headers: { host: host },
     })
     .then((res) => res.data.filter((acc) => acc.platform === 'DISCORD'))

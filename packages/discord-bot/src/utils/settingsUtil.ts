@@ -1,5 +1,5 @@
 import { Setting } from './api-schema';
-import { apiClient } from './api';
+import { apiGet } from './api';
 
 export const getDefaultSetting = (
   key: string
@@ -60,8 +60,7 @@ export const getSetting = async (
   key: string,
   host?: string
 ): Promise<string | string[] | boolean | number | number[] | undefined> => {
-  const setting = await apiClient
-    .get(`/settings?key=${key}`, {
+  const setting = await apiGet<Setting[]>(`/settings?key=${key}`, {
       headers: host ? { host: host } : {},
     })
     .then((res) => (res.data[0] as Setting).valueRealized)

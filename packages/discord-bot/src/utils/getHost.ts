@@ -1,4 +1,4 @@
-import { apiClient } from './api';
+import { apiGet } from './api';
 import Keyv from 'keyv';
 import { CommunityPaginatedResponseDto } from './api-schema';
 import { DiscordClient } from '../interfaces/DiscordClient';
@@ -14,9 +14,8 @@ export const cacheHosts = async (
   let currPage = 1;
   let totalPages = 1;
   while (currPage <= totalPages) {
-    const communityList = await apiClient
-      .get(`/communities?page=${currPage}`)
-      .then<CommunityPaginatedResponseDto>((res) => res.data);
+    const communityList = await apiGet<CommunityPaginatedResponseDto>(`/communities?page=${currPage}`)
+      .then((res) => res.data);
 
     for (const community of communityList.docs) {
       if (community.discordGuildId) {

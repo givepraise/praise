@@ -65,7 +65,7 @@ export const whatsupHandler: CommandHandler = async (
   );
 
   // No response, return
-  if (!praiseResponse.docs.length) {
+  if (!praiseResponse.data.docs.length) {
     await interaction.editReply(
       'Unable to fetch praise. Please try again later.'
     );
@@ -75,7 +75,7 @@ export const whatsupHandler: CommandHandler = async (
   // Create a CSV of the latest 100 praise
   const topPraiseCsv =
     'date, praise\n' +
-    praiseResponse.docs
+    praiseResponse.data.docs
       .map(
         (praise) =>
           `${praise.createdAt}, Praise ${getReceiverUserName(praise)} ${

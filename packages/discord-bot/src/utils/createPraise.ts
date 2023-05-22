@@ -5,7 +5,7 @@ import {
 } from 'discord.js';
 
 import { UserAccount } from './api-schema';
-import { apiClient } from './api';
+import { apiPost } from './api';
 import { logger } from './logger';
 
 export const createPraise = async (
@@ -42,15 +42,9 @@ export const createPraise = async (
     )}`,
   };
 
-  const response = await apiClient
-    .post('/praise', praiseData, {
+  const response = await apiPost('/praise', praiseData, {
       headers: { host: host },
-    })
-    .then((res) => res.status === 201)
-    .catch((err) => {
-      logger.error(err?.response?.data || err.message);
-      return false;
     });
 
-  return response;
+  return response.status === 201;
 };
