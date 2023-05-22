@@ -25,38 +25,33 @@ const WrappedUserName = ({
 }: UserNameProps): JSX.Element => {
   const userFromId = useRecoilValue(SingleUser(userId));
 
-  let name = 'Unknown username';
+  // If we have a userAccount, but no user, we can use the user from the userAccount
+  if (!user && userAccount && userAccount.user) {
+    if (typeof userAccount.user === 'object') {
+      user = userAccount.user as User;
+    } else {
+      userId = userAccount.user as string;
+    }
+  }
 
   // Merge user and userFromId
   user = user || userFromId;
 
-  // If we have a userAccount, but no user, we can use the user from the userAccount
-  if (
-    !user &&
-    userAccount &&
-    userAccount.user &&
-    typeof userAccount.user === 'object'
-  ) {
-    user = userAccount.user as User;
+  let name = 'Unknown username';
+
+  if (usePseudonym) {
+    if (!userAccount || !periodId) {
+      return <div className={className}>{name}</div>;
+    }
+    return <UserPseudonym userId={userAccount?._id} periodId={periodId} />;
   }
 
-  if ((!user && !userAccount) || (usePseudonym && !periodId))
-    name = 'Unknown username';
+  if (userAccount && userAccount.name) {
+    name = userAccount.name;
+  }
 
-  if (user) {
-    if (usePseudonym && periodId) {
-      return <UserPseudonym userId={userId} periodId={periodId} />;
-    } else if (user.username) {
-      name = user.username;
-    }
-  } else {
-    if (userAccount) {
-      if (usePseudonym && periodId) {
-        return <UserPseudonym userId={userId} periodId={periodId} />;
-      } else {
-        name = userAccount.name;
-      }
-    }
+  if (user && user.username) {
+    name = user.username;
   }
 
   if (name.length === 42) {

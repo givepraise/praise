@@ -96,6 +96,12 @@ const questions = [
     message: 'OpenAI key (optional)',
     default: process.env.OPENAI_KEY,
   },
+  {
+    type: 'string',
+    name: 'OPENAI_MODEL',
+    message: 'OpenAI key (optional)',
+    default: process.env.OPENAI_MODEL,
+  },
 ];
 
 const setupAndWriteEnv = (
@@ -191,6 +197,7 @@ const run = async (): Promise<void> => {
     DISCORD_CLIENT_ID: answers.DISCORD_CLIENT_ID,
     DISCORD_GUILD_ID: answers.DISCORD_GUILD_ID,
     OPENAI_KEY: answers.OPENAI_KEY,
+    OPENAI_MODEL: answers.OPENAI_MODEL,
   };
 
   setupAndWriteEnv(rootEnvTemplatePath, rootEnvPath, rootEnv);

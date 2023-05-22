@@ -66,6 +66,13 @@ export class PeriodAssignmentsService {
       )) as string,
     );
 
+    const PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER: number = JSON.parse(
+      (await this.settingsService.settingValue(
+        'PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER',
+        period._id,
+      )) as string,
+    );
+
     const quantifierPoolSize = await this.userModel.count({
       roles: AuthRole.QUANTIFIER,
     });
@@ -73,10 +80,17 @@ export class PeriodAssignmentsService {
     let response;
 
     if (PRAISE_QUANTIFIERS_ASSIGN_EVENLY) {
+      // When quantifiers are assigned evenly, the quantifier pool size needed
+      // is the number of quantifiers per praise receiver plus one.
+      const quantifierPoolSizeNeeded =
+        PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER + 1;
       response = {
         quantifierPoolSize,
-        quantifierPoolSizeNeeded: quantifierPoolSize,
-        quantifierPoolDeficitSize: 0,
+        quantifierPoolSizeNeeded,
+        quantifierPoolDeficitSize:
+          quantifierPoolSizeNeeded > quantifierPoolSize
+            ? quantifierPoolSizeNeeded - quantifierPoolSize
+            : 0,
       };
     } else {
       const assignments = await this.assignQuantifiersDryRun(_id);
@@ -120,11 +134,11 @@ export class PeriodAssignmentsService {
         errorMessages.SOME_PERIODS_HAS_ALREADY_BEEN_ASSIGNED_FOR_THIS_PERIOD,
       );
 
-    // Make five attempts at assigning quantifiers
+    // Make ten attempts at assigning quantifiers
     // Since the algorithm is random, it's possible that the first attempt
     // will fail to assign all quantifiers.
     let assignedQuantifiers;
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 10; i++) {
       assignedQuantifiers = await this.assignQuantifiersDryRun(_id);
       if (assignedQuantifiers.remainingAssignmentsCount === 0) break;
     }
