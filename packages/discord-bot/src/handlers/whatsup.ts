@@ -49,7 +49,7 @@ export const whatsupHandler: CommandHandler = async (
   }
 
   // Check if we have a cached whatsup message
-  const cachedWhatsup = await keyv.get('whatsup');
+  const cachedWhatsup = await keyv.get(host);
   if (cachedWhatsup) {
     const embed = createWhatsupEmbed(cachedWhatsup);
     await interaction.editReply({ embeds: [embed] });
@@ -105,7 +105,7 @@ export const whatsupHandler: CommandHandler = async (
   }
 
   // Cache the response
-  await keyv.set('whatsup', whatsupResponse, CACHE_TTL);
+  await keyv.set(host, whatsupResponse, CACHE_TTL);
 
   // Create an embed
   const embed = createWhatsupEmbed(whatsupResponse);
