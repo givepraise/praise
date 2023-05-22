@@ -10,6 +10,12 @@ import { queryOpenAi } from '../utils/queryOpenAi';
 import { EmbedBuilder } from '@discordjs/builders';
 import { logger } from '../utils/logger';
 import { APIEmbedField } from 'discord.js';
+import Keyv from 'keyv';
+
+const CACHE_TTL = 60 * 1000 * 60 * 24 * 7; // 7 days
+
+// Create a new Keyv instance for caching responses from OpenAI
+const keyv = new Keyv();
 
 /**
  * Execute command /whoami
@@ -29,6 +35,14 @@ export const whoisHandler: CommandHandler = async (
 
   try {
     const discordUser = interaction.options.getUser('member', true);
+
+    // Check if we have a cached user embed
+    const cachedUserEmbed = await keyv.get(discordUser.id);
+    if (cachedUserEmbed) {
+      await interaction.editReply({ embeds: [cachedUserEmbed] });
+      return;
+    }
+
     const userAccount = await getUserAccount(discordUser, host);
 
     if (!process.env.OPENAI_KEY) {
@@ -56,7 +70,7 @@ export const whoisHandler: CommandHandler = async (
       'score, reason\n' +
       praise.map((item) => `${item.score}, ${item.reason}`).join('\n');
 
-    const summaryPrompt = `Below is a table of praise items describing contributions made by community member ${userAccount.name}. Summarize, what kind of work does ${userAccount.name} do for the community? The first column is a score representing the impact of the contribution, the second column describes the contribution. The higher impact score a contribution has the more it impacts your description of ${userAccount.name}.`;
+    const summaryPrompt = `Below is a table of praise items describing contributions made by community member ${userAccount.name}. Summarize, what kind of work does ${userAccount.name} do for the community? The first column is a score representing the impact of the contribution, the second column describes the contribution. The higher impact score a contribution has the more it impacts your description of ${userAccount.name}. Max 700 characters.`;
     const labelPrompt = `Below is a list of contributions made by community member ${userAccount.name}. The first column of the list is a score representing the impact of the contribution, the second column describes the contribution. I want you to create a comma separated list of labels that describe the most impactful work ${userAccount.name} does for the community. The higher impact score a contribution has the more it impacts your description. A label can consist of at max two words. 7 labels please.`;
 
     const [summary, labels, user] = await Promise.all([
@@ -98,19 +112,23 @@ export const whoisHandler: CommandHandler = async (
         });
     }
 
+    const embed = new EmbedBuilder()
+      .setTitle(userAccount.name)
+      .setDescription(summary)
+      .setThumbnail(
+        `https://cdn.discordapp.com/avatars/${discordUser.id}/${
+          discordUser?.avatar || ''
+        }`
+      )
+      .setFooter({ text: '🤖 This is an AI generated description.' })
+      .addFields(fields);
+
+    // Cache the embed for a week
+    await keyv.set(discordUser.id, embed, CACHE_TTL);
+
+    // Send the embed
     await interaction.editReply({
-      embeds: [
-        new EmbedBuilder()
-          .setTitle(userAccount.name)
-          .setDescription(summary)
-          .setThumbnail(
-            `https://cdn.discordapp.com/avatars/${discordUser.id}/${
-              discordUser?.avatar || ''
-            }`
-          )
-          .setFooter({ text: '🤖 This is an AI generated description.' })
-          .addFields(fields),
-      ],
+      embeds: [embed],
     });
   } catch (err) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
