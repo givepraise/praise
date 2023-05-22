@@ -2,8 +2,14 @@ import { components } from 'api-types';
 
 export type CreateUserAccountInputDto =
   components['schemas']['CreateUserAccountInputDto'];
+export type CreateUserAccountResponseDto =
+  components['schemas']['CreateUserAccountResponseDto'];
+
 export type UpdateUserAccountInputDto =
   components['schemas']['UpdateUserAccountInputDto'];
+export type UpdateUserAccountResponseDto =
+  components['schemas']['UpdateUserAccountResponseDto'];
+
 export type UserAccount = components['schemas']['UserAccount'];
 
 export type User = components['schemas']['User'];

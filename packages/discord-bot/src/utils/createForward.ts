@@ -7,7 +7,7 @@ import {
 } from 'discord.js';
 
 import { UserAccount } from './api-schema';
-import { apiClient } from './api';
+import { apiPost } from './api';
 
 export const createForward = async (
   interaction: ChatInputCommandInteraction,
@@ -50,12 +50,9 @@ export const createForward = async (
     },
   };
 
-  const response = await apiClient
-    .post('/praise/forward', praiseData, {
-      headers: { host },
-    })
-    .then((res) => res.status === 201)
-    .catch(() => false);
+  const response = await apiPost('/praise/forward', praiseData, {
+    headers: { host },
+  });
 
-  return response;
+  return response.status === 201;
 };

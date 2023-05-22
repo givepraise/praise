@@ -129,14 +129,6 @@ export const praiseHandler: CommandHandler = async (
       })
     );
 
-    await createPraise(
-      interaction,
-      giverAccount,
-      receivers.map((receiver) => receiver.userAccount),
-      reason,
-      host
-    );
-
     if (receivers.length !== 0) {
       await interaction.editReply({
         embeds: [
@@ -148,6 +140,13 @@ export const praiseHandler: CommandHandler = async (
           ),
         ],
       });
+      await createPraise(
+        interaction,
+        giverAccount,
+        receivers.map((receiver) => receiver.userAccount),
+        reason,
+        host
+      );
     } else if (warnSelfPraise) {
       await ephemeralWarning(interaction, 'SELF_PRAISE_WARNING', host);
     } else if (!receivers.length) {

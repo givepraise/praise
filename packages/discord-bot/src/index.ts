@@ -6,7 +6,7 @@ import { envCheck } from './pre-start/envCheck';
 import { logger } from './utils/logger';
 import { cacheHosts, getHost, getHostId } from './utils/getHost';
 import Keyv from 'keyv';
-import { apiClient } from './utils/api';
+import { apiGet } from './utils/api';
 import { Community } from './utils/api-schema';
 import {
   communityNotCreatedError,
@@ -116,10 +116,9 @@ discordClient.on('guildCreate', async (guild): Promise<void> => {
       return;
     }
 
-    const community = await apiClient
-      .get<Community>(`/communities/${hostId}`, {
-        headers: { host },
-      })
+    const community = await apiGet<Community>(`/communities/${hostId}`, {
+      headers: { host },
+    })
       .then((res) => res.data)
       .catch((err) => {
         console.log(err);
