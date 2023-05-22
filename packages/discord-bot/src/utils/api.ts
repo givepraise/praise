@@ -1,4 +1,4 @@
-import axios, { AxiosInstance } from 'axios';
+import axios, { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
 import { isDocker } from './isDocker';
 
 export const apiBaseURL = isDocker()
@@ -31,3 +31,47 @@ export const apiClient: AxiosInstance = axios.create({
     'x-api-key': getApiKey(),
   },
 });
+
+export async function apiGet<T>(
+  endpoint: string,
+  config?: AxiosRequestConfig
+): Promise<T> {
+  try {
+    const response = await apiClient.get<T>(endpoint, config);
+    return response.data;
+  } catch (err) {
+    console.error(err);
+    console.error((err as AxiosError).response?.data);
+    throw err;
+  }
+}
+
+export async function apiPost<T, U>(
+  endpoint: string,
+  data?: U,
+  config?: AxiosRequestConfig
+): Promise<T> {
+  try {
+    const response = await apiClient.post<T>(endpoint, data, config);
+    return response.data;
+  } catch (err) {
+    console.error(err);
+    console.error((err as AxiosError).response?.data);
+    throw err;
+  }
+}
+
+export async function apiPatch<T, U>(
+  endpoint: string,
+  data?: U,
+  config?: AxiosRequestConfig
+): Promise<T> {
+  try {
+    const response = await apiClient.patch<T>(endpoint, data, config);
+    return response.data;
+  } catch (err) {
+    console.error(err);
+    console.error((err as AxiosError).response?.data);
+    throw err;
+  }
+}
