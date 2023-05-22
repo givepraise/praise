@@ -1,15 +1,13 @@
 import {
   GuildMember,
   EmbedBuilder,
-  APIInteractionGuildMember,
   ActionRowBuilder,
+  ButtonBuilder,
   ButtonStyle,
-  TextChannel,
 } from 'discord.js';
 import { logger } from '../logger';
 import { renderMessage } from '../renderMessage';
 import { UserAccount } from '../api-schema';
-import { ButtonBuilder } from 'discord.js';
 
 export const sendReceiverDM = async (
   receiver: { guildMember: GuildMember; userAccount: UserAccount },
@@ -20,7 +18,7 @@ export const sendReceiverDM = async (
   hostUrl: string,
   channelId: string,
   isActivated = true
-) => {
+): Promise<void> => {
   try {
     const channel = await member.guild.channels.fetch(channelId);
     const embed = new EmbedBuilder()
@@ -28,11 +26,15 @@ export const sendReceiverDM = async (
       .setDescription(reason)
       .setAuthor({
         name: member.user.username,
-        iconURL: `https://cdn.discordapp.com/avatars/${member.id}/${member.user.avatar}.png`,
+        iconURL: `https://cdn.discordapp.com/avatars/${member.id}/${
+          member.user.avatar || 'undefined'
+        }.png`,
       })
       .setFooter({
         text: channel?.name || channelId,
-        iconURL: `https://cdn.discordapp.com/icons/${member.guild.id}/${member.guild.icon}.png`,
+        iconURL: `https://cdn.discordapp.com/icons/${member.guild.id}/${
+          member.guild.icon || 'undefined'
+        }.png`,
       });
 
     if (!isActivated) {
@@ -65,6 +67,7 @@ export const sendReceiverDM = async (
       ],
     });
   } catch (err) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     logger.error((err as any).message);
     logger.warn(
       `Can't DM user - ${receiver.userAccount.name} [${receiver.userAccount.accountId}]`

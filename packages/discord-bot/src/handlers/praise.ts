@@ -1,10 +1,4 @@
-import {
-  DMChannel,
-  Guild,
-  GuildMember,
-  TextBasedChannel,
-  User,
-} from 'discord.js';
+import { GuildMember, User } from 'discord.js';
 import { parseReceivers } from '../utils/parseReceivers';
 import { sendReceiverDM } from '../utils/embeds/sendReceiverDM';
 import { renderMessage, ephemeralWarning } from '../utils/renderMessage';

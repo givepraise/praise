@@ -1,16 +1,18 @@
-import { GuildMember } from 'discord.js';
+import { GuildMember, User } from 'discord.js';
 import { parseReceivers } from '../utils/parseReceivers';
 import { getUserAccount } from '../utils/getUserAccount';
 import { getUser } from '../utils/getUser';
-import { praiseSuccessDM } from '../utils/embeds/praiseEmbeds';
 import { assertPraiseGiver } from '../utils/assertPraiseGiver';
 import { assertPraiseAllowedInChannel } from '../utils/assertPraiseAllowedInChannel';
 import { CommandHandler } from '../interfaces/CommandHandler';
 import { praiseForwardEmbed } from '../utils/embeds/praiseForwardEmbed';
-import { createForward } from '../utils/createForward';
+// import { createForward } from '../utils/createForward';
 import { getSetting } from '../utils/settingsUtil';
 import { logger } from '../utils/logger';
 import { renderMessage, ephemeralWarning } from '../utils/renderMessage';
+import { UserAccount } from '../utils/api-schema';
+import { createPraise } from '../utils/createPraise';
+import { sendReceiverDM } from '../utils/embeds/sendReceiverDM';
 
 /**
  * Execute command /forward
@@ -86,10 +88,10 @@ export const forwardHandler: CommandHandler = async (
       return;
     }
 
-    const receiverData = parseReceivers(receiverOptions);
+    const parsedReceivers = parseReceivers(receiverOptions);
     if (
-      !receiverData.validReceiverIds ||
-      receiverData.validReceiverIds?.length === 0
+      !parsedReceivers.validReceiverIds ||
+      parsedReceivers.validReceiverIds?.length === 0
     ) {
       await ephemeralWarning(
         interaction,
@@ -111,10 +113,11 @@ export const forwardHandler: CommandHandler = async (
       return;
     }
 
-    const receivers: string[] = [];
-    const receiverIds = [
+    const validReceiverIds: string[] = [
       ...new Set(
-        receiverData.validReceiverIds.map((id: string) => id.replace(/\D/g, ''))
+        parsedReceivers.validReceiverIds.map((id: string) =>
+          id.replace(/\D/g, '')
+        )
       ),
     ];
 
@@ -124,53 +127,45 @@ export const forwardHandler: CommandHandler = async (
     )) as boolean;
 
     let warnSelfPraise = false;
-    if (!selfPraiseAllowed && receiverIds.includes(giverAccount.accountId)) {
+    if (
+      !selfPraiseAllowed &&
+      validReceiverIds.includes(giverAccount.accountId)
+    ) {
       warnSelfPraise = true;
-      receiverIds.splice(receiverIds.indexOf(giverAccount.accountId), 1);
+      validReceiverIds.splice(
+        validReceiverIds.indexOf(giverAccount.accountId),
+        1
+      );
     }
-    const Receivers = (await guild.members.fetch({ user: receiverIds })).map(
-      (u) => u
-    );
 
-    for (const receiver of Receivers) {
-      const receiverAccount = await getUserAccount(receiver.user, host);
-
-      const praiseRegistered = await createForward(
-        interaction,
-        giverAccount,
-        receiverAccount,
-        forwarderAccount,
-        reason,
-        host
+    const receivers: { guildMember: GuildMember; userAccount: UserAccount }[] =
+      await Promise.all(
+        (
+          await guild.members.fetch({ user: validReceiverIds })
+        ).map(async (guildMember) => {
+          const userAccount = await getUserAccount(guildMember.user, host);
+          return {
+            guildMember,
+            userAccount,
+          };
+        })
       );
 
-      if (praiseRegistered) {
-        try {
-          await receiver.send({
-            embeds: [
-              await praiseSuccessDM(responseUrl, host, !receiverAccount.user),
-            ],
-          });
-        } catch (err) {
-          logger.warn(
-            `Can't DM user - ${receiverAccount.name} [${receiverAccount.accountId}]`
-          );
-        }
-        receivers.push(receiverAccount.accountId);
-      } else {
-        logger.error(
-          `Praise not registered for [${giverAccount.accountId}] -> [${receiverAccount.accountId}] for [${reason}]`
-        );
-      }
-    }
+    await createPraise(
+      interaction,
+      giverAccount,
+      receivers.map((receiver) => receiver.userAccount),
+      reason,
+      host
+    );
 
-    if (Receivers.length !== 0 && receivers.length !== 0) {
+    if (receivers.length !== 0) {
       await interaction.editReply({
         embeds: [
           await praiseForwardEmbed(
             interaction,
             praiseGiver.user,
-            receivers.map((id) => `<@!${id}>`),
+            receivers.map((receiver) => `<@!${receiver.guildMember.id}>`),
             reason,
             host
           ),
@@ -178,32 +173,65 @@ export const forwardHandler: CommandHandler = async (
       });
     } else if (warnSelfPraise) {
       await ephemeralWarning(interaction, 'SELF_PRAISE_WARNING', host);
-    } else if (!Receivers.length) {
+    } else if (!receivers.length) {
       await ephemeralWarning(
         interaction,
         'PRAISE_INVALID_RECEIVERS_ERROR',
         host
       );
     } else {
-      await ephemeralWarning(interaction, 'PRAISE_FORWARD_FAILED', host);
+      await ephemeralWarning(interaction, 'PRAISE_FAILED', host);
     }
 
-    const warningMsg =
-      (receiverData.undefinedReceivers
-        ? (await renderMessage('PRAISE_UNDEFINED_RECEIVERS_WARNING', host, {
-            receivers: receiverData.undefinedReceivers,
-            user: praiseGiver.user,
-          })) + '\n'
-        : '') +
-      (receiverData.roleMentions
-        ? (await renderMessage('PRAISE_TO_ROLE_WARNING', host, {
-            user: praiseGiver.user,
-            receivers: receiverData.roleMentions,
-          })) + '\n'
-        : '') +
-      (Receivers.length !== 0 && warnSelfPraise
-        ? (await renderMessage('SELF_PRAISE_WARNING', host)) + '\n'
-        : '');
+    const hostUrl =
+      process.env.NODE_ENV === 'development'
+        ? process.env?.FRONTEND_URL || 'undefined:/'
+        : `https://${(await client.hostCache.get(guild.id)) as string}`;
+
+    await Promise.all(
+      receivers.map(async (receiver) => {
+        await sendReceiverDM(
+          receiver,
+          member as GuildMember,
+          reason,
+          responseUrl,
+          host,
+          hostUrl,
+          interaction.channelId
+        );
+      })
+    );
+
+    const warningMsgParts: string[] = [];
+
+    if (parsedReceivers.undefinedReceivers) {
+      const warning = await renderMessage(
+        'PRAISE_UNDEFINED_RECEIVERS_WARNING',
+        host,
+        {
+          receivers: parsedReceivers.undefinedReceivers.map((id) =>
+            id.replace(/[<>]/, '')
+          ),
+          user: member.user as User,
+        }
+      );
+      warningMsgParts.push(warning);
+    }
+
+    if (parsedReceivers.roleMentions) {
+      const warning = await renderMessage('PRAISE_TO_ROLE_WARNING', host, {
+        user: member.user as User,
+        receivers: parsedReceivers.roleMentions,
+      });
+      warningMsgParts.push(warning);
+    }
+
+    if (receivers.length !== 0 && warnSelfPraise) {
+      const warning = await renderMessage('SELF_PRAISE_WARNING', host);
+      warningMsgParts.push(warning);
+    }
+
+    const warningMsg = warningMsgParts.join('\n');
 
     if (warningMsg && warningMsg.length !== 0) {
       await interaction.followUp({ content: warningMsg, ephemeral: true });
