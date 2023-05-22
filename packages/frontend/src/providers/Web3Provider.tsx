@@ -7,7 +7,7 @@ import {
   RainbowKitProvider,
 } from '@rainbow-me/rainbowkit';
 import merge from 'lodash/merge';
-import { WagmiConfig, configureChains, createClient } from 'wagmi';
+import { WagmiConfig, configureChains, createConfig } from 'wagmi';
 import { publicProvider } from 'wagmi/providers/public';
 import { mainnet } from 'wagmi/chains';
 import { alchemyProvider } from 'wagmi/providers/alchemy';
@@ -26,7 +26,7 @@ const REACT_APP_WALLETCONNECT_PROJECT_ID =
   process.env.REACT_APP_WALLETCONNECT_PROJECT_ID ||
   win.REACT_APP_WALLETCONNECT_PROJECT_ID;
 
-const { chains, provider } = configureChains(
+const { chains, publicClient } = configureChains(
   [mainnet],
   [
     alchemyProvider({
@@ -42,10 +42,10 @@ const { connectors } = getDefaultWallets({
   chains,
 });
 
-const wagmiClient = createClient({
+const wagmiClient = createConfig({
   autoConnect: true,
   connectors,
-  provider,
+  publicClient,
 });
 
 const customTheme = merge(lightTheme(), {
@@ -70,7 +70,7 @@ export function Web3Provider({ children }: Web3ProviderProps): JSX.Element {
     throw new Error('REACT_APP_WALLETCONNECT_PROJECT_ID is not set');
   }
   return (
-    <WagmiConfig client={wagmiClient}>
+    <WagmiConfig config={wagmiClient}>
       <RainbowKitProvider
         chains={chains}
         theme={customTheme}

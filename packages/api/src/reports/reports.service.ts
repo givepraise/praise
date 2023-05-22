@@ -25,7 +25,7 @@ export class ReportsService {
         path: this.basePath,
       });
 
-      const manifestsPromises = reportsDirs.data
+      const manifestsPromises = (reportsDirs.data as any)
         .filter((item: { type: string }) => item.type === 'dir')
         .map(async (dir: { name: any }) => {
           try {
