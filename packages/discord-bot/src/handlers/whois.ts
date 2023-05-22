@@ -37,7 +37,7 @@ export const whoisHandler: CommandHandler = async (
     const discordUser = interaction.options.getUser('member', true);
 
     // Check if we have a cached user embed
-    const cachedUserEmbed = await keyv.get(discordUser.id);
+    const cachedUserEmbed = await keyv.get(`${host} ${discordUser.id}`);
     if (cachedUserEmbed) {
       await interaction.editReply({ embeds: [cachedUserEmbed] });
       return;
@@ -124,7 +124,7 @@ export const whoisHandler: CommandHandler = async (
       .addFields(fields);
 
     // Cache the embed for a week
-    await keyv.set(discordUser.id, embed, CACHE_TTL);
+    await keyv.set(`${host} ${discordUser.id}`, embed, CACHE_TTL);
 
     // Send the embed
     await interaction.editReply({

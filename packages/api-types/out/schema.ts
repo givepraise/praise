@@ -939,10 +939,9 @@ export interface components {
       /** @example 0980987846534 */
       discordGuildId?: string;
     };
-    ObjectId: Record<string, never>;
     Community: {
       /** @example 621f802b813dbdba9eeaf7b4 */
-      _id: components['schemas']['ObjectId'];
+      _id: string;
       /** @example banklessdao.givepraise.xyz */
       hostname: string;
       /** @example BanklessDAO */
