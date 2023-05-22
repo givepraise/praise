@@ -611,7 +611,8 @@ export interface components {
         | 'PRAISE'
         | 'QUANTIFICATION'
         | 'SETTING'
-        | 'USER_ACCOUNT';
+        | 'USER_ACCOUNT'
+        | 'COMMUNITY';
       /** @example An action that changes user permissions */
       label: string;
       /** @example A user's permissions were changed */
