@@ -87,7 +87,7 @@ export const whatsupHandler: CommandHandler = async (
   // Create a prompt for OpenAI
   const prompt = `
     CSV List contains praise for contributions made by community members in ${host} community. Write summary for a page called "what's up".
-    Use markdown formatting, use headers, no links. Use casual tone, positive, medium heat. Create a compelling summary of the community activity. Don't mention "Praise" or "Praising". Define sections freely but always include at minimum: Project Updates, Things To Look Forward To`;
+    Use markdown formatting, use headers, no links. Use casual tone, positive, medium heat. Create a compelling summary of the community activity. Don't mention "Praise" or "Praising". Define sections freely but always include at minimum: Project Updates, Things To Look Forward To. Focus on contributions more than community members.`;
 
   // Query OpenAI
   const whatsupResponse = await queryOpenAi(
