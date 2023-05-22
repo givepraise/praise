@@ -27,6 +27,8 @@ import { errorMessages } from '../shared/exceptions/error-messages';
 import { ApiException } from '../shared/exceptions/api-exception';
 import { IsNameAvailableResponseDto } from './dto/is-name-available-response-dto';
 import { IsNameAvailableRequestDto } from './dto/is-name-available-request-dto';
+import { EventLogService } from '../event-log/event-log.service';
+import { EventLogTypeKey } from 'src/event-log/enums/event-log-type-key';
 
 @Controller('communities')
 @ApiTags('Communities')
@@ -35,7 +37,10 @@ import { IsNameAvailableRequestDto } from './dto/is-name-available-request-dto';
 })
 @EnforceAuthAndPermissions()
 export class CommunityController {
-  constructor(private readonly communityService: CommunityService) {}
+  constructor(
+    private readonly communityService: CommunityService,
+    private readonly eventLogService: EventLogService,
+  ) {}
 
   @Post('/')
   @ApiOperation({ summary: 'Create a new community' })
@@ -122,7 +127,17 @@ export class CommunityController {
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
     @Body() linkDiscordBotDto: LinkDiscordBotDto,
   ): Promise<Community> {
-    return this.communityService.linkDiscord(id, linkDiscordBotDto);
+    const community = await this.communityService.linkDiscord(
+      id,
+      linkDiscordBotDto,
+    );
+
+    await this.eventLogService.logEvent({
+      typeKey: EventLogTypeKey.COMMUNITY,
+      description: `Community "${community.name}" linked to discord bot`,
+    });
+
+    return community;
   }
 
   // TODO Implement webservice activate/deactivate/update  communities for admin panel usage in future

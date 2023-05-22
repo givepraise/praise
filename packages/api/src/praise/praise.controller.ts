@@ -272,7 +272,7 @@ export class PraiseController {
     await this.eventLogService.logEventWithAuthContext({
       authContext: request.authContext,
       typeKey: EventLogTypeKey.PRAISE,
-      description: `Forwarder ${data.forwarder} created an Praise item with receiver IDS ${data.receiverIds}`,
+      description: `Forwarder ${data.forwarder._id} created an Praise item with receiver IDS ${data.receiverIds}`,
     });
 
     return praiseItem;
