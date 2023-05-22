@@ -28,7 +28,7 @@ import { ApiException } from '../shared/exceptions/api-exception';
 import { IsNameAvailableResponseDto } from './dto/is-name-available-response-dto';
 import { IsNameAvailableRequestDto } from './dto/is-name-available-request-dto';
 import { EventLogService } from '../event-log/event-log.service';
-import { EventLogTypeKey } from 'src/event-log/enums/event-log-type-key';
+import { EventLogTypeKey } from '../event-log/enums/event-log-type-key';
 
 @Controller('communities')
 @ApiTags('Communities')

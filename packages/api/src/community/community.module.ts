@@ -6,7 +6,7 @@ import { CommunityController } from './community.controller';
 import { ConstantsProvider } from '../constants/constants.provider';
 import { AuthGuardModule } from '../auth/auth-guard.module';
 import { dbUrlMain } from '../database/utils/db-url-main';
-import { EventLogModule } from 'src/event-log/event-log.module';
+import { EventLogModule } from '../event-log/event-log.module';
 
 @Module({
   imports: [
