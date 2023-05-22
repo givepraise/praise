@@ -4,10 +4,8 @@ import { registerCommands } from './utils/registerCommands';
 import { requiredEnvVariables } from './pre-start/env-required';
 import { envCheck } from './pre-start/envCheck';
 import { logger } from './utils/logger';
-import { cacheHosts, getHost, getHostId } from './utils/getHost';
+import { buildCommunityCache, getCommunityFromCache } from './utils/getHost';
 import Keyv from 'keyv';
-import { apiGet } from './utils/api';
-import { Community } from './utils/api-schema';
 import {
   communityNotCreatedError,
   praiseWelcomeEmbed,
@@ -39,9 +37,8 @@ void (async (): Promise<void> => {
 
 discordClient.once('ready', async () => {
   logger.info('Discord client is ready!');
-  discordClient.hostCache = new Keyv();
-  discordClient.hostIdCache = new Keyv();
-  await cacheHosts(discordClient.hostCache, discordClient.hostIdCache);
+  discordClient.communityCache = new Keyv();
+  await buildCommunityCache(discordClient.communityCache);
 });
 
 discordClient.on('interactionCreate', async (interaction): Promise<void> => {
@@ -65,8 +62,12 @@ discordClient.on('interactionCreate', async (interaction): Promise<void> => {
       )}`
     );
 
-    const host = await getHost(discordClient, interaction.guild.id);
-    if (host) await command.execute(discordClient, interaction, host);
+    const community = await getCommunityFromCache(
+      discordClient,
+      interaction.guild.id
+    );
+    if (community)
+      await command.execute(discordClient, interaction, community.hostname);
     else
       await interaction.editReply({
         embeds: [communityNotCreatedError(process.env.WEB_URL as string)],
@@ -106,24 +107,7 @@ discordClient.on('guildCreate', async (guild): Promise<void> => {
   try {
     if (!channel || channel.type !== ChannelType.GuildText) return;
 
-    const host = await getHost(discordClient, guild.id);
-    const hostId = await getHostId(discordClient, guild.id);
-
-    if (!host || !hostId) {
-      await channel.send({
-        embeds: [communityNotCreatedError(process.env.WEB_URL as string)],
-      });
-      return;
-    }
-
-    const community = await apiGet<Community>(`/communities/${hostId}`, {
-      headers: { host },
-    })
-      .then((res) => res.data)
-      .catch((err) => {
-        console.log(err);
-        return undefined;
-      });
+    const community = await getCommunityFromCache(discordClient, guild.id);
 
     if (!community) {
       await channel.send({
@@ -137,7 +121,7 @@ discordClient.on('guildCreate', async (guild): Promise<void> => {
             process.env.WEB_URL as string,
             community.discordLinkNonce,
             community.discordLinkState === 'ACTIVE',
-            hostId,
+            community._id,
             guild.id
           ),
         ],
