@@ -108,6 +108,7 @@ export const whoisHandler: CommandHandler = async (
               discordUser?.avatar || ''
             }`
           )
+          .setFooter({ text: '🤖 This is an AI generated description.' })
           .addFields(fields),
       ],
     });
