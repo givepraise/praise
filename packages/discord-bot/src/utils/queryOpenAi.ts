@@ -7,7 +7,7 @@ export const queryOpenAi = async (
 ): Promise<string> => {
   try {
     const body = {
-      model: 'gpt-3.5-turbo',
+      model: process.env?.OPENAI_MODEL || 'gpt-3.5-turbo',
       messages: [{ role: 'user', content: `${prompt}\n\n${data}` }],
     };
     const headers = {
