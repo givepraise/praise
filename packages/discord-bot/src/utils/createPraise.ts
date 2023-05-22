@@ -5,8 +5,7 @@ import {
 } from 'discord.js';
 
 import { UserAccount } from './api-schema';
-import { apiClient } from './api';
-import { logger } from './logger';
+import { apiPost } from './api';
 
 export const createPraise = async (
   interaction: ChatInputCommandInteraction,
@@ -42,15 +41,9 @@ export const createPraise = async (
     )}`,
   };
 
-  const response = await apiClient
-    .post('/praise', praiseData, {
-      headers: { host },
-    })
-    .then((res) => res.status === 201)
-    .catch((err) => {
-      logger.error(err?.response?.data || err.message);
-      return false;
-    });
+  const response = await apiPost('/praise', praiseData, {
+    headers: { host: host },
+  });
 
-  return response;
+  return response.status === 201;
 };

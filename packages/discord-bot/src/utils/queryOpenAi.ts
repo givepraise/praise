@@ -1,4 +1,5 @@
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
+import { logger } from './logger';
 
 export const queryOpenAi = async (
   data: string,
@@ -7,7 +8,7 @@ export const queryOpenAi = async (
 ): Promise<string> => {
   try {
     const body = {
-      model: process.env?.OPENAI_MODEL || 'gpt-3.5-turbo',
+      model: process.env.OPENAI_MODEL || 'gpt-3.5-turbo',
       messages: [{ role: 'user', content: `${prompt}\n\n${data}` }],
     };
     const headers = {
@@ -21,18 +22,11 @@ export const queryOpenAi = async (
         headers,
       }
     );
-
     return res.data.choices[0].message.content;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (err: any) {
-    if (err.response) {
-      throw new Error(
-        `(queryOpenAi) ${err.response.status as string}: ${
-          err.response.data as string
-        }\n`
-      );
-    } else {
-      throw new Error(`(queryOpenAi) ${err.message as string}\n`);
-    }
+  } catch (err) {
+    const axiosError = err as AxiosError;
+    logger.error(axiosError);
+    logger.error(axiosError.response?.data);
+    throw err;
   }
 };

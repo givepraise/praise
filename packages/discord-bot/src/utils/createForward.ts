@@ -5,8 +5,7 @@ import {
 } from 'discord.js';
 
 import { UserAccount } from './api-schema';
-import { apiClient } from './api';
-import { logger } from './logger';
+import { apiPost } from './api';
 
 export const createForward = async (
   interaction: ChatInputCommandInteraction,
@@ -48,16 +47,10 @@ export const createForward = async (
       platform: forwarderAccount.platform,
     },
   };
+  
+  const response = await apiPost('/praise/forward', praiseData, {
+    headers: { host },
+  });
 
-  const response = await apiClient
-    .post('/praise/forward', praiseData, {
-      headers: { host },
-    })
-    .then((res) => res.status === 201)
-    .catch((err) => {
-      logger.error(err?.response?.data || err.message);
-      return false;
-    });
-
-  return response;
+  return response.status === 201;
 };

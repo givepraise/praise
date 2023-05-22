@@ -1,5 +1,11 @@
-import axios, { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
+import axios, {
+  AxiosError,
+  AxiosInstance,
+  AxiosRequestConfig,
+  AxiosResponse,
+} from 'axios';
 import { isDocker } from './isDocker';
+import { logger } from './logger';
 
 export const apiBaseURL = isDocker()
   ? `http://api:${process.env.API_PORT as string}/api`
@@ -35,13 +41,12 @@ export const apiClient: AxiosInstance = axios.create({
 export async function apiGet<T>(
   endpoint: string,
   config?: AxiosRequestConfig
-): Promise<T> {
+): Promise<AxiosResponse<T>> {
   try {
-    const response = await apiClient.get<T>(endpoint, config);
-    return response.data;
+    return await apiClient.get<T>(endpoint, config);
   } catch (err) {
-    console.error(err);
-    console.error((err as AxiosError).response?.data);
+    logger.error(err);
+    logger.error((err as AxiosError).response?.data);
     throw err;
   }
 }
@@ -50,13 +55,12 @@ export async function apiPost<T, U>(
   endpoint: string,
   data?: U,
   config?: AxiosRequestConfig
-): Promise<T> {
+): Promise<AxiosResponse<T>> {
   try {
-    const response = await apiClient.post<T>(endpoint, data, config);
-    return response.data;
+    return await apiClient.post<T>(endpoint, data, config);
   } catch (err) {
-    console.error(err);
-    console.error((err as AxiosError).response?.data);
+    logger.error(err);
+    logger.error((err as AxiosError).response?.data);
     throw err;
   }
 }
@@ -65,13 +69,12 @@ export async function apiPatch<T, U>(
   endpoint: string,
   data?: U,
   config?: AxiosRequestConfig
-): Promise<T> {
+): Promise<AxiosResponse<T>> {
   try {
-    const response = await apiClient.patch<T>(endpoint, data, config);
-    return response.data;
+    return await apiClient.patch<T>(endpoint, data, config);
   } catch (err) {
-    console.error(err);
-    console.error((err as AxiosError).response?.data);
+    logger.error(err);
+    logger.error((err as AxiosError).response?.data);
     throw err;
   }
 }
