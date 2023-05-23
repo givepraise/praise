@@ -8,8 +8,10 @@ import {
 import { logger } from '../logger';
 import { renderMessage } from '../renderMessage';
 import { UserAccount } from '../api-schema';
+import { praise } from 'src/commands/praise';
 
 export const sendReceiverDM = async (
+  praiseId: string,
   receiver: { guildMember: GuildMember; userAccount: UserAccount },
   member: GuildMember,
   reason: string,
@@ -62,7 +64,7 @@ export const sendReceiverDM = async (
           new ButtonBuilder()
             .setLabel('Praise Dashboard')
             .setStyle(ButtonStyle.Link)
-            .setURL(`${hostUrl}/praise/`)
+            .setURL(`${hostUrl}/praise/${praiseId}`)
         ),
       ],
     });

@@ -12,6 +12,7 @@ import { apiClient } from '../utils/api';
 import { PraisePaginatedResponseDto, UserAccount } from '../utils/api-schema';
 import { getSetting } from '../utils/settingsUtil';
 import { logger } from '../utils/logger';
+import { Praise } from '../utils/api-schema';
 
 /**
  * Execute command /praise
@@ -129,6 +130,7 @@ export const praiseHandler: CommandHandler = async (
         })
       );
 
+    let praiseItems: Praise[] = [];
     if (receivers.length !== 0) {
       await interaction.editReply({
         embeds: [
@@ -140,7 +142,7 @@ export const praiseHandler: CommandHandler = async (
           ),
         ],
       });
-      await createPraise(
+      praiseItems = await createPraise(
         interaction,
         giverAccount,
         receivers.map((receiver) => receiver.userAccount),
@@ -165,9 +167,14 @@ export const praiseHandler: CommandHandler = async (
         : `https://${(await client.hostCache.get(guild.id)) as string}`;
 
     await Promise.all(
-      receivers.map(async (receiver) => {
+      praiseItems.map(async (praise) => {
+        console.log(praiseItems, receivers);
         await sendReceiverDM(
-          receiver,
+          praise._id,
+          receivers.filter(
+            (receiver) =>
+              receiver.userAccount.accountId === praise.receiver.accountId
+          )[0],
           member as GuildMember,
           reason,
           responseUrl,
