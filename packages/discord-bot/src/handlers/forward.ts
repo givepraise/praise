@@ -10,7 +10,7 @@ import { createForward } from '../utils/createForward';
 import { getSetting } from '../utils/settingsUtil';
 import { logger } from '../utils/logger';
 import { renderMessage, ephemeralWarning } from '../utils/renderMessage';
-import { UserAccount } from '../utils/api-schema';
+import { UserAccount, Praise } from '../utils/api-schema';
 import { sendReceiverDM } from '../utils/embeds/sendReceiverDM';
 
 /**
@@ -137,6 +137,8 @@ export const forwardHandler: CommandHandler = async (
       );
     }
 
+    let praiseItems: Praise[] = [];
+
     const receivers: { guildMember: GuildMember; userAccount: UserAccount }[] =
       await Promise.all(
         (
@@ -150,7 +152,7 @@ export const forwardHandler: CommandHandler = async (
         })
       );
 
-    await createForward(
+    praiseItems = await createForward(
       interaction,
       giverAccount,
       receivers.map((receiver) => receiver.userAccount),
@@ -186,12 +188,16 @@ export const forwardHandler: CommandHandler = async (
     const hostUrl =
       process.env.NODE_ENV === 'development'
         ? process.env?.FRONTEND_URL || 'undefined:/'
-        : `https://${(await client.hostCache.get(guild.id)) as string}`;
+        : `https://${host}`;
 
     await Promise.all(
-      receivers.map(async (receiver) => {
+      praiseItems.map(async (praise) => {
         await sendReceiverDM(
-          receiver,
+          praise._id,
+          receivers.filter(
+            (receiver) =>
+              receiver.userAccount.accountId === praise.receiver.accountId
+          )[0],
           member as GuildMember,
           reason,
           responseUrl,

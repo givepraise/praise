@@ -164,7 +164,7 @@ export const praiseHandler: CommandHandler = async (
     const hostUrl =
       process.env.NODE_ENV === 'development'
         ? process.env?.FRONTEND_URL || 'undefined:/'
-        : `https://${(await client.hostCache.get(guild.id)) as string}`;
+        : `https://${host}`;
 
     await Promise.all(
       praiseItems.map(async (praise) => {
