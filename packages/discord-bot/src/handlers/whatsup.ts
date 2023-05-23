@@ -5,6 +5,7 @@ import { CommandHandler } from '../interfaces/CommandHandler';
 import { queryOpenAi } from '../utils/queryOpenAi';
 import { EmbedBuilder } from 'discord.js';
 import Keyv from 'keyv';
+import { getCommunityFromCache } from '../utils/getHost';
 
 const CACHE_TTL = 60 * 1000 * 60 * 24; // 24 hours
 
@@ -49,7 +50,7 @@ export const whatsupHandler: CommandHandler = async (
   }
 
   // Check if we have a cached whatsup message
-  const cachedWhatsup = await keyv.get('whatsup');
+  const cachedWhatsup = await keyv.get(host);
   if (cachedWhatsup) {
     const embed = createWhatsupEmbed(cachedWhatsup);
     await interaction.editReply({ embeds: [embed] });
@@ -84,10 +85,19 @@ export const whatsupHandler: CommandHandler = async (
       )
       .join('\n');
 
+  // Get the community name
+  const community = await getCommunityFromCache(client, guild.id);
+  if (!community) {
+    await interaction.editReply(
+      'Unable to fetch community name. Please try again later.'
+    );
+    return;
+  }
+
   // Create a prompt for OpenAI
   const prompt = `
-    CSV List contains praise for contributions made by community members in ${host} community. Write summary for a page called "what's up".
-    Use markdown formatting, use headers, no links. Use casual tone, positive, medium heat. Create a compelling summary of the community activity. Don't mention "Praise" or "Praising". Define sections freely but always include at minimum: Project Updates, Things To Look Forward To. Focus on contributions more than community members.`;
+    CSV List contains praise for contributions made by community members in the "${community.name}" community. Write summary for a page called "what's up".
+    Use markdown formatting, use headers, no links. Use casual tone, positive, medium heat. Create a compelling summary of the community activity. Don't mention "Praise" or "Praising". Define sections freely but always include at minimum: Project Updates, Things To Look Forward To. Focus on contributions, not on community members.`;
 
   // Query OpenAI
   const whatsupResponse = await queryOpenAi(
@@ -105,7 +115,7 @@ export const whatsupHandler: CommandHandler = async (
   }
 
   // Cache the response
-  await keyv.set('whatsup', whatsupResponse, CACHE_TTL);
+  await keyv.set(host, whatsupResponse, CACHE_TTL);
 
   // Create an embed
   const embed = createWhatsupEmbed(whatsupResponse);

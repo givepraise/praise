@@ -48,7 +48,7 @@ export const activationHandler: CommandHandler = async (
     const hostUrl =
       process.env.NODE_ENV === 'development'
         ? process.env.FRONTEND_URL
-        : `https://${(await client.hostCache.get(guild.id)) as string}`;
+        : `https://${host}`;
 
     const activationURL = `${hostUrl || 'undefined:/'}/activate?accountId=${
       member.user.id
