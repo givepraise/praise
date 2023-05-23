@@ -16,7 +16,7 @@ export const leaderboard: Command = {
           { name: 'receivers', value: 'receivers' },
           { name: 'givers', value: 'givers' }
         )
-        .setRequired(false)
+        .setRequired(true)
     ),
   async execute(client, interaction, host) {
     if (!interaction.isCommand() || interaction.commandName !== 'leaderboard')

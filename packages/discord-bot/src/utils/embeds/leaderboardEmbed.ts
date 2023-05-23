@@ -6,14 +6,14 @@ import { PeriodDetailsDto } from '../api-schema';
  */
 export const leaderboardEmbed = (
   periodDetails: PeriodDetailsDto,
-  leaderboardType?: string
+  leaderboardType: string
 ): EmbedBuilder => {
   let leaderboardContent = '';
-  let users;
 
-  if (!leaderboardType || leaderboardType === 'users')
-    users = periodDetails.receivers;
-  else users = periodDetails.givers;
+  const users =
+    leaderboardType === 'receivers'
+      ? periodDetails.receivers
+      : periodDetails.givers;
 
   if (users) {
     // Sort users by score and take top 20
