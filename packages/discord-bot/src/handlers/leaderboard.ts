@@ -55,7 +55,7 @@ export const leaderboardHandler: CommandHandler = async (
     return;
   }
 
-  const leaderboardType = interaction.options.getString('type', false);
+  const leaderboardType = interaction.options.getString('type', true);
 
   // Get period details and generate leaderboard embed
   try {
@@ -66,7 +66,7 @@ export const leaderboardHandler: CommandHandler = async (
       }
     );
     await interaction.editReply({
-      embeds: [leaderboardEmbed(response.data, leaderboardType || undefined)],
+      embeds: [leaderboardEmbed(response.data, leaderboardType)],
     });
   } catch (err) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
