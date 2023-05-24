@@ -10,6 +10,7 @@ import { errorMessages } from '../shared/exceptions/error-messages';
 import { UsersService } from '../users/users.service';
 import { EventLogService } from '../event-log/event-log.service';
 import { EventLogTypeKey } from '../event-log/enums/event-log-type-key';
+import { GenerateTokenDto } from './dto/generate-token-dto';
 
 @Controller('auth')
 @ApiTags('Authentication')
@@ -77,6 +78,36 @@ export class EthSignatureController {
     await this.eventLogService.logEvent({
       typeKey: EventLogTypeKey.AUTHENTICATION,
       description: `User ${loginInputDto.identityEthAddress} logged in`,
+    });
+
+    return loginResponse;
+  }
+
+  @Post('eth-signature/token')
+  @ApiOperation({
+    summary: 'Verifies a refreshToken  and returns a JWT token',
+  })
+  @ApiBody({
+    type: GenerateTokenDto,
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Tokens generated successfully',
+    type: LoginResponseDto,
+  })
+  async token(
+    @Headers('host') host: string,
+    @Body() generateTokenDto: GenerateTokenDto,
+  ): Promise<LoginResponseDto> {
+    const loginResponse =
+      await this.ethSignatureService.generateTokensByRefreshToken(
+        generateTokenDto.refreshToken,
+        host.split(':')[0],
+      );
+
+    await this.eventLogService.logEvent({
+      typeKey: EventLogTypeKey.AUTHENTICATION,
+      description: `User ${loginResponse.identityEthAddress} refreshed tokens`,
     });
 
     return loginResponse;

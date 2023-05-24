@@ -87,15 +87,98 @@ export class EthSignatureService {
     } as JwtPayload;
 
     // Sign payload to create access token
-    const accessToken = this.jwtService.sign(payload, {
-      expiresIn: '7d',
-      secret: process.env.JWT_SECRET,
-    });
+    const accessToken = this.jwtService.sign(
+      {
+        ...payload,
+        type: 'access',
+      },
+      {
+        expiresIn: '7d',
+        secret: process.env.JWT_SECRET,
+      },
+    );
+
+    // Sign payload to create refresh token
+    const refreshToken = this.jwtService.sign(
+      {
+        ...payload,
+        type: 'refresh',
+      },
+      {
+        expiresIn: '30d',
+        secret: process.env.JWT_SECRET,
+      },
+    );
 
     // Return login response with access token
     return {
       accessToken,
       identityEthAddress,
+      refreshToken,
+      tokenType: 'Bearer',
+    };
+  }
+
+  /**
+   * Generate new tokens with existing refreshToken.
+   *
+   * @param token String
+   * @param hostname String
+   * @returns LoginResponse
+   */
+  async generateTokensByRefreshToken(
+    token: string,
+    hostname: string,
+  ): Promise<LoginResponseDto> {
+    const accessTokenPayload = this.jwtService.verify(token, {
+      secret: process.env.JWT_SECRET,
+    }) as JwtPayload;
+
+    const expectedHostname =
+      process.env.NODE_ENV === 'testing' ? HOSTNAME_TEST : hostname;
+
+    if (
+      expectedHostname !== accessTokenPayload.hostname ||
+      accessTokenPayload.type !== 'refresh'
+    ) {
+      throw new ApiException(errorMessages.UNAUTHORIZED);
+    }
+    const payload = {
+      identityEthAddress: accessTokenPayload.identityEthAddress,
+      hostname: accessTokenPayload.hostname,
+      roles: accessTokenPayload.roles,
+      userId: accessTokenPayload.userId,
+    };
+
+    // Sign payload to create access token
+    const accessToken = this.jwtService.sign(
+      {
+        ...payload,
+        type: 'access',
+      },
+      {
+        expiresIn: '7d',
+        secret: process.env.JWT_SECRET,
+      },
+    );
+
+    // Sign payload to create refresh token
+    const refreshToken = this.jwtService.sign(
+      {
+        ...payload,
+        type: 'refresh',
+      },
+      {
+        expiresIn: '30d',
+        secret: process.env.JWT_SECRET,
+      },
+    );
+
+    // Return login response with access token
+    return {
+      accessToken,
+      identityEthAddress: payload.identityEthAddress,
+      refreshToken,
       tokenType: 'Bearer',
     };
   }

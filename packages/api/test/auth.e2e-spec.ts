@@ -221,7 +221,87 @@ describe('AuthController (E2E)', () => {
           expect(response2.body.tokenType).toEqual('Bearer');
           expect(response2.body.identityEthAddress).toEqual(wallet.address);
           expect(response2.body).toHaveProperty('accessToken');
+          expect(response2.body).toHaveProperty('refreshToken');
         });
+    });
+  });
+
+  describe('POST /api/auth/eth-signature/token', () => {
+    test('responds with 400 error when missing refreshToken', async () => {
+      const response = await request(server)
+        .post('/auth/eth-signature/token')
+        .send({});
+      expect(response.statusCode).toBe(400);
+    });
+
+    /**
+     *
+     */
+    test('401 response when sending accessToken instead of refreshToken', async function () {
+      const wallet = Wallet.createRandom();
+
+      const response = await request(server)
+        .post('/auth/eth-signature/nonce')
+        .send({ identityEthAddress: wallet.address });
+
+      const message = ethSignatureService.generateLoginMessage(
+        wallet.address,
+        response.body.nonce,
+      );
+      const signature = await wallet.signMessage(message);
+
+      const body = {
+        identityEthAddress: wallet.address,
+        signature: signature,
+      };
+
+      const loginResponse = await request(server)
+        .post('/auth/eth-signature/login')
+        .send(body);
+
+      const tokenResponse = await request(server)
+        .post('/auth/eth-signature/token')
+        .send({
+          refreshToken: loginResponse?.body?.accessToken,
+        });
+
+      expect(tokenResponse.statusCode).toBe(401);
+    });
+
+    /**
+     *
+     */
+    test('201 response when and receive accessToken and refreshToken', async function () {
+      const wallet = Wallet.createRandom();
+
+      const response = await request(server)
+        .post('/auth/eth-signature/nonce')
+        .send({ identityEthAddress: wallet.address });
+
+      const message = ethSignatureService.generateLoginMessage(
+        wallet.address,
+        response.body.nonce,
+      );
+      const signature = await wallet.signMessage(message);
+
+      const body = {
+        identityEthAddress: wallet.address,
+        signature: signature,
+      };
+      const loginResponse = await request(server)
+        .post('/auth/eth-signature/login')
+        .send(body);
+      console.log('**loginResponse**', JSON.stringify(loginResponse, null, 2));
+      const tokenResponse = await request(server)
+        .post('/auth/eth-signature/token')
+        .send({
+          refreshToken: loginResponse?.body?.refreshToken,
+        });
+      expect(tokenResponse.statusCode).toBe(201);
+      expect(tokenResponse.body.tokenType).toEqual('Bearer');
+      expect(tokenResponse.body.identityEthAddress).toEqual(wallet.address);
+      expect(tokenResponse.body).toHaveProperty('accessToken');
+      expect(tokenResponse.body).toHaveProperty('refreshToken');
     });
   });
 
