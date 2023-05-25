@@ -64,11 +64,7 @@ export const forwardHandler: CommandHandler = async (
     if (!(await assertPraiseGiver(praiseGiver, interaction, true, host)))
       return;
 
-    const reason = interaction.options.getString('reason');
-    if (!reason || reason.length === 0) {
-      await ephemeralWarning(interaction, 'PRAISE_REASON_MISSING_ERROR', host);
-      return;
-    }
+    const reason = interaction.options.getString('reason', true);
 
     if (reason.length < 5 || reason.length > 280) {
       await ephemeralWarning(interaction, 'INVALID_REASON_LENGTH', host);
