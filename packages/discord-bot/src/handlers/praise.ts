@@ -54,10 +54,6 @@ export const praiseHandler: CommandHandler = async (
     }
 
     const reason = interaction.options.getString('reason', true);
-    if (!reason || reason.length === 0) {
-      await ephemeralWarning(interaction, 'PRAISE_REASON_MISSING_ERROR', host);
-      return;
-    }
 
     if (reason.length < 5 || reason.length > 280) {
       await ephemeralWarning(interaction, 'INVALID_REASON_LENGTH', host);

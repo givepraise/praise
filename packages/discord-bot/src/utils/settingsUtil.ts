@@ -21,14 +21,10 @@ export const getDefaultSetting = (
       return 'USER DOES NOT HAVE {@role} role (message not set)';
     case 'PRAISE_INVALID_RECEIVERS_ERROR':
       return 'VALID RECEIVERS NOT MENTIONED (message not set)';
-    case 'PRAISE_REASON_MISSING_ERROR':
-      return 'REASON NOT MENTIONED (message not set)';
     case 'PRAISE_UNDEFINED_RECEIVERS_WARNING':
       return 'UNDEFINED RECEIVERS MENTIONED, UNABLE TO PRAISE THEM (message not set)';
     case 'PRAISE_TO_ROLE_WARNING':
       return "ROLES MENTIONED AS PRAISE RECEIVERS, PRAISE CAN'T BE DISHED TO ROLES (message not set)";
-    case 'PRAISE_SUCCESS_DM':
-      return '[YOU HAVE BEEN PRAISED!!!]({praiseURL) (message not set)';
     case 'SELF_PRAISE_WARNING':
       return 'SELF-PRAISE NOT ALLOWED, PRAISE GIVERS UNABLE TO PRAISE THEMSELVES (message not set)';
     case 'FIRST_TIME_PRAISER':
