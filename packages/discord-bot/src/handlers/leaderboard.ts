@@ -55,6 +55,8 @@ export const leaderboardHandler: CommandHandler = async (
     return;
   }
 
+  const leaderboardType = interaction.options.getString('type', true);
+
   // Get period details and generate leaderboard embed
   try {
     const response = await apiClient.get<PeriodDetailsDto>(
@@ -64,7 +66,7 @@ export const leaderboardHandler: CommandHandler = async (
       }
     );
     await interaction.editReply({
-      embeds: [leaderboardEmbed(response.data)],
+      embeds: [leaderboardEmbed(response.data, leaderboardType)],
     });
   } catch (err) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

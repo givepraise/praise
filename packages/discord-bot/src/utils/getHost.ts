@@ -1,27 +1,23 @@
-import { apiClient } from './api';
+import { apiGet } from './api';
 import Keyv from 'keyv';
-import { CommunityPaginatedResponseDto } from './api-schema';
+import { Community, CommunityPaginatedResponseDto } from './api-schema';
 import { DiscordClient } from '../interfaces/DiscordClient';
 
 /**
  * Cache host after fetching communities from API
  *
  */
-export const cacheHosts = async (
-  hostCache: Keyv,
-  idCache: Keyv
-): Promise<void> => {
+export const buildCommunityCache = async (cache: Keyv): Promise<void> => {
   let currPage = 1;
   let totalPages = 1;
   while (currPage <= totalPages) {
-    const communityList = await apiClient
-      .get(`/communities?page=${currPage}`)
-      .then<CommunityPaginatedResponseDto>((res) => res.data);
+    const communityList = await apiGet<CommunityPaginatedResponseDto>(
+      `/communities?page=${currPage}`
+    ).then((res) => res.data);
 
     for (const community of communityList.docs) {
       if (community.discordGuildId) {
-        await hostCache.set(community.discordGuildId, community.hostname);
-        await idCache.set(community.discordGuildId, community._id);
+        await cache.set(community.discordGuildId, community);
       }
     }
 
@@ -34,33 +30,15 @@ export const cacheHosts = async (
  * Fetch Host by id
  *
  */
-export const getHost = async (
+export const getCommunityFromCache = async (
   client: DiscordClient,
   guildId: string
-): Promise<string | undefined> => {
-  let host = await client.hostCache.get(guildId);
+): Promise<Community | undefined> => {
+  let host = await client.communityCache.get(guildId);
 
   if (host === undefined) {
-    await cacheHosts(client.hostCache, client.hostIdCache);
-    host = await client.hostCache.get(guildId);
-  }
-
-  return host;
-};
-
-/**
- * Fetch Host by id
- *
- */
-export const getHostId = async (
-  client: DiscordClient,
-  guildId: string
-): Promise<string | undefined> => {
-  let host = await client.hostIdCache.get(guildId);
-
-  if (host === undefined) {
-    await cacheHosts(client.hostCache, client.hostIdCache);
-    host = await client.hostIdCache.get(guildId);
+    await buildCommunityCache(client.communityCache);
+    host = await client.communityCache.get(guildId);
   }
 
   return host;

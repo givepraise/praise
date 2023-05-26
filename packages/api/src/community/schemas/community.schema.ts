@@ -28,7 +28,11 @@ export class Community {
     }
   }
 
-  @ApiProperty({ example: '621f802b813dbdba9eeaf7b4', required: true })
+  @ApiProperty({
+    example: '621f802b813dbdba9eeaf7b4',
+    type: 'string',
+    required: true,
+  })
   @IsString()
   @ExposeId()
   _id: Types.ObjectId;

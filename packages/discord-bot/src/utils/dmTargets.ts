@@ -2,7 +2,7 @@ import { PeriodDetailsDto, User } from '../utils/api-schema';
 import { CommandInteraction, DiscordAPIError } from 'discord.js';
 import { Buffer } from 'node:buffer';
 import { FailedToDmUsersList } from '../interfaces/FailedToDmUsersList';
-import { apiClient } from './api';
+import { apiGet } from './api';
 
 /**
  * Send a custom direct message to a list of users
@@ -151,8 +151,7 @@ export const selectTargets = async (
   message: string,
   host: string
 ): Promise<void> => {
-  const users = await apiClient
-    .get<User[]>('/users', { headers: { host } })
+  const users = await apiGet<User[]>('/users', { headers: { host } })
     .then((res) => res.data)
     .catch(() => undefined);
 
@@ -174,8 +173,7 @@ export const selectTargets = async (
     case 'UNFINISHED-QUANTIFIERS': {
       if (!period || !period.length) return;
 
-      const selectedPeriod = await apiClient
-        .get<PeriodDetailsDto>(`/period/${period}`)
+      const selectedPeriod = await apiGet<PeriodDetailsDto>(`/period/${period}`)
         .then((res) => res.data)
         .catch(() => undefined);
       if (!selectedPeriod) return;

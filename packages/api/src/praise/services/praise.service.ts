@@ -256,10 +256,9 @@ export class PraiseService {
       .find({
         accountId: { $in: receiverIds },
       })
-      .populate('user')
       .lean();
 
-    const insertManyPraiseItems = await this.praiseModel.insertMany(
+    const newPraise = await this.praiseModel.insertMany(
       receivers.map((receiver) => ({
         reason,
         reasonRaw,
@@ -271,6 +270,10 @@ export class PraiseService {
       })),
     );
 
-    return await Promise.all(insertManyPraiseItems);
+    const findPraisePromises = newPraise.map((praise) =>
+      this.findOneById(praise._id),
+    );
+
+    return Promise.all(findPraisePromises);
   };
 }

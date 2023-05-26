@@ -5,6 +5,5 @@ import Keyv from 'keyv';
 export interface DiscordClient extends Client {
   id: string;
   commands: Collection<string, Command>;
-  hostCache: Keyv;
-  hostIdCache: Keyv;
+  communityCache: Keyv;
 }

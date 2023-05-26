@@ -7,6 +7,16 @@ export const leaderboard: Command = {
     .setName('leaderboard')
     .setDescription(
       'The top 20 users by praise score received in the latest quantified period.'
+    )
+    .addStringOption((option) =>
+      option
+        .setName('type')
+        .setDescription('Select type of leaderboard')
+        .addChoices(
+          { name: 'receivers', value: 'receivers' },
+          { name: 'givers', value: 'givers' }
+        )
+        .setRequired(true)
     ),
   async execute(client, interaction, host) {
     if (!interaction.isCommand() || interaction.commandName !== 'leaderboard')
