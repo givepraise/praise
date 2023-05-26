@@ -8,7 +8,6 @@ import {
 import { logger } from '../logger';
 import { renderMessage } from '../renderMessage';
 import { UserAccount } from '../api-schema';
-import { praise } from 'src/commands/praise';
 
 export const sendReceiverDM = async (
   praiseId: string,
@@ -25,7 +24,9 @@ export const sendReceiverDM = async (
     const channel = await member.guild.channels.fetch(channelId);
     const embed = new EmbedBuilder()
       .setColor('#696969')
-      .setDescription(reason)
+      .setDescription(
+        `Praise <@!${receiver.userAccount.accountId}> for ${reason}`
+      )
       .setAuthor({
         name: member.user.username,
         iconURL: `https://cdn.discordapp.com/avatars/${member.id}/${
