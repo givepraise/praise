@@ -9,10 +9,13 @@ import { getUserAccount } from '../utils/getUserAccount';
 import { createPraise } from '../utils/createPraise';
 import { praiseSuccessEmbed } from '../utils/embeds/praiseSuccessEmbed';
 import { apiClient } from '../utils/api';
-import { PraisePaginatedResponseDto, UserAccount } from '../utils/api-schema';
+import {
+  PraisePaginatedResponseDto,
+  UserAccount,
+  Praise,
+} from '../utils/api-schema';
 import { getSetting } from '../utils/settingsUtil';
 import { logger } from '../utils/logger';
-import { Praise } from '../utils/api-schema';
 
 /**
  * Execute command /praise

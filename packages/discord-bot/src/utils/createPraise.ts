@@ -3,8 +3,7 @@ import {
   ChatInputCommandInteraction,
   cleanContent,
 } from 'discord.js';
-import { UserAccount } from './api-schema';
-import { Praise } from './api-schema';
+import { UserAccount, Praise } from './api-schema';
 import { apiPost } from './api';
 
 interface PraiseCreateInputDto {
