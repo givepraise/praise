@@ -33,6 +33,7 @@ import {
   settingsService,
   periodSettingsSeeder,
 } from './shared/nest';
+import { UserAccount } from '../src/useraccounts/schemas/useraccounts.schema';
 
 class LoggedInUser {
   accessToken: string;
@@ -454,6 +455,8 @@ describe('Praise (E2E)', () => {
       expect(rb).toHaveLength(3);
 
       expect(rb[0]).toBeValidClass(Praise);
+      expect(rb[0].giver).toBeValidClass(UserAccount);
+      expect(rb[0].receiver).toBeValidClass(UserAccount);
       expect(rb[0]).toBeProperlySerialized();
     });
 

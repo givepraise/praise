@@ -1,7 +1,7 @@
 import { GuildMember, User } from 'discord.js';
 import { parseReceivers } from '../utils/parseReceivers';
-import { praiseSuccessDM } from '../utils/embeds/praiseEmbeds';
-import { renderMessage } from '../utils/renderMessage';
+import { sendReceiverDM } from '../utils/embeds/sendReceiverDM';
+import { renderMessage, ephemeralWarning } from '../utils/renderMessage';
 import { assertPraiseGiver } from '../utils/assertPraiseGiver';
 import { assertPraiseAllowedInChannel } from '../utils/assertPraiseAllowedInChannel';
 import { CommandHandler } from '../interfaces/CommandHandler';
@@ -9,10 +9,14 @@ import { getUserAccount } from '../utils/getUserAccount';
 import { createPraise } from '../utils/createPraise';
 import { praiseSuccessEmbed } from '../utils/embeds/praiseSuccessEmbed';
 import { apiClient } from '../utils/api';
-import { PraisePaginatedResponseDto } from '../utils/api-schema';
+import {
+  PraisePaginatedResponseDto,
+  UserAccount,
+  Praise,
+} from '../utils/api-schema';
 import { getSetting } from '../utils/settingsUtil';
-
 import { logger } from '../utils/logger';
+
 /**
  * Execute command /praise
  *  Creates praises with a given receiver and reason
@@ -27,10 +31,10 @@ export const praiseHandler: CommandHandler = async (
 ) => {
   if (!responseUrl) return;
 
-  const { guild, channel, member } = interaction;
+  const { guild, member } = interaction;
 
-  if (!guild || !member || !channel) {
-    await interaction.editReply(await renderMessage('DM_ERROR'));
+  if (!guild || !member) {
+    await ephemeralWarning(interaction, 'DM_ERROR');
     return;
   }
 
@@ -44,24 +48,18 @@ export const praiseHandler: CommandHandler = async (
     const receiverOptions = interaction.options.getString('receivers');
 
     if (!receiverOptions || receiverOptions.length === 0) {
-      await interaction.editReply(
-        await renderMessage('PRAISE_INVALID_RECEIVERS_ERROR', host)
+      await ephemeralWarning(
+        interaction,
+        'PRAISE_INVALID_RECEIVERS_ERROR',
+        host
       );
       return;
     }
 
     const reason = interaction.options.getString('reason', true);
-    if (!reason || reason.length === 0) {
-      await interaction.editReply(
-        await renderMessage('PRAISE_REASON_MISSING_ERROR', host)
-      );
-      return;
-    }
 
     if (reason.length < 5 || reason.length > 280) {
-      await interaction.editReply(
-        '⚠️ The praise reason should be between 5 to 280 characters.'
-      );
+      await ephemeralWarning(interaction, 'INVALID_REASON_LENGTH', host);
       return;
     }
 
@@ -71,8 +69,10 @@ export const praiseHandler: CommandHandler = async (
       !parsedReceivers.validReceiverIds ||
       parsedReceivers.validReceiverIds?.length === 0
     ) {
-      await interaction.editReply(
-        await renderMessage('PRAISE_INVALID_RECEIVERS_ERROR', host)
+      await ephemeralWarning(
+        interaction,
+        'PRAISE_INVALID_RECEIVERS_ERROR',
+        host
       );
       return;
     }
@@ -83,8 +83,10 @@ export const praiseHandler: CommandHandler = async (
     );
 
     if (!giverAccount || !giverAccount.user || giverAccount.user === null) {
-      await interaction.editReply(
-        await renderMessage('PRAISE_ACCOUNT_NOT_ACTIVATED_ERROR', host)
+      await ephemeralWarning(
+        interaction,
+        'PRAISE_ACCOUNT_NOT_ACTIVATED_ERROR',
+        host
       );
       return;
     }
@@ -114,49 +116,22 @@ export const praiseHandler: CommandHandler = async (
       );
     }
 
-    const receivers = await Promise.all(
-      (
-        await guild.members.fetch({ user: validReceiverIds })
-      ).map(async (guildMember) => {
-        const userAccount = await getUserAccount(guildMember.user, host);
-        return {
-          guildMember,
-          userAccount,
-        };
-      })
-    );
+    const receivers: { guildMember: GuildMember; userAccount: UserAccount }[] =
+      await Promise.all(
+        (
+          await guild.members.fetch({ user: validReceiverIds })
+        ).map(async (guildMember) => {
+          const userAccount = await getUserAccount(guildMember.user, host);
+          return {
+            guildMember,
+            userAccount,
+          };
+        })
+      );
 
-    await createPraise(
-      interaction,
-      giverAccount,
-      receivers.map((receiver) => receiver.userAccount),
-      reason,
-      host
-    );
-
-    await Promise.all(
-      receivers.map(async (receiver) => {
-        try {
-          await receiver.guildMember.send({
-            embeds: [
-              await praiseSuccessDM(
-                responseUrl,
-                host,
-                receiver.userAccount.user ? true : false
-              ),
-            ],
-          });
-        } catch (err) {
-          logger.warn(
-            `Can't DM user - ${receiver.userAccount.name} [${receiver.userAccount.accountId}]`
-          );
-        }
-      })
-    );
-
+    let praiseItems: Praise[] = [];
     if (receivers.length !== 0) {
-      await interaction.editReply('Praise given!');
-      await interaction.followUp({
+      await interaction.editReply({
         embeds: [
           await praiseSuccessEmbed(
             interaction.user,
@@ -165,19 +140,49 @@ export const praiseHandler: CommandHandler = async (
             host
           ),
         ],
-        ephemeral: false,
       });
-    } else if (warnSelfPraise) {
-      await interaction.editReply(
-        await renderMessage('SELF_PRAISE_WARNING', host)
+      praiseItems = await createPraise(
+        interaction,
+        giverAccount,
+        receivers.map((receiver) => receiver.userAccount),
+        reason,
+        host
       );
+    } else if (warnSelfPraise) {
+      await ephemeralWarning(interaction, 'SELF_PRAISE_WARNING', host);
     } else if (!receivers.length) {
-      await interaction.editReply(
-        await renderMessage('PRAISE_INVALID_RECEIVERS_ERROR', host)
+      await ephemeralWarning(
+        interaction,
+        'PRAISE_INVALID_RECEIVERS_ERROR',
+        host
       );
     } else {
-      await interaction.editReply('Praise failed :(');
+      await ephemeralWarning(interaction, 'PRAISE_FAILED', host);
     }
+
+    const hostUrl =
+      process.env.NODE_ENV === 'development'
+        ? process.env?.FRONTEND_URL || 'undefined:/'
+        : `https://${host}`;
+
+    await Promise.all(
+      praiseItems.map(async (praise) => {
+        console.log(praiseItems, receivers);
+        await sendReceiverDM(
+          praise._id,
+          receivers.filter(
+            (receiver) =>
+              receiver.userAccount.accountId === praise.receiver.accountId
+          )[0],
+          member as GuildMember,
+          reason,
+          responseUrl,
+          host,
+          hostUrl,
+          interaction.channelId
+        );
+      })
+    );
 
     const warningMsgParts: string[] = [];
 
@@ -221,12 +226,7 @@ export const praiseHandler: CommandHandler = async (
       .then((res) => (res.data as PraisePaginatedResponseDto).totalPages)
       .catch(() => 0);
 
-    if (
-      receivers.length &&
-      receiverOptions.length &&
-      receiverOptions.length !== 0 &&
-      praiseItemsCount === 0
-    ) {
+    if (receivers.length && receiverOptions.length && praiseItemsCount === 0) {
       await interaction.followUp({
         content: await renderMessage('FIRST_TIME_PRAISER', host),
         ephemeral: true,

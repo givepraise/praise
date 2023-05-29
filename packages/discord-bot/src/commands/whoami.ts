@@ -9,6 +9,7 @@ export const whoami: Command = {
   async execute(client, interaction, host) {
     if (!interaction.isCommand() || interaction.commandName !== 'whoami')
       return;
+    await interaction.deferReply({ ephemeral: true });
     await whoamiHandler(client, interaction, host);
   },
 };

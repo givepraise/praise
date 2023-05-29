@@ -14,6 +14,7 @@ import { SetPeriodSettingDto } from './dto/set-periodsetting.dto';
 import { Period } from '../periods/schemas/periods.schema';
 import { PeriodStatusType } from '../periods/enums/status-type.enum';
 import { logger } from '../shared/logger';
+import { deleteFromIpfs, uploadToIpfs } from './utils/pinata-ipfs';
 
 @Injectable()
 export class SettingsService {
@@ -138,24 +139,26 @@ export class SettingsService {
       throw new ApiException(errorMessages.UPLOADED_FILE_IS_NOT_AN_IMAGE);
     }
 
-    const originalValue = setting.value;
-
-    // Remove previous file
+    // Remove previous file if exists
     try {
+      await deleteFromIpfs(setting.value);
       await this.utils.removeFile(setting.value);
     } catch (err) {
       // Ignore error
     }
 
-    setting.value = file.filename;
+    const ipfsHash = await uploadToIpfs(file);
 
-    logger.info(
-      `Updated global setting "${setting.label}" from "${
-        originalValue || ''
-      }" to "${setting.value || ''}"`,
-    );
+    // Remove temporary file
+    try {
+      await this.utils.removeFile(file.filename);
+    } catch (err) {
+      // Ignore error
+    }
 
+    setting.value = ipfsHash;
     await setting.save();
+
     return this.findOneById(_id);
   }
 

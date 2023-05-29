@@ -35,28 +35,3 @@ export const praiseWelcomeEmbed = (
     } Praise bot linked to community\n\nOne final step before you can start praising! Follow below link and sign a message with your wallet to secure the connection between the bot and the newly setup community.\n[Link Praise Bot to "${name}"](${webUrl}/discord-bot/link?nonce=${nonce}&communityId=${hostId}&guildId=${guildId})`
   );
 };
-
-export const praiseSuccessDM = async (
-  praiseUrl: string,
-  host: string,
-  isActivated = true
-): Promise<EmbedBuilder> => {
-  const msg = await renderMessage('PRAISE_SUCCESS_DM', host, { praiseUrl });
-  const embed = new EmbedBuilder().setColor('#696969').setDescription(msg);
-
-  if (!isActivated) {
-    const notActivatedMsg = await renderMessage(
-      'PRAISE_ACCOUNT_NOT_ACTIVATED_ERROR_DM',
-      host
-    );
-
-    embed.addFields([
-      {
-        name: '\u200b',
-        value: notActivatedMsg,
-      },
-    ]);
-  }
-
-  return embed;
-};

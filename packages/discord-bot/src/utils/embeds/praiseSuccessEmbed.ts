@@ -12,16 +12,7 @@ export const praiseSuccessEmbed = async (
     .replace('{reason}', reason);
 
   try {
-    const embed = new EmbedBuilder()
-      .setColor(0xe6007e)
-      .setAuthor({
-        name: user.username,
-        iconURL: user.avatar
-          ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}`
-          : 'https://discord.com/assets/1f0bfc0865d324c2587920a7d80c609b.png',
-        url: `${process.env.FRONTEND_URL as string}/users/${user.id}`,
-      })
-      .setDescription(msg);
+    const embed = new EmbedBuilder().setColor(0xe6007e).setDescription(msg);
     return embed;
   } catch (error) {
     console.log(error);

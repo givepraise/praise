@@ -20,9 +20,11 @@ export const praise: Command = {
         .setRequired(true)
     ),
 
-  async execute(client, interaction, host, msg) {
+  async execute(client, interaction, host) {
     if (!interaction.isCommand() || interaction.commandName !== 'praise')
       return;
+
+    const msg = await interaction.deferReply({ fetchReply: true });
 
     await praiseHandler(
       client,

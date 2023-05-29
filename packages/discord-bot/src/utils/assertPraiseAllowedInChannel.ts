@@ -15,7 +15,7 @@ export const assertPraiseAllowedInChannel = async (
 ): Promise<boolean> => {
   const { channel, guild } = interaction;
 
-  if (!channel || !guild) return false;
+  if (!guild) return false;
 
   const [allowedInAllChannels, allowedChannelsList] = await Promise.all([
     getSetting('PRAISE_ALLOWED_IN_ALL_CHANNELS', host) as Promise<boolean>,
@@ -26,7 +26,8 @@ export const assertPraiseAllowedInChannel = async (
 
   if (!channel) {
     await interaction.editReply({
-      content: '**❌ Praise Restricted**\nPraise not allowed here.',
+      content:
+        '**❌ Missing Permissions**\nPraise bot can not work in private threads yet.',
     });
     return false;
   }

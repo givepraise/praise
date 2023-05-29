@@ -1,5 +1,5 @@
 import { Setting } from './api-schema';
-import { apiClient } from './api';
+import { apiGet } from './api';
 
 export const getDefaultSetting = (
   key: string
@@ -21,14 +21,10 @@ export const getDefaultSetting = (
       return 'USER DOES NOT HAVE {@role} role (message not set)';
     case 'PRAISE_INVALID_RECEIVERS_ERROR':
       return 'VALID RECEIVERS NOT MENTIONED (message not set)';
-    case 'PRAISE_REASON_MISSING_ERROR':
-      return 'REASON NOT MENTIONED (message not set)';
     case 'PRAISE_UNDEFINED_RECEIVERS_WARNING':
       return 'UNDEFINED RECEIVERS MENTIONED, UNABLE TO PRAISE THEM (message not set)';
     case 'PRAISE_TO_ROLE_WARNING':
       return "ROLES MENTIONED AS PRAISE RECEIVERS, PRAISE CAN'T BE DISHED TO ROLES (message not set)";
-    case 'PRAISE_SUCCESS_DM':
-      return '[YOU HAVE BEEN PRAISED!!!]({praiseURL) (message not set)';
     case 'SELF_PRAISE_WARNING':
       return 'SELF-PRAISE NOT ALLOWED, PRAISE GIVERS UNABLE TO PRAISE THEMSELVES (message not set)';
     case 'FIRST_TIME_PRAISER':
@@ -45,6 +41,14 @@ export const getDefaultSetting = (
       return false;
     case 'PRAISE_ACCOUNT_NOT_ACTIVATED_ERROR_DM':
       return 'In order to claim your praise, link your discord account to your ethereum wallet using the `/activate` command';
+    case 'FORWARDER_ROLE_WARNING':
+      return "**❌ You don't have the permission to use this command.**";
+    case 'INVALID_REASON_LENGTH':
+      return 'Reason should be between 5 to 280 characters';
+    case 'FORWARD_FORWARD_FAILED':
+      return 'Forward Failed :(';
+    case 'PRAISE_FAILED':
+      return 'Praise Failed :(';
   }
 };
 
@@ -52,11 +56,10 @@ export const getSetting = async (
   key: string,
   host?: string
 ): Promise<string | string[] | boolean | number | number[] | undefined> => {
-  const setting = await apiClient
-    .get(`/settings?key=${key}`, {
-      headers: host ? { host: host } : {},
-    })
-    .then((res) => (res.data[0] as Setting).valueRealized)
+  const setting = await apiGet<Setting[]>(`/settings?key=${key}`, {
+    headers: host ? { host: host } : {},
+  })
+    .then((res) => res.data[0].valueRealized)
     .catch(() => getDefaultSetting(key));
 
   return setting;

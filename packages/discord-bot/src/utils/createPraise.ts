@@ -3,10 +3,22 @@ import {
   ChatInputCommandInteraction,
   cleanContent,
 } from 'discord.js';
+import { UserAccount, Praise } from './api-schema';
+import { apiPost } from './api';
 
-import { UserAccount } from './api-schema';
-import { apiClient } from './api';
-import { logger } from './logger';
+interface PraiseCreateInputDto {
+  reason: string;
+  reasonRaw: string;
+  giver: {
+    accountId: string;
+    name: string;
+    avatarId?: string;
+    platform: string;
+  };
+  receiverIds: string[];
+  sourceId: string;
+  sourceName: string;
+}
 
 export const createPraise = async (
   interaction: ChatInputCommandInteraction,
@@ -14,9 +26,9 @@ export const createPraise = async (
   receiverAccounts: UserAccount[],
   reason: string,
   host: string
-): Promise<boolean> => {
+): Promise<Praise[]> => {
   const { channel, guild } = interaction;
-  if (!channel || !guild || channel.type === ChannelType.DM) return false;
+  if (!channel || !guild || channel.type === ChannelType.DM) return [];
 
   const channelName =
     (channel.type === ChannelType.PublicThread ||
@@ -26,7 +38,7 @@ export const createPraise = async (
       ? `${channel.parent.name} / ${channel.name}`
       : channel.name;
 
-  const praiseData = {
+  const praiseData: PraiseCreateInputDto = {
     reason: reason,
     reasonRaw: cleanContent(reason, channel),
     giver: {
@@ -42,15 +54,13 @@ export const createPraise = async (
     )}`,
   };
 
-  const response = await apiClient
-    .post('/praise', praiseData, {
-      headers: { host: host },
-    })
-    .then((res) => res.status === 201)
-    .catch((err) => {
-      logger.error(err?.response?.data || err.message);
-      return false;
-    });
+  const response = await apiPost<Praise[], PraiseCreateInputDto>(
+    '/praise',
+    praiseData,
+    {
+      headers: { host },
+    }
+  );
 
-  return response;
+  return response.data;
 };

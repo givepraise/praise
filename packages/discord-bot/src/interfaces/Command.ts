@@ -3,7 +3,7 @@ import {
   SlashCommandSubcommandsOnlyBuilder,
   SlashCommandOptionsOnlyBuilder,
 } from '@discordjs/builders';
-import { Collection, ChatInputCommandInteraction, Message } from 'discord.js';
+import { Collection, ChatInputCommandInteraction } from 'discord.js';
 import { DiscordClient } from './DiscordClient';
 
 interface HelpText {
@@ -21,8 +21,7 @@ export interface Command {
   execute: (
     client: DiscordClient,
     interaction: ChatInputCommandInteraction,
-    host: string,
-    msg: Message<boolean>
+    host: string
   ) => Promise<void>;
   help?: HelpText;
 }

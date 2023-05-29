@@ -14,6 +14,7 @@ export const whois: Command = {
     ),
   async execute(client, interaction, host) {
     if (!interaction.isCommand() || interaction.commandName !== 'whois') return;
+    await interaction.deferReply({ ephemeral: true });
     await whoisHandler(client, interaction, host);
   },
 };
