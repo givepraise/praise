@@ -1541,7 +1541,7 @@ export interface operations {
   /** List all settings. */
   SettingsController_findAll: {
     parameters: {
-      query: {
+      query?: {
         /** @example SETTING_KEY */
         key?: string;
         type?:
@@ -1740,7 +1740,7 @@ export interface operations {
   /** Export praise document to json */
   PraiseController_exportJson: {
     parameters: {
-      query: {
+      query?: {
         startDate?: string;
         endDate?: string;
       };
@@ -1756,7 +1756,7 @@ export interface operations {
   /** Export praise document to csv */
   PraiseController_exportCsv: {
     parameters: {
-      query: {
+      query?: {
         startDate?: string;
         endDate?: string;
       };
@@ -1772,7 +1772,7 @@ export interface operations {
   /** Export praise document to parquet */
   PraiseController_exportParquet: {
     parameters: {
-      query: {
+      query?: {
         startDate?: string;
         endDate?: string;
       };
@@ -1825,7 +1825,7 @@ export interface operations {
   /** UserAccount list */
   UserAccountsController_findAll: {
     parameters: {
-      query: {
+      query?: {
         /** @example 098098098098098 */
         accountId?: string;
         /** @example darth#6755 */
@@ -2158,7 +2158,7 @@ export interface operations {
   /** Export quantifications document to json */
   QuantificationsController_exportJson: {
     parameters: {
-      query: {
+      query?: {
         startDate?: string;
         endDate?: string;
       };
@@ -2174,7 +2174,7 @@ export interface operations {
   /** Export quantifications document to csv */
   QuantificationsController_exportCsv: {
     parameters: {
-      query: {
+      query?: {
         startDate?: string;
         endDate?: string;
       };
@@ -2190,7 +2190,7 @@ export interface operations {
   /** Export quantifications document to parquet */
   QuantificationsController_exportParquet: {
     parameters: {
-      query: {
+      query?: {
         startDate?: string;
         endDate?: string;
       };
