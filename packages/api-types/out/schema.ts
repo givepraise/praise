@@ -920,6 +920,7 @@ export interface components {
       identityEthAddress: string;
       /** @example bearer */
       tokenType: string;
+      user: components['schemas']['User'];
     };
     CreateCommunityInputDto: {
       /** @example banklessdao.givepraise.xyz */
