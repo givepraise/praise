@@ -21,6 +21,7 @@
   "dependencies": {
     "@faker-js/faker": "^7.6.0",
     "@json2csv/node": "^6.1.2",
+    "@keyv/mongo": "^2.2.8",
     "@nestjs/cache-manager": "^1.0.0",
     "@nestjs/common": "^9.4.0",
     "@nestjs/config": "^2.3.1",
