@@ -9,7 +9,17 @@ const isJsonBlob = (data): data is Blob =>
  *
  * @param err
  */
-export const handleErrors = (err: AxiosError): AxiosError => {
+export const handleErrors = (
+  err: AxiosError,
+  handleErrorsAutomatically = true
+): AxiosError => {
+  // Handling errors automatically means the error will be displayed to the user with a toast.
+  // If not handled automatically, the error will just be logged to the console and returned.
+  if (!handleErrorsAutomatically) {
+    console.error(err);
+    return err;
+  }
+
   if (err?.response) {
     if (err.response.status === 401) {
       // If the response is 401, it means the user is not logged in
@@ -39,13 +49,13 @@ export const handleErrors = (err: AxiosError): AxiosError => {
  * Client for external requests.
  * @returns
  */
-export const makeClient = (): AxiosInstance => {
+export const makeClient = (handleErrorsAutomatically = true): AxiosInstance => {
   const client = axios.create();
 
   client.interceptors.response.use(
     (res) => res,
     (err) => {
-      return handleErrors(err);
+      return handleErrors(err, handleErrorsAutomatically);
     }
   );
   return client;
