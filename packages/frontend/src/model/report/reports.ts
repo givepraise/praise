@@ -1,5 +1,5 @@
 import { AxiosResponse, AxiosError } from 'axios';
-import { selector, selectorFamily } from 'recoil';
+import { atomFamily, selector, selectorFamily } from 'recoil';
 import { ApiAuthGet, isResponseOk } from '../api';
 import { ReportManifestDto } from './dto/report-manifest.dto';
 
@@ -43,4 +43,49 @@ export const SingleReport = selectorFamily({
 
       return null;
     },
+});
+
+export const ReceiverBio = atomFamily<string | undefined, string | undefined>({
+  key: 'ReceiverBio',
+  default: undefined,
+  effects: (userAccountId) => [
+    ({ setSelf, getPromise }): void => {
+      setSelf(
+        getPromise(
+          ApiAuthGet({
+            url: `/reports/receiverBio/${userAccountId?.toString()}`,
+            handleErrorsAutomatically: false,
+          })
+        ).then((response) => {
+          if (isResponseOk(response)) {
+            return response.data as string;
+          }
+        })
+      );
+    },
+  ],
+});
+
+export const ReceiverLabels = atomFamily<
+  string | undefined,
+  string | undefined
+>({
+  key: 'ReceiverLabels',
+  default: undefined,
+  effects: (userAccountId) => [
+    ({ setSelf, getPromise }): void => {
+      setSelf(
+        getPromise(
+          ApiAuthGet({
+            url: `/reports/receiverLabels/${userAccountId?.toString()}`,
+            handleErrorsAutomatically: false,
+          })
+        ).then((response) => {
+          if (isResponseOk(response)) {
+            return response.data as string;
+          }
+        })
+      );
+    },
+  ],
 });

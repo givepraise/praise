@@ -13,6 +13,7 @@ export type RequestParams = {
   headers?: any;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   file?: any;
+  handleErrorsAutomatically?: boolean;
 };
 
 type RequestDataParam = {
@@ -63,10 +64,13 @@ export const ApiAuthGet = selectorFamily<AxiosResponse<unknown>, RequestParams>(
     get:
       (params: RequestParams) =>
       async ({ get }): Promise<AxiosResponse<never>> => {
-        const { config, url } = params;
+        const { config, url, handleErrorsAutomatically = true } = params;
         const accessToken = get(AccessToken);
         if (!accessToken) throw new Error('AccessToken not available.');
-        const apiAuthClient = makeApiAuthClient(accessToken);
+        const apiAuthClient = makeApiAuthClient(
+          accessToken,
+          handleErrorsAutomatically
+        );
         const response = await apiAuthClient.get(url, config);
         return response;
       },
@@ -84,10 +88,13 @@ export const ApiAuthPost = selectorFamily<
   get:
     (params: PostRequestParams) =>
     async ({ get }): Promise<AxiosResponse<unknown>> => {
-      const { config, url, data } = params;
+      const { config, url, data, handleErrorsAutomatically = true } = params;
       const accessToken = get(AccessToken);
       if (!accessToken) throw new Error('AccessToken not available.');
-      const apiAuthClient = makeApiAuthClient(accessToken);
+      const apiAuthClient = makeApiAuthClient(
+        accessToken,
+        handleErrorsAutomatically
+      );
       const response = await apiAuthClient.post(url, data, config);
 
       return response;
@@ -105,7 +112,13 @@ export const ApiAuthPatch = selectorFamily<
   get:
     (params: PatchRequestParams) =>
     async ({ get }): Promise<AxiosResponse<unknown>> => {
-      const { config, url, data, file } = params;
+      const {
+        config,
+        url,
+        data,
+        file,
+        handleErrorsAutomatically = true,
+      } = params;
 
       const formData = new FormData();
       formData.append('value', file);
@@ -114,7 +127,10 @@ export const ApiAuthPatch = selectorFamily<
 
       const accessToken = get(AccessToken);
       if (!accessToken) throw new Error('AccessToken not available.');
-      const apiAuthClient = makeApiAuthClient(accessToken);
+      const apiAuthClient = makeApiAuthClient(
+        accessToken,
+        handleErrorsAutomatically
+      );
       const response = await apiAuthClient.patch(url, reqData, config);
 
       return response;

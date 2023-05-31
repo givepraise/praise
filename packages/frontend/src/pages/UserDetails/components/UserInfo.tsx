@@ -18,6 +18,7 @@ import { UserAvatar } from '@/components/user/UserAvatar';
 import { UserWithStatsDto } from '@/model/user/dto/user-with-stats.dto';
 import { UserRole } from '@/model/user/enums/user-role.enum';
 import { shortenEthAddress } from '@/utils/string';
+import { Bio } from './Bio';
 
 interface Params {
   user: UserWithStatsDto;
@@ -125,7 +126,7 @@ export const UserInfo = ({
                 className="mr-2"
                 size="1x"
               />
-              Joined: ${formatIsoDateUTC(user.createdAt, DATE_FORMAT)}
+              Joined: {formatIsoDateUTC(user.createdAt, DATE_FORMAT)}
             </p>
           ) : (
             ''
@@ -156,6 +157,15 @@ export const UserInfo = ({
           </p>
         </div>
       </div>
+
+      {user.receivedTotalCount && user.receivedTotalCount >= 10 ? (
+        <Bio userAccountId={discordAccount?._id} />
+      ) : (
+        <div>
+          <div className="mt-3 mb-1 font-bold">Contributor bio</div>
+          <div>At least 10 received praise are required to generate bio.</div>
+        </div>
+      )}
 
       <>
         {isAdmin && (
