@@ -9,7 +9,11 @@ import {
   UserAccountSchema,
 } from '../useraccounts/schemas/useraccounts.schema';
 import { User, UserSchema } from '../users/schemas/users.schema';
-import { KeyvCacheService } from '../database/services/keyv-cache.service';
+import { ReportsCacheService } from './reports-cache.service';
+import {
+  ReportCacheItem,
+  ReportCacheItemSchema,
+} from './schemas/report-cache-item.schema';
 
 @Module({
   imports: [
@@ -17,9 +21,10 @@ import { KeyvCacheService } from '../database/services/keyv-cache.service';
       { name: User.name, schema: UserSchema },
       { name: Praise.name, schema: PraiseSchema },
       { name: UserAccount.name, schema: UserAccountSchema },
+      { name: ReportCacheItem.name, schema: ReportCacheItemSchema },
     ]),
   ],
   controllers: [ReportsController],
-  providers: [ReportsService, ConstantsProvider, KeyvCacheService],
+  providers: [ReportsService, ReportsCacheService, ConstantsProvider],
 })
 export class ReportsModule {}

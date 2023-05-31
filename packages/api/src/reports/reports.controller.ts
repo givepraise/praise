@@ -6,7 +6,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ReportsService } from './reports.service';
-import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
+import { CacheInterceptor, CacheTTL } from '@nestjs/common';
 import {
   ApiOkResponse,
   ApiOperation,
@@ -20,7 +20,7 @@ import { EnforceAuthAndPermissions } from '../auth/decorators/enforce-auth-and-p
 import { Types } from 'mongoose';
 import { ObjectIdPipe } from '../shared/pipes/object-id.pipe';
 import { Public } from '../shared/decorators/public.decorator';
-import { KeyvCacheService } from '../database/services/keyv-cache.service';
+import { ReportsCacheService } from './reports-cache.service';
 
 @Controller('reports')
 @UseInterceptors(CacheInterceptor)
@@ -36,7 +36,7 @@ import { KeyvCacheService } from '../database/services/keyv-cache.service';
 export class ReportsController {
   constructor(
     private readonly reportsService: ReportsService,
-    private readonly keyvCacheService: KeyvCacheService,
+    private readonly reportsCacheService: ReportsCacheService,
   ) {}
 
   @Get()
@@ -49,8 +49,9 @@ export class ReportsController {
     status: 500,
     description: 'An error occurred while fetching report manifests',
   })
-  @CacheTTL(60 * 10) // 10 minutes
+  @CacheTTL(60 * 10) // Cache data for 10 minutes
   @UseInterceptors(MongooseClassSerializerInterceptor(ReportManifestDto))
+  // Fetch all reports from the service
   listAllReports(): Promise<ReportManifestDto[]> {
     return this.reportsService.listAllReports();
   }
@@ -63,15 +64,18 @@ export class ReportsController {
     type: String,
   })
   @ApiParam({ name: 'userAccountId', type: 'string' })
+  // Fetch a user bio from the service or the cache
   async receiverBio(
     @Param('userAccountId', ObjectIdPipe) userAccountId: Types.ObjectId,
   ): Promise<string> {
     const bioKey = `receiverBio:${userAccountId}`;
-    const keyv = this.keyvCacheService.getKeyv();
-    let bio = await keyv.get(bioKey);
+    let bio = await this.reportsCacheService.get(bioKey);
     if (!bio) {
+      // Bio is not in cache. Generate a new bio and save it to the cache.
+      await this.reportsCacheService.set(bioKey, 'Generating contributor bio…'); // Placeholder
+
       bio = await this.reportsService.getReceiverBio(userAccountId);
-      await keyv.set(bioKey, bio, 60 * 60 * 24 * 7); // 1 week
+      await this.reportsCacheService.set(bioKey, bio, 60 * 60 * 24 * 7); // Cache bio for 1 week
     }
     return bio;
   }
@@ -86,15 +90,18 @@ export class ReportsController {
     type: String,
   })
   @ApiParam({ name: 'userAccountId', type: 'string' })
+  // Fetch a user labels from the service or the cache
   async receiverLabels(
     @Param('userAccountId', ObjectIdPipe) userAccountId: Types.ObjectId,
   ): Promise<string> {
     const labelsKey = `receiverLabels:${userAccountId}`;
-    const keyv = this.keyvCacheService.getKeyv();
-    let labels = await keyv.get(labelsKey);
+    let labels = await this.reportsCacheService.get(labelsKey);
     if (!labels) {
+      // Labels are not in cache. Generate new labels and save them to the cache.
+      await this.reportsCacheService.set(labelsKey, 'Generating…'); // Placeholder
+
       labels = await this.reportsService.getReceiverLabels(userAccountId);
-      await keyv.set(labelsKey, labels, 60 * 60 * 24 * 7); // 1 week
+      await this.reportsCacheService.set(labelsKey, labels, 60 * 60 * 24 * 7); // Cache labels for 1 week
     }
     return labels;
   }
