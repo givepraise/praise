@@ -6,14 +6,14 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useRecoilValue } from 'recoil';
 import { Nav } from '@/navigation/Nav';
 import { AuthenticatedRoutes } from '@/navigation/AuthenticatedRoutes';
-import { ApiAuthGet } from '@/model/api';
+import { ApiGet } from '@/model/api';
 import { LoadScreen } from '@/components/ui/LoadScreen';
 import { ActiveUserRoles, HasRole, ROLE_ADMIN } from '@/model/auth/auth';
 import { usePraiseAppVersion } from '@/model/app';
 import { HeaderBanner } from '@/components/ui/HeaderBanner';
 
 export const AuthenticatedLayout = (): JSX.Element | null => {
-  useRecoilValue(ApiAuthGet({ url: '/settings' })); //Pre-loading settings to force `ApiAuthGet` to initialise properly. Weird.
+  useRecoilValue(ApiGet({ url: '/settings' })); //Pre-loading settings to force `ApiAuthGet` to initialise properly. Weird.
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const activeUserRoles = useRecoilValue(ActiveUserRoles);
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));

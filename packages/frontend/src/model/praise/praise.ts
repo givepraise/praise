@@ -10,7 +10,7 @@ import {
   useRecoilValue,
   useSetRecoilState,
 } from 'recoil';
-import { ApiAuthGet, isApiResponseAxiosError, isResponseOk } from '../api';
+import { ApiGet, isApiResponseAxiosError, isResponseOk } from '../api';
 import { PaginatedResponseBody } from 'shared/interfaces/paginated-response-body.interface';
 
 /**
@@ -52,7 +52,7 @@ const SinglePraiseDetailsQuery = selectorFamily({
   get:
     (praiseId: string) =>
     ({ get }): AxiosResponse<Praise> | AxiosError => {
-      return get(ApiAuthGet({ url: `/praise/${praiseId}` })) as
+      return get(ApiGet({ url: `/praise/${praiseId}` })) as
         | AxiosResponse<Praise>
         | AxiosError;
     },
@@ -130,7 +130,7 @@ const AllPraiseQuery = selectorFamily<
       const qs = Object.keys(query)
         .map((key) => `${key}=${query[key]}`)
         .join('&');
-      const response = get(ApiAuthGet({ url: `/praise${qs ? `?${qs}` : ''}` }));
+      const response = get(ApiGet({ url: `/praise${qs ? `?${qs}` : ''}` }));
       return response as
         | AxiosResponse<PaginatedResponseBody<Praise>>
         | AxiosError;

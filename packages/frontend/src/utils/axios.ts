@@ -25,7 +25,7 @@ export const handleErrors = (
       // If the response is 401, it means the user is not logged in
       // Redirect to login page
       if (window.location.pathname !== '/login') {
-        window.location.href = '/login';
+        window.location.href = '/';
       }
     }
     // If the response is a json blob, parse it and display the error message

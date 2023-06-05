@@ -62,7 +62,7 @@ const exportIncludeFields = [
 @SerializeOptions({
   excludePrefixes: ['__'],
 })
-@EnforceAuthAndPermissions()
+// @EnforceAuthAndPermissions()
 export class PraiseController {
   constructor(
     private readonly praiseService: PraiseService,
@@ -231,6 +231,7 @@ export class PraiseController {
   }
 
   @Post()
+  @EnforceAuthAndPermissions()
   @ApiOperation({ summary: 'Create praise item' })
   @ApiResponse({
     status: 200,
@@ -255,6 +256,7 @@ export class PraiseController {
   }
 
   @Post('forward')
+  @EnforceAuthAndPermissions()
   @ApiOperation({ summary: 'Forward praise item' })
   @ApiResponse({
     status: 200,

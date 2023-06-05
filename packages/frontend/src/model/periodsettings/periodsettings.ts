@@ -1,7 +1,7 @@
 import { AxiosError, AxiosResponse } from 'axios';
 import { atomFamily, selectorFamily, useRecoilCallback } from 'recoil';
 import { useApiAuthClient } from '@/utils/api';
-import { isResponseOk, ApiAuthGet } from '../api';
+import { isResponseOk, ApiGet } from '../api';
 import { PeriodSetting } from './dto/period-setting.dto';
 import { Setting } from '../settings/dto/setting.dto';
 
@@ -30,7 +30,7 @@ export const AllPeriodSettings = atomFamily<Setting[] | undefined, string>({
     ({ setSelf, getPromise }): void => {
       setSelf(
         getPromise(
-          ApiAuthGet({
+          ApiGet({
             url: `/periods/${periodId}/settings`,
           })
         ).then((response) => {

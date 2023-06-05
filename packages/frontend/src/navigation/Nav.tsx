@@ -46,11 +46,13 @@ export const Nav = (): JSX.Element => {
               <NavLogo />
             </li>
 
-            <NavItem
-              icon={faUser}
-              description="Profile"
-              to={`/users/${userId}`}
-            />
+            {userId && (
+              <NavItem
+                icon={faUser}
+                description="Profile"
+                to={`/users/${userId}`}
+              />
+            )}
             <NavItem icon={faCalendarAlt} description="Periods" to="/periods" />
             <NavItem
               icon={faUserFriends}

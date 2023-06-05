@@ -1,6 +1,6 @@
 import { AxiosResponse, AxiosError } from 'axios';
 import { atomFamily, selector, selectorFamily } from 'recoil';
-import { ApiAuthGet, isResponseOk } from '../api';
+import { ApiGet, isResponseOk } from '../api';
 import { ReportManifestDto } from './dto/report-manifest.dto';
 
 /**
@@ -10,7 +10,7 @@ import { ReportManifestDto } from './dto/report-manifest.dto';
 const AllReportsQuery = selector({
   key: 'AllReportsQuery',
   get: ({ get }): AxiosResponse<ReportManifestDto[]> | AxiosError => {
-    return get(ApiAuthGet({ url: '/reports' })) as
+    return get(ApiGet({ url: '/reports' })) as
       | AxiosResponse<ReportManifestDto[]>
       | AxiosError;
   },
@@ -52,7 +52,7 @@ export const ReceiverBio = atomFamily<string | undefined, string | undefined>({
     ({ setSelf, getPromise }): void => {
       setSelf(
         getPromise(
-          ApiAuthGet({
+          ApiGet({
             url: `/reports/receiverBio/${userAccountId?.toString()}`,
             handleErrorsAutomatically: false,
           })
@@ -76,7 +76,7 @@ export const ReceiverLabels = atomFamily<
     ({ setSelf, getPromise }): void => {
       setSelf(
         getPromise(
-          ApiAuthGet({
+          ApiGet({
             url: `/reports/receiverLabels/${userAccountId?.toString()}`,
             handleErrorsAutomatically: false,
           })

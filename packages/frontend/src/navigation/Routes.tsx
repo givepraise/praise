@@ -21,7 +21,8 @@ export const Routes = (): JSX.Element => {
     }
   }, [tokenSet, address, decodedToken?.identityEthAddress, setTokenSet]);
 
-  return tokenSet && decodedToken?.identityEthAddress === address ? (
+  // return tokenSet && decodedToken?.identityEthAddress === address ? (
+  return (
     <Switch>
       <Route exact path="/activate">
         <ActivatePage />
@@ -31,21 +32,22 @@ export const Routes = (): JSX.Element => {
       </Route>
       <AuthenticatedLayout />
     </Switch>
-  ) : (
-    <Switch>
-      <Route exact path="/">
-        <LoginPage />
-      </Route>
-      <Route exact path="/activate">
-        <ActivatePage />
-      </Route>
-      <Route path="/*">
-        <Redirect
-          to={{
-            pathname: '/',
-          }}
-        />
-      </Route>
-    </Switch>
   );
+  // ) : (
+  //   <Switch>
+  //     <Route exact path="/">
+  //       <LoginPage />
+  //     </Route>
+  //     <Route exact path="/activate">
+  //       <ActivatePage />
+  //     </Route>
+  //     <Route path="/*">
+  //       <Redirect
+  //         to={{
+  //           pathname: '/',
+  //         }}
+  //       />
+  //     </Route>
+  //   </Switch>
+  // );
 };

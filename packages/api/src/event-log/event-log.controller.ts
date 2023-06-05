@@ -21,7 +21,7 @@ import { EnforceAuthAndPermissions } from '../auth/decorators/enforce-auth-and-p
 @SerializeOptions({
   excludePrefixes: ['__'],
 })
-@EnforceAuthAndPermissions()
+// @EnforceAuthAndPermissions()
 export class EventLogController {
   constructor(private eventLogService: EventLogService) {}
 
