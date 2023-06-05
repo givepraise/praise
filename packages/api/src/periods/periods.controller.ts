@@ -245,7 +245,7 @@ export class PeriodsController {
     await this.eventLogService.logEventWithAuthContext({
       authContext: request.authContext,
       typeKey: EventLogTypeKey.PERIOD,
-      description: `User ${request.authContext.userId} created an PERIOD`,
+      description: `User ${request.authContext.userId} created a new period "${period.name}"`,
     });
 
     return period;
@@ -271,9 +271,9 @@ export class PeriodsController {
     await this.eventLogService.logEventWithAuthContext({
       authContext: request.authContext,
       typeKey: EventLogTypeKey.PERIOD,
-      description: `User ${
-        request.authContext.userId
-      } updated an PERIOD ${id} with data ${JSON.stringify(updatePeriodDto)}`,
+      description: `User ${request.authContext.userId} updated an PERIOD "${
+        period.name
+      }" with data ${JSON.stringify(updatePeriodDto)}`,
     });
 
     return period;
@@ -298,7 +298,7 @@ export class PeriodsController {
     await this.eventLogService.logEventWithAuthContext({
       authContext: request.authContext,
       typeKey: EventLogTypeKey.PERIOD,
-      description: `User ${request.authContext.userId} closed PERIOD ${id}`,
+      description: `User ${request.authContext.userId} closed PERIOD ${period.name}`,
     });
 
     return period;
@@ -427,7 +427,7 @@ export class PeriodsController {
     await this.eventLogService.logEventWithAuthContext({
       authContext: request.authContext,
       typeKey: EventLogTypeKey.PERIOD,
-      description: `Assigned random quantifiers to all praise in period "${id}"`,
+      description: `Assigned random quantifiers to all praise in period "${periodDetails.name} - ${id}"`,
     });
 
     return periodDetails;

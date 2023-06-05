@@ -128,9 +128,7 @@ export class UsersService {
     const user = await userDocument.save();
 
     logger.info(
-      `Added role "${roleChange.role}" to user with id "${(
-        user._id as Types.ObjectId
-      ).toString()}"`,
+      `Added role "${roleChange.role}" to user with "${user.username}"`,
     );
 
     return this.findOneById(user._id);

@@ -37,6 +37,7 @@ import * as JSONStream from 'JSONStream';
 import { Transform } from '@json2csv/node';
 import { QuantificationsExportSqlSchema } from './schemas/quantifications.schema';
 import { Public } from '../shared/decorators/public.decorator';
+import { UsersService } from '../users/users.service';
 
 // Fields to include in the csv
 const exportIncludeFields = [
@@ -61,6 +62,7 @@ export class QuantificationsController {
     private readonly quantificationsService: QuantificationsService,
     private readonly quantificationsExportService: QuantificationsExportService,
     private readonly eventLogService: EventLogService,
+    private readonly usersService: UsersService,
   ) {}
 
   @Get('export/json')
@@ -251,7 +253,9 @@ export class QuantificationsController {
     @Request() request: RequestWithAuthContext,
   ): Promise<Praise[]> {
     const userId = new Types.ObjectId(request.authContext?.userId);
-    if (!userId) {
+    const user = await this.usersService.findOne(userId);
+
+    if (!userId || !user) {
       throw new ApiException(errorMessages.USER_NOT_FOUND);
     }
     const praise = await this.quantificationsService.quantifyPraise(
@@ -263,7 +267,7 @@ export class QuantificationsController {
     await this.eventLogService.logEventWithAuthContext({
       authContext: request.authContext,
       typeKey: EventLogTypeKey.USER_ACCOUNT,
-      description: `User ${userId} quantified a Praise ${praiseId} with score ${data.score}`,
+      description: `User ${user.username} quantified a Praise ${praiseId} with score ${data.score}`,
     });
 
     return praise;
