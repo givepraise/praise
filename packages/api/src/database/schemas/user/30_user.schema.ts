@@ -1,5 +1,6 @@
 import { AuthRole } from '../../../auth/enums/auth-role.enum';
 import mongoose from 'mongoose';
+import { UserAccountModel } from '../useraccount/useraccount.schema';
 const { Schema, model } = mongoose;
 const { ObjectId } = Schema.Types;
 
@@ -42,6 +43,12 @@ export const UserSchema = new Schema({
   },
   accessToken: { type: String, select: false },
   refreshToken: { type: String, select: false },
+});
+
+UserSchema.virtual('accounts', {
+  ref: UserAccountModel,
+  localField: '_id',
+  foreignField: 'user',
 });
 
 delete mongoose.models['User'];

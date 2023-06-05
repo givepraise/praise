@@ -501,4 +501,19 @@ export const errorMessages: { [key: string]: ErrorMessage } = {
     httpStatusCode: 500,
     code: 1103,
   },
+  CONFIGURATION_ERROR: {
+    message: 'Configuration error',
+    httpStatusCode: 500,
+    code: 1104,
+  },
+  OPEN_AI_API_ERROR: {
+    message: 'OpenAI API error',
+    httpStatusCode: 500,
+    code: 1105,
+  },
+  PRAISE_NOT_ENOUGH: {
+    message: 'Not enough praise',
+    httpStatusCode: 400,
+    code: 1106,
+  },
 };

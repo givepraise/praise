@@ -239,6 +239,14 @@ export interface paths {
     /** List all report manifests */
     get: operations['ReportsController_listAllReports'];
   };
+  "/api/reports/receiverBio/{userAccountId}": {
+    /** Get one AI generated receiver bio */
+    get: operations["ReportsController_receiverBio"];
+  };
+  "/api/reports/receiverLabels/{userAccountId}": {
+    /** AI generated labels describing a praise receiver. */
+    get: operations["ReportsController_receiverLabels"];
+  };
 }
 
 export type webhooks = Record<string, never>;
@@ -2252,6 +2260,38 @@ export interface operations {
       };
       /** @description An error occurred while fetching report manifests */
       500: never;
+    };
+  };
+  /** Get one AI generated receiver bio */
+  ReportsController_receiverBio: {
+    parameters: {
+      path: {
+        userAccountId: string;
+      };
+    };
+    responses: {
+      /** @description A receiver bio */
+      200: {
+        content: {
+          "application/json": string;
+        };
+      };
+    };
+  };
+  /** AI generated labels describing a praise receiver. */
+  ReportsController_receiverLabels: {
+    parameters: {
+      path: {
+        userAccountId: string;
+      };
+    };
+    responses: {
+      /** @description Comma separated list of labels, 7 max */
+      200: {
+        content: {
+          "application/json": string;
+        };
+      };
     };
   };
 }
