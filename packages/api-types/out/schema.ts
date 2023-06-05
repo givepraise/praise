@@ -239,13 +239,13 @@ export interface paths {
     /** List all report manifests */
     get: operations['ReportsController_listAllReports'];
   };
-  "/api/reports/receiverBio/{userAccountId}": {
+  '/api/reports/receiverBio/{userAccountId}': {
     /** Get one AI generated receiver bio */
-    get: operations["ReportsController_receiverBio"];
+    get: operations['ReportsController_receiverBio'];
   };
-  "/api/reports/receiverLabels/{userAccountId}": {
+  '/api/reports/receiverLabels/{userAccountId}': {
     /** AI generated labels describing a praise receiver. */
-    get: operations["ReportsController_receiverLabels"];
+    get: operations['ReportsController_receiverLabels'];
   };
 }
 
@@ -2273,7 +2273,7 @@ export interface operations {
       /** @description A receiver bio */
       200: {
         content: {
-          "application/json": string;
+          'application/json': string;
         };
       };
     };
@@ -2289,7 +2289,7 @@ export interface operations {
       /** @description Comma separated list of labels, 7 max */
       200: {
         content: {
-          "application/json": string;
+          'application/json': string;
         };
       };
     };
