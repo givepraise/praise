@@ -715,11 +715,13 @@ export interface components {
       _id: string;
       period: components['schemas']['Period'];
       setting: components['schemas']['Setting'];
+      /** @example 666 */
       value: string;
       /** @example 666 */
       valueRealized: string | string[] | boolean | number | number[];
     };
     SetPeriodSettingDto: {
+      /** @example 666 */
       value: string;
     };
     PraisePaginatedResponseDto: {
