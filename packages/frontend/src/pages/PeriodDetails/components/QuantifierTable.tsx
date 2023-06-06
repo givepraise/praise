@@ -31,25 +31,6 @@ const QuantifierTable = (): JSX.Element => {
     Quantifier | undefined
   >(undefined);
 
-  // const { replaceQuantifier } = useReplaceQuantifier(periodId);
-
-  // const handleReplaceQuantifier = async (
-  //   newQuantifierUserId: string
-  // ): Promise<void> => {
-  //   if (!quantifierToReplace) return;
-  //   toast.loading('Replacing quantifier...');
-
-  //   const response = await replaceQuantifier(
-  //     quantifierToReplace?._id,
-  //     newQuantifierUserId
-  //   );
-
-  //   if (isResponseOk(response)) {
-  //     toast.success('Replaced quantifier and reset their scores');
-  //     setTimeout(() => history.go(0), 2000);
-  //   }
-  // };
-
   const columns = React.useMemo(
     () => [
       {
