@@ -37,7 +37,7 @@ import { RequestWithAuthContext } from '../auth/interfaces/request-with-auth-con
   excludePrefixes: ['__'],
 })
 @UseInterceptors(MongooseClassSerializerInterceptor(Setting))
-// @EnforceAuthAndPermissions()
+@EnforceAuthAndPermissions()
 export class SettingsController {
   constructor(
     private readonly settingsService: SettingsService,

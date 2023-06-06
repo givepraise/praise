@@ -62,7 +62,6 @@ const exportIncludeFields = [
 @SerializeOptions({
   excludePrefixes: ['__'],
 })
-// @EnforceAuthAndPermissions()
 export class PraiseController {
   constructor(
     private readonly praiseService: PraiseService,

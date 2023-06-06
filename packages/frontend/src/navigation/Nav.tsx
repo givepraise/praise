@@ -22,10 +22,14 @@ import { Theme } from '@/model/theme';
 import { ActiveUserId } from '@/model/auth/auth';
 import { NavItem } from './NavItem';
 import { NavLogo } from './NavLogo';
+import { Button } from '@/components/ui/Button';
+import { useState } from 'react';
+import { LoginDialog } from '@/components/auth/LoginDialog';
 
 export const Nav = (): JSX.Element => {
   const userId = useRecoilValue(ActiveUserId);
   const setTheme = useSetRecoilState(Theme);
+  const [loginDialogOpen, setLoginDialogOpen] = useState(false);
 
   const handleTheme = (theme: string): void => {
     if (theme === 'Dark') {
@@ -137,16 +141,30 @@ export const Nav = (): JSX.Element => {
 
         <div className="w-full border-t">
           <Menu as="div" className="flex flex-col justify-center">
-            <Menu.Button className="flex items-center justify-between w-full selection:hover:text-warm-gray-500 focus:outline-none">
-              <EthAccount
-                showDownCaret={false}
-                showRightCaret={true}
-                className="w-full px-4 py-3"
-              />
-            </Menu.Button>
+            {userId ? (
+              <Menu.Button className="flex items-center justify-between w-full selection:hover:text-warm-gray-500 focus:outline-none">
+                <EthAccount
+                  showDownCaret={false}
+                  showRightCaret={true}
+                  className="w-full px-4 py-3"
+                />
+              </Menu.Button>
+            ) : (
+              <Button
+                className="w-1/3 m-4"
+                onClick={(): void => setLoginDialogOpen(true)}
+              >
+                Sign In
+              </Button>
+            )}
           </Menu>
         </div>
       </div>
+
+      <LoginDialog
+        open={loginDialogOpen}
+        onClose={(): void => setLoginDialogOpen(false)}
+      />
     </nav>
   );
 };
