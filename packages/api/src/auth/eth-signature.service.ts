@@ -97,6 +97,7 @@ export class EthSignatureService {
       accessToken,
       identityEthAddress,
       tokenType: 'Bearer',
+      user,
     };
   }
 }

@@ -445,7 +445,7 @@ export const errorMessages: { [key: string]: ErrorMessage } = {
     code: 1092,
   },
   COMMUNITY_NOT_ALLOWED_SIGNER: {
-    message: 'Only creator is allowd to link a community.',
+    message: 'Only creator is allowed to link a community.',
     httpStatusCode: 403,
     code: 1093,
   },
