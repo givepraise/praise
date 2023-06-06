@@ -173,7 +173,9 @@ export const selectTargets = async (
     case 'UNFINISHED-QUANTIFIERS': {
       if (!period || !period.length) return;
 
-      const selectedPeriod = await apiGet<PeriodDetailsDto>(`/period/${period}`)
+      const selectedPeriod = await apiGet<PeriodDetailsDto>(
+        `/periods/${period}`
+      )
         .then((res) => res.data)
         .catch(() => undefined);
       if (!selectedPeriod) return;
