@@ -23,6 +23,7 @@ export const getMarkdownText = (text: string): string => {
       ),
       {
         href: markdownEngine?.sanitizeUrl(node.target) || '',
+        target: '_blank',
       },
       state
     );
