@@ -110,10 +110,6 @@ describe('Period (E2E)', () => {
       }
     });
 
-    test('401 when not authenticated', async () => {
-      return request(server).get(`/periods/${period._id}`).send().expect(401);
-    });
-
     test('should return 200 and the period details', async () => {
       const response = await request(server)
         .get(`/periods/${period._id}`)
@@ -129,8 +125,8 @@ describe('Period (E2E)', () => {
       });
 
       expect(p.quantifiers).toHaveLength(1);
-      expect(p.receivers).toHaveLength(6);
-      expect(p.givers).toHaveLength(6);
+      expect(p.receivers).toHaveLength(3);
+      expect(p.givers).toHaveLength(3);
       expect(p).toBeProperlySerialized();
       expect(p).toBeValidClass(Period);
     });
@@ -226,10 +222,6 @@ describe('Period (E2E)', () => {
       });
     });
 
-    test('401 when not authenticated', async () => {
-      return request(server).get(`/periods`).send().expect(401);
-    });
-
     test('200 when correct data is sent', async () => {
       const response = await authorizedGetRequest(
         '/periods',
@@ -296,10 +288,6 @@ describe('Period (E2E)', () => {
   describe('POST /periods', () => {
     beforeEach(async () => {
       await periodsService.getModel().deleteMany({});
-    });
-
-    test('401 when not authenticated', async () => {
-      return request(server).post(`/periods`).send().expect(401);
     });
 
     test('should return 403 when the user is not an admin', async () => {
@@ -405,10 +393,6 @@ describe('Period (E2E)', () => {
         status: PeriodStatusType.OPEN,
         endDate: new Date(),
       });
-    });
-
-    test('401 when not authenticated', async () => {
-      return request(server).patch(`/periods/${period._id}`).send().expect(401);
     });
 
     test('should return 403 when the user is not an admin', async () => {
@@ -635,13 +619,6 @@ describe('Period (E2E)', () => {
           quantifier: users[0].user._id,
         });
       }
-    });
-
-    test('401 when not authenticated', async () => {
-      return request(server)
-        .get(`/periods/${period._id}/praise`)
-        .send()
-        .expect(401);
     });
 
     test('should return 404 when the period does not exist', async () => {

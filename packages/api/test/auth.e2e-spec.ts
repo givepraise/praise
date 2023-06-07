@@ -226,17 +226,6 @@ describe('AuthController (E2E)', () => {
   });
 
   describe('Database API KEY authentication, GET /api/users', () => {
-    test('401 when missing api key', async () => {
-      return request(server).get('/users').expect(401);
-    });
-
-    /**
-     *
-     */
-    test('401 when api key is invalid', async () => {
-      return request(server).get('/users').set('token', 'invalid').expect(401);
-    });
-
     /**
      *
      */

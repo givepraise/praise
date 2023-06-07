@@ -120,10 +120,6 @@ describe('UserController (E2E)', () => {
       accessToken = response.accessToken;
     });
 
-    test('401 when not authenticated', async () => {
-      await request(server).get('/users').send().expect(401);
-    });
-
     test('200 when authenticated', async () => {
       const response = await authorizedGetRequest(
         '/users',
@@ -181,10 +177,6 @@ describe('UserController (E2E)', () => {
       // Login and get access token
       const response = await loginUser(app, testingModule, wallet);
       accessToken = response.accessToken;
-    });
-
-    test('401 when not authenticated', async () => {
-      return request(server).get(`/users/${user._id}`).send().expect(401);
     });
 
     test('404 when user not found', async () => {

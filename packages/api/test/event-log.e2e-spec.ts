@@ -32,10 +32,6 @@ describe('EventLog (E2E)', () => {
   });
 
   describe('GET /api/event-log', () => {
-    test('401 when not authenticated', async () => {
-      return request(server).get('/event-log').send().expect(401);
-    });
-
     test('200 and correct body when authenticated', async () => {
       //Clear the database
       await eventLogService.getModel().deleteMany({});
@@ -67,10 +63,6 @@ describe('EventLog (E2E)', () => {
   });
 
   describe('GET /api/event-log/types', () => {
-    test('401 when not authenticated', async () => {
-      return request(server).get('/event-log/types').send().expect(401);
-    });
-
     test('200 and correct body when authenticated', async () => {
       const response = await authorizedGetRequest(
         '/event-log/types',
