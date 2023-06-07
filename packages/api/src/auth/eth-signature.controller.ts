@@ -83,7 +83,7 @@ export class EthSignatureController {
     return loginResponse;
   }
 
-  @Post('eth-signature/token')
+  @Post('eth-signature/refresh')
   @ApiOperation({
     summary: 'Verifies a refreshToken  and returns a JWT token',
   })
