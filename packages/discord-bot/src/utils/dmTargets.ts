@@ -1,9 +1,8 @@
 import { PeriodDetailsDto, User } from '../utils/api-schema';
-import { CommandInteraction, DiscordAPIError, Embed } from 'discord.js';
+import { CommandInteraction, DiscordAPIError, EmbedBuilder } from 'discord.js';
 import { Buffer } from 'node:buffer';
 import { FailedToDmUsersList } from '../interfaces/FailedToDmUsersList';
 import { apiGet } from './api';
-import { EmbedBuilder } from '@discordjs/builders';
 
 /**
  * Send a custom direct message to a list of users
@@ -184,7 +183,7 @@ export const selectTargets = async (
 
       if (type === 'RECEIVERS') {
         const receivers = selectedPeriod.receivers?.map((r) => r._id);
-        sendDMs(
+        await sendDMs(
           interaction,
           users.filter((user) => receivers?.includes(user._id)),
           message
