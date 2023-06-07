@@ -44,9 +44,9 @@ export class PeriodSetting {
   @Prop({ type: SchemaTypes.ObjectId, ref: 'Setting', required: true })
   setting: Types.ObjectId | Setting;
 
-  @ApiProperty({ type: 'string', maxLength: 255 })
+  @ApiProperty({ example: '666', type: 'string', maxLength: 512 })
   @IsString()
-  @Prop({ type: String, maxLength: 255, required: true })
+  @Prop({ maxLength: 512 })
   value: string;
 
   @ApiProperty({

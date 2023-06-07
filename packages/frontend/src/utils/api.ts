@@ -20,14 +20,16 @@ export const apiBaseURL =
  *
  * @returns
  */
-export const makeApiClient = (): AxiosInstance => {
+export const makeApiClient = (
+  handleErrorsAutomatically = true
+): AxiosInstance => {
   const apiClient = axios.create({
     baseURL: apiBaseURL,
   });
   apiClient.interceptors.response.use(
     (res) => res,
     (err) => {
-      return handleErrors(err);
+      return handleErrors(err, handleErrorsAutomatically);
     }
   );
   return apiClient;
@@ -38,7 +40,10 @@ export const makeApiClient = (): AxiosInstance => {
  * - On 401 response: attempt refresh of access using refresh token & retry request
  * @returns
  */
-export const makeApiAuthClient = (accessToken: string): AxiosInstance => {
+export const makeApiAuthClient = (
+  accessToken: string,
+  handleErrorsAutomatically = true
+): AxiosInstance => {
   const apiAuthClient = axios.create({
     baseURL: apiBaseURL,
     headers: {
@@ -48,7 +53,7 @@ export const makeApiAuthClient = (accessToken: string): AxiosInstance => {
   apiAuthClient.interceptors.response.use(
     (res) => res,
     (err) => {
-      return handleErrors(err);
+      return handleErrors(err, handleErrorsAutomatically);
     }
   );
   return apiAuthClient;

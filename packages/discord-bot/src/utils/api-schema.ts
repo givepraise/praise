@@ -19,6 +19,9 @@ export type Praise = components['schemas']['Praise'];
 export type PraisePaginatedResponseDto =
   components['schemas']['PraisePaginatedResponseDto'];
 
+export type PraiseForwardInputDto =
+  components['schemas']['PraiseForwardInputDto'];
+
 export type Setting = components['schemas']['Setting'];
 
 export type CommunityPaginatedResponseDto =

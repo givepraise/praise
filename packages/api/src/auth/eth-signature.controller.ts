@@ -75,9 +75,13 @@ export class EthSignatureController {
       host.split(':')[0],
     );
 
-    await this.eventLogService.logEvent({
+    await this.eventLogService.logEventWithAuthContext({
+      authContext: {
+        userId: loginResponse.user._id,
+        roles: loginResponse.user.roles,
+      },
       typeKey: EventLogTypeKey.AUTHENTICATION,
-      description: `User ${loginInputDto.identityEthAddress} logged in`,
+      description: `User ${loginResponse.user.username} logged in`,
     });
 
     return loginResponse;

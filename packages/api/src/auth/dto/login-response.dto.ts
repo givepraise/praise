@@ -1,4 +1,6 @@
 import { ApiResponseProperty } from '@nestjs/swagger';
+import { User } from '../../users/schemas/users.schema';
+
 export class LoginResponseDto {
   @ApiResponseProperty({
     example:
@@ -25,4 +27,9 @@ export class LoginResponseDto {
     type: 'string',
   })
   tokenType: string;
+
+  @ApiResponseProperty({
+    type: User,
+  })
+  user: User;
 }

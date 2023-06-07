@@ -1,6 +1,6 @@
 import { GuildMember, User } from 'discord.js';
 import { parseReceivers } from '../utils/parseReceivers';
-import { praiseSuccessDM } from '../utils/embeds/praiseEmbeds';
+import { sendReceiverDM } from '../utils/embeds/sendReceiverDM';
 import { renderMessage, ephemeralWarning } from '../utils/renderMessage';
 import { assertPraiseGiver } from '../utils/assertPraiseGiver';
 import { assertPraiseAllowedInChannel } from '../utils/assertPraiseAllowedInChannel';
@@ -9,9 +9,12 @@ import { getUserAccount } from '../utils/getUserAccount';
 import { createPraise } from '../utils/createPraise';
 import { praiseSuccessEmbed } from '../utils/embeds/praiseSuccessEmbed';
 import { apiClient } from '../utils/api';
-import { PraisePaginatedResponseDto } from '../utils/api-schema';
+import {
+  PraisePaginatedResponseDto,
+  UserAccount,
+  Praise,
+} from '../utils/api-schema';
 import { getSetting } from '../utils/settingsUtil';
-
 import { logger } from '../utils/logger';
 
 /**
@@ -54,10 +57,6 @@ export const praiseHandler: CommandHandler = async (
     }
 
     const reason = interaction.options.getString('reason', true);
-    if (!reason || reason.length === 0) {
-      await ephemeralWarning(interaction, 'PRAISE_REASON_MISSING_ERROR', host);
-      return;
-    }
 
     if (reason.length < 5 || reason.length > 280) {
       await ephemeralWarning(interaction, 'INVALID_REASON_LENGTH', host);
@@ -117,18 +116,20 @@ export const praiseHandler: CommandHandler = async (
       );
     }
 
-    const receivers = await Promise.all(
-      (
-        await guild.members.fetch({ user: validReceiverIds })
-      ).map(async (guildMember) => {
-        const userAccount = await getUserAccount(guildMember.user, host);
-        return {
-          guildMember,
-          userAccount,
-        };
-      })
-    );
+    const receivers: { guildMember: GuildMember; userAccount: UserAccount }[] =
+      await Promise.all(
+        (
+          await guild.members.fetch({ user: validReceiverIds })
+        ).map(async (guildMember) => {
+          const userAccount = await getUserAccount(guildMember.user, host);
+          return {
+            guildMember,
+            userAccount,
+          };
+        })
+      );
 
+    let praiseItems: Praise[] = [];
     if (receivers.length !== 0) {
       await interaction.editReply({
         embeds: [
@@ -140,7 +141,7 @@ export const praiseHandler: CommandHandler = async (
           ),
         ],
       });
-      await createPraise(
+      praiseItems = await createPraise(
         interaction,
         giverAccount,
         receivers.map((receiver) => receiver.userAccount),
@@ -159,23 +160,27 @@ export const praiseHandler: CommandHandler = async (
       await ephemeralWarning(interaction, 'PRAISE_FAILED', host);
     }
 
+    const hostUrl =
+      process.env.NODE_ENV === 'development'
+        ? process.env?.FRONTEND_URL || 'undefined:/'
+        : `https://${host}`;
+
     await Promise.all(
-      receivers.map(async (receiver) => {
-        try {
-          await receiver.guildMember.send({
-            embeds: [
-              await praiseSuccessDM(
-                responseUrl,
-                host,
-                receiver.userAccount.user ? true : false
-              ),
-            ],
-          });
-        } catch (err) {
-          logger.warn(
-            `Can't DM user - ${receiver.userAccount.name} [${receiver.userAccount.accountId}]`
-          );
-        }
+      praiseItems.map(async (praise) => {
+        console.log(praiseItems, receivers);
+        await sendReceiverDM(
+          praise._id,
+          receivers.filter(
+            (receiver) =>
+              receiver.userAccount.accountId === praise.receiver.accountId
+          )[0],
+          member as GuildMember,
+          reason,
+          responseUrl,
+          host,
+          hostUrl,
+          interaction.channelId
+        );
       })
     );
 

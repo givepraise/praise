@@ -37,7 +37,7 @@ export class Setting {
     maxLength: 512,
   })
   @IsString()
-  @Prop({ required: true, maxlength: 512 })
+  @Prop({ maxlength: 512 })
   value: string;
 
   @ApiProperty({

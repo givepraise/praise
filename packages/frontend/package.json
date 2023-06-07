@@ -22,7 +22,7 @@
     "@json2csv/plainjs": "^6.1.2",
     "@mui/material": "^5.3.0",
     "@observablehq/plot": "^0.6.5",
-    "@rainbow-me/rainbowkit": "^0.12.12",
+    "@rainbow-me/rainbowkit": "^1.0.0",
     "@sgratzl/chartjs-chart-boxplot": "^4.1.1",
     "@tailwindcss/container-queries": "^0.1.1",
     "@tailwindcss/forms": "latest",
@@ -65,7 +65,8 @@
     "tailwindcss": "^3.0.24",
     "use-error-boundary": "^2.0.6",
     "util": "^0.12.4",
-    "wagmi": "^0.12.0",
+    "viem": "^0.3.33",
+    "wagmi": "^1.0.5",
     "wasm-check": "^2.1.2"
   },
   "scripts": {

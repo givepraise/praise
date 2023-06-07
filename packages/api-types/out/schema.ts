@@ -239,6 +239,14 @@ export interface paths {
     /** List all report manifests */
     get: operations['ReportsController_listAllReports'];
   };
+  '/api/reports/receiverBio/{userAccountId}': {
+    /** Get one AI generated receiver bio */
+    get: operations['ReportsController_receiverBio'];
+  };
+  '/api/reports/receiverLabels/{userAccountId}': {
+    /** AI generated labels describing a praise receiver. */
+    get: operations['ReportsController_receiverLabels'];
+  };
 }
 
 export type webhooks = Record<string, never>;
@@ -611,7 +619,8 @@ export interface components {
         | 'PRAISE'
         | 'QUANTIFICATION'
         | 'SETTING'
-        | 'USER_ACCOUNT';
+        | 'USER_ACCOUNT'
+        | 'COMMUNITY';
       /** @example An action that changes user permissions */
       label: string;
       /** @example A user's permissions were changed */
@@ -706,11 +715,13 @@ export interface components {
       _id: string;
       period: components['schemas']['Period'];
       setting: components['schemas']['Setting'];
+      /** @example 666 */
       value: string;
       /** @example 666 */
       valueRealized: string | string[] | boolean | number | number[];
     };
     SetPeriodSettingDto: {
+      /** @example 666 */
       value: string;
     };
     PraisePaginatedResponseDto: {
@@ -919,6 +930,7 @@ export interface components {
       identityEthAddress: string;
       /** @example bearer */
       tokenType: string;
+      user: components['schemas']['User'];
     };
     CreateCommunityInputDto: {
       /** @example banklessdao.givepraise.xyz */
@@ -1540,7 +1552,7 @@ export interface operations {
   /** List all settings. */
   SettingsController_findAll: {
     parameters: {
-      query: {
+      query?: {
         /** @example SETTING_KEY */
         key?: string;
         type?:
@@ -1739,7 +1751,7 @@ export interface operations {
   /** Export praise document to json */
   PraiseController_exportJson: {
     parameters: {
-      query: {
+      query?: {
         startDate?: string;
         endDate?: string;
       };
@@ -1755,7 +1767,7 @@ export interface operations {
   /** Export praise document to csv */
   PraiseController_exportCsv: {
     parameters: {
-      query: {
+      query?: {
         startDate?: string;
         endDate?: string;
       };
@@ -1771,7 +1783,7 @@ export interface operations {
   /** Export praise document to parquet */
   PraiseController_exportParquet: {
     parameters: {
-      query: {
+      query?: {
         startDate?: string;
         endDate?: string;
       };
@@ -1824,7 +1836,7 @@ export interface operations {
   /** UserAccount list */
   UserAccountsController_findAll: {
     parameters: {
-      query: {
+      query?: {
         /** @example 098098098098098 */
         accountId?: string;
         /** @example darth#6755 */
@@ -2157,7 +2169,7 @@ export interface operations {
   /** Export quantifications document to json */
   QuantificationsController_exportJson: {
     parameters: {
-      query: {
+      query?: {
         startDate?: string;
         endDate?: string;
       };
@@ -2173,7 +2185,7 @@ export interface operations {
   /** Export quantifications document to csv */
   QuantificationsController_exportCsv: {
     parameters: {
-      query: {
+      query?: {
         startDate?: string;
         endDate?: string;
       };
@@ -2189,7 +2201,7 @@ export interface operations {
   /** Export quantifications document to parquet */
   QuantificationsController_exportParquet: {
     parameters: {
-      query: {
+      query?: {
         startDate?: string;
         endDate?: string;
       };
@@ -2250,6 +2262,38 @@ export interface operations {
       };
       /** @description An error occurred while fetching report manifests */
       500: never;
+    };
+  };
+  /** Get one AI generated receiver bio */
+  ReportsController_receiverBio: {
+    parameters: {
+      path: {
+        userAccountId: string;
+      };
+    };
+    responses: {
+      /** @description A receiver bio */
+      200: {
+        content: {
+          'application/json': string;
+        };
+      };
+    };
+  };
+  /** AI generated labels describing a praise receiver. */
+  ReportsController_receiverLabels: {
+    parameters: {
+      path: {
+        userAccountId: string;
+      };
+    };
+    responses: {
+      /** @description Comma separated list of labels, 7 max */
+      200: {
+        content: {
+          'application/json': string;
+        };
+      };
     };
   };
 }

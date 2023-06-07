@@ -1,24 +1,42 @@
-/* TODO - fix forwards */
-
 import {
   ChannelType,
   ChatInputCommandInteraction,
   cleanContent,
 } from 'discord.js';
 
-import { UserAccount } from './api-schema';
+import { Praise, UserAccount } from './api-schema';
 import { apiPost } from './api';
+
+interface PraiseForwardInputDto {
+  reason: string;
+  reasonRaw: string;
+  giver: {
+    accountId: string;
+    name: string;
+    avatarId?: string;
+    platform: string;
+  };
+  forwarder: {
+    accountId: string;
+    name: string;
+    avatarId?: string;
+    platform: string;
+  };
+  receiverIds: string[];
+  sourceId: string;
+  sourceName: string;
+}
 
 export const createForward = async (
   interaction: ChatInputCommandInteraction,
   giverAccount: UserAccount,
-  receiverAccount: UserAccount,
+  receiverAccounts: UserAccount[],
   forwarderAccount: UserAccount,
   reason: string,
   host: string
-): Promise<boolean> => {
+): Promise<Praise[]> => {
   const { channel, guild } = interaction;
-  if (!channel || !guild || channel.type === ChannelType.DM) return false;
+  if (!channel || !guild || channel.type === ChannelType.DM) return [];
 
   const channelName =
     (channel.type === ChannelType.PublicThread ||
@@ -28,7 +46,7 @@ export const createForward = async (
       ? `${channel.parent.name} / ${channel.name}`
       : channel.name;
 
-  const praiseData = {
+  const praiseData: PraiseForwardInputDto = {
     reason: reason,
     reasonRaw: cleanContent(reason, channel),
     giver: {
@@ -37,7 +55,7 @@ export const createForward = async (
       avatarId: giverAccount.avatarId,
       platform: giverAccount.platform,
     },
-    receiverIds: [receiverAccount.accountId],
+    receiverIds: receiverAccounts.map((receiver) => receiver.accountId),
     sourceId: `DISCORD:${guild.id}:${interaction.channelId}`,
     sourceName: `DISCORD:${encodeURIComponent(guild.name)}:${encodeURIComponent(
       channelName
@@ -50,9 +68,13 @@ export const createForward = async (
     },
   };
 
-  const response = await apiPost('/praise/forward', praiseData, {
-    headers: { host },
-  });
+  const response = await apiPost<Praise[], PraiseForwardInputDto>(
+    '/praise/forward',
+    praiseData,
+    {
+      headers: { host },
+    }
+  );
 
-  return response.status === 201;
+  return response.data;
 };

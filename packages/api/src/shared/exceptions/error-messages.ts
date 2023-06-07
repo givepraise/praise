@@ -445,7 +445,7 @@ export const errorMessages: { [key: string]: ErrorMessage } = {
     code: 1092,
   },
   COMMUNITY_NOT_ALLOWED_SIGNER: {
-    message: 'Only creator is allowd to link a community.',
+    message: 'Only creator is allowed to link a community.',
     httpStatusCode: 403,
     code: 1093,
   },
@@ -500,5 +500,20 @@ export const errorMessages: { [key: string]: ErrorMessage } = {
     message: 'Failed to delete file from IPFS Pinata',
     httpStatusCode: 500,
     code: 1103,
+  },
+  CONFIGURATION_ERROR: {
+    message: 'Configuration error',
+    httpStatusCode: 500,
+    code: 1104,
+  },
+  OPEN_AI_API_ERROR: {
+    message: 'OpenAI API error',
+    httpStatusCode: 500,
+    code: 1105,
+  },
+  PRAISE_NOT_ENOUGH: {
+    message: 'Not enough praise',
+    httpStatusCode: 400,
+    code: 1106,
   },
 };

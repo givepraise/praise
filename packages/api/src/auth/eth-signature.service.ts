@@ -179,6 +179,7 @@ export class EthSignatureService {
       identityEthAddress: payload.identityEthAddress,
       refreshToken,
       tokenType: 'Bearer',
+      user,
     };
   }
 }
