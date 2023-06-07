@@ -4,10 +4,9 @@ import {
   apiKeySeeder,
   server,
   usersSeeder,
-  ethSignatureService, app
+  ethSignatureService,
+  app,
 } from './shared/nest';
-import { ROLE_ADMIN } from 'frontend/src/model/auth/auth';
-import { UserRole } from 'frontend/src/model/user/enums/user-role.enum';
 import { JwtService } from '@nestjs/jwt';
 import { HOSTNAME_TEST } from '../src/constants/constants.provider';
 import { authorizedPatchRequest } from './shared/request';
@@ -239,7 +238,6 @@ describe('AuthController (E2E)', () => {
       expect(response.statusCode).toBe(400);
     });
 
-
     test('401 response when sending accessToken instead of refreshToken', async function () {
       const wallet = Wallet.createRandom();
 
@@ -271,14 +269,14 @@ describe('AuthController (E2E)', () => {
       expect(tokenResponse.statusCode).toBe(401);
     });
     test('401 response when refresh token is expired', async function () {
-      const user = await usersSeeder.seedUser({})
+      const user = await usersSeeder.seedUser({});
       const payload = {
         identityEthAddress: user.identityEthAddress,
         hostname: HOSTNAME_TEST,
         roles: user.roles,
         userId: user._id,
       };
-      const jwtService = new JwtService()
+      const jwtService = new JwtService();
       const refreshToken = jwtService.sign(
         {
           ...payload,
@@ -298,14 +296,14 @@ describe('AuthController (E2E)', () => {
       expect(tokenResponse.statusCode).toBe(500);
     });
     test('401 for expired accessToken and then call successfully with refreshed token', async function () {
-      const user = await usersSeeder.seedUser({})
+      const user = await usersSeeder.seedUser({});
       const payload = {
         identityEthAddress: user.identityEthAddress,
         hostname: HOSTNAME_TEST,
         roles: user.roles,
         userId: user._id,
       };
-      const jwtService = new JwtService()
+      const jwtService = new JwtService();
       const accessToken = jwtService.sign(
         {
           ...payload,
@@ -342,10 +340,14 @@ describe('AuthController (E2E)', () => {
       expect(tokenResponse.statusCode).toBe(201);
 
       // Call with new generated access token and get 200
-      await authorizedPatchRequest(`/users/${user._id}`, app, tokenResponse.body.accessToken, {
-        username: 'valid-username',
-      }).expect(200);
-
+      await authorizedPatchRequest(
+        `/users/${user._id}`,
+        app,
+        tokenResponse.body.accessToken,
+        {
+          username: 'valid-username',
+        },
+      ).expect(200);
     });
 
     test('201 response when and receive accessToken and refreshToken', async function () {

@@ -41,7 +41,6 @@ export class EthSignatureService {
   /**
    * Logs in the user and returns a JWT token.
    *
-   * @param user User object with information about the user
    * @returns LoginResponse
    */
   async login(
