@@ -111,6 +111,7 @@ export class EthSignatureService {
 
     // Return login response with access token
     return {
+      user,
       accessToken,
       identityEthAddress,
       refreshToken,
@@ -129,25 +130,31 @@ export class EthSignatureService {
     token: string,
     hostname: string,
   ): Promise<LoginResponseDto> {
-    const accessTokenPayload = this.jwtService.verify(token, {
+    const tokenPayload = this.jwtService.verify(token, {
       secret: process.env.JWT_SECRET,
     }) as JwtPayload;
+
+    const user = await this.userModel.findOne({ identityEthAddress: tokenPayload.identityEthAddress, }).lean() ;
+    if (!user){
+      throw new ApiException(errorMessages.UNAUTHORIZED);
+    }
 
     const expectedHostname =
       process.env.NODE_ENV === 'testing' ? HOSTNAME_TEST : hostname;
 
     if (
-      expectedHostname !== accessTokenPayload.hostname ||
-      accessTokenPayload.type !== 'refresh'
+      expectedHostname !== tokenPayload.hostname ||
+      tokenPayload.type !== 'refresh'
     ) {
       throw new ApiException(errorMessages.UNAUTHORIZED);
     }
     const payload = {
-      identityEthAddress: accessTokenPayload.identityEthAddress,
-      hostname: accessTokenPayload.hostname,
-      roles: accessTokenPayload.roles,
-      userId: accessTokenPayload.userId,
+      identityEthAddress: tokenPayload.identityEthAddress,
+      hostname: tokenPayload.hostname,
+      roles: tokenPayload.roles,
+      userId: tokenPayload.userId,
     };
+
 
     // Sign payload to create access token
     const accessToken = this.jwtService.sign(
@@ -175,11 +182,11 @@ export class EthSignatureService {
 
     // Return login response with access token
     return {
+      user,
       accessToken,
       identityEthAddress: payload.identityEthAddress,
       refreshToken,
       tokenType: 'Bearer',
-      user,
     };
   }
 }
