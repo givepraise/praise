@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { logger } from '../../logger';
 
 interface PlausibleEventInput {
   userAgent: string;
@@ -35,6 +36,6 @@ export async function sendPageViewEvent(
       throw new Error(`Unexpected response code: ${response.status}`);
     }
   } catch (error) {
-    console.error(`Error sending pageview event: ${error}`);
+    logger.error(`Error sending pageview event: ${error}`);
   }
 }
