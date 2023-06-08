@@ -5,7 +5,7 @@ import {
   useRecoilValue,
 } from 'recoil';
 import { AxiosResponse, AxiosError } from 'axios';
-import { ApiGet, isResponseOk } from '../api';
+import { ApiAuthGet, isResponseOk } from '../api';
 import { ApiKey } from './dto/apikeys.dto';
 import {
   CreateApiKeyInputDto,
@@ -28,7 +28,7 @@ export const AllApiKeys = atom<ApiKey[]>({
     ({ setSelf, getPromise }): void => {
       setSelf(
         getPromise(
-          ApiGet({
+          ApiAuthGet({
             url: '/api-key',
           })
         ).then((response) => {

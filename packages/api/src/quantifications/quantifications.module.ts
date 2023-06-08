@@ -15,6 +15,7 @@ import { Praise, PraiseSchema } from '../praise/schemas/praise.schema';
 import { EventLogModule } from '../event-log/event-log.module';
 import { PeriodsService } from '../periods/services/periods.service';
 import { PraiseService } from '../praise/services/praise.service';
+import { UsersModule } from '../users/users.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { PraiseService } from '../praise/services/praise.service';
     SettingsModule,
     PeriodsModule,
     EventLogModule,
+    UsersModule,
   ],
   controllers: [QuantificationsController],
   providers: [

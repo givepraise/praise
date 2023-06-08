@@ -128,9 +128,7 @@ export class UsersService {
     const user = await userDocument.save();
 
     logger.info(
-      `Added role "${roleChange.role}" to user with id "${(
-        user._id as Types.ObjectId
-      ).toString()}"`,
+      `Added role "${roleChange.role}" to user with "${user.username}"`,
     );
 
     return this.findOneById(user._id);
@@ -232,16 +230,24 @@ export class UsersService {
       .replace(/\s/g, '_')
       .replace(/[^a-z0-9_.-]/g, '')
       .replace(/[-_.]{2,}/g, '')
-      .replace(/^[.-]/, '')
-      .replace(/[.-]$/, '')
+      .replace(/^[^a-z0-9]+/g, '')
+      .replace(/[^a-z0-9]+$/g, '')
       .substring(0, 50);
 
-    if (newUsername.length < 4) {
-      newUsername = `${newUsername}${Math.floor(Math.random() * 900 + 100)}`;
+    // If the new username is less than 4 characters, pad it with a random number to ensure a minimum length of 4
+    while (newUsername.length < 4) {
+      newUsername = `${newUsername}${Math.floor(
+        Math.random() * 900 + 100,
+      )}`.substring(0, 50);
     }
 
+    // Check if the username already exists
     const exists = await this.userModel.find({ username: newUsername }).lean();
+
+    // If the username does not exist, return it
     if (exists.length === 0) return newUsername;
+
+    // If the username exists, try again with a random number appended
     return this.generateValidUsername(
       `${newUsername.substring(0, 15)}${Math.floor(Math.random() * 900 + 100)}`,
     );

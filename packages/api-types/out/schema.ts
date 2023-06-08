@@ -619,7 +619,8 @@ export interface components {
         | 'PRAISE'
         | 'QUANTIFICATION'
         | 'SETTING'
-        | 'USER_ACCOUNT';
+        | 'USER_ACCOUNT'
+        | 'COMMUNITY';
       /** @example An action that changes user permissions */
       label: string;
       /** @example A user's permissions were changed */
@@ -714,11 +715,13 @@ export interface components {
       _id: string;
       period: components['schemas']['Period'];
       setting: components['schemas']['Setting'];
+      /** @example 666 */
       value: string;
       /** @example 666 */
       valueRealized: string | string[] | boolean | number | number[];
     };
     SetPeriodSettingDto: {
+      /** @example 666 */
       value: string;
     };
     PraisePaginatedResponseDto: {
@@ -927,6 +930,7 @@ export interface components {
       identityEthAddress: string;
       /** @example bearer */
       tokenType: string;
+      user: components['schemas']['User'];
     };
     CreateCommunityInputDto: {
       /** @example banklessdao.givepraise.xyz */
