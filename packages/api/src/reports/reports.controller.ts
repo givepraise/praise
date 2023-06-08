@@ -28,7 +28,6 @@ import { ReportsCacheService } from './reports-cache.service';
 @SerializeOptions({
   excludePrefixes: ['__'],
 })
-@EnforceAuthAndPermissions()
 /**
  * Controller for managing reports. See https://github.com/givepraise/reports for more information
  * on how to create reports.
