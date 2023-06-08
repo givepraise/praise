@@ -130,9 +130,18 @@ export class EthSignatureService {
     token: string,
     hostname: string,
   ): Promise<LoginResponseDto> {
-    const tokenPayload = this.jwtService.verify(token, {
-      secret: process.env.JWT_SECRET,
-    }) as JwtPayload;
+    let tokenPayload :JwtPayload
+    try {
+      tokenPayload = this.jwtService.verify(token, {
+        secret: process.env.JWT_SECRET
+      }) as JwtPayload;
+    } catch (e) {
+      if (e.name === 'TokenExpiredError'){
+        throw new ApiException(errorMessages.JWT_TOKEN_EXPIRED);
+      } else {
+        throw new ApiException(errorMessages.UNAUTHORIZED);
+      }
+    }
 
     const user = await this.userModel.findOne({ identityEthAddress: tokenPayload.identityEthAddress, }).lean() ;
     if (!user){

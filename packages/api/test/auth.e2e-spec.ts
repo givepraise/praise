@@ -293,7 +293,7 @@ describe('AuthController (E2E)', () => {
         .send({
           refreshToken,
         });
-      expect(tokenResponse.statusCode).toBe(500);
+      expect(tokenResponse.statusCode).toBe(401);
     });
     test('401 for expired accessToken and then call successfully with refreshed token', async function () {
       const user = await usersSeeder.seedUser({});
