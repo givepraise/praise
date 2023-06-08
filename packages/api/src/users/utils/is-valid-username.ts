@@ -9,6 +9,6 @@
  * - cannot contain two dots, two hyphens, or two underscores in a row
  */
 export function isValidUsername(username: string) {
-  const pattern = /^[a-z0-9][a-z0-9_.-]{1,48}[a-z0-9]$/;
+  const pattern = /^[a-z0-9][a-z0-9_.-]{2,48}[a-z0-9]$/;
   return pattern.test(username);
 }

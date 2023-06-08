@@ -258,7 +258,7 @@ export class UsersController {
     await this.eventLogService.logEventWithAuthContext({
       authContext: request.authContext,
       typeKey: EventLogTypeKey.USER_ACCOUNT,
-      description: `Added role ${roleChange.role} to user ${id}`,
+      description: `Added role ${roleChange.role} to user ${userWithStats.username}`,
     });
 
     return userWithStats;
@@ -284,7 +284,7 @@ export class UsersController {
     await this.eventLogService.logEventWithAuthContext({
       authContext: request.authContext,
       typeKey: EventLogTypeKey.USER_ACCOUNT,
-      description: `Removed role ${roleChange.role} from user ${id}`,
+      description: `Removed role ${roleChange.role} from user ${userWithStats.username}`,
     });
 
     return userWithStats;

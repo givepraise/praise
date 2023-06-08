@@ -88,7 +88,7 @@ export class UserAccountsController {
     this.eventLogService.logEventWithAuthContext({
       authContext: req.authContext,
       typeKey: EventLogTypeKey.USER_ACCOUNT,
-      description: `Created UserAccount id: ${userAccount.accountId}`,
+      description: `Created UserAccount - id: ${userAccount.accountId}, name: ${userAccount.name}`,
     });
 
     return userAccount;

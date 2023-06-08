@@ -42,6 +42,8 @@ import { EventLogTypeKey } from '../event-log/enums/event-log-type-key';
 import * as JSONStream from 'JSONStream';
 import { Transform } from '@json2csv/node';
 import { Public } from '../shared/decorators/public.decorator';
+import { User } from '../users/schemas/users.schema';
+import { UserAccount } from '../useraccounts/schemas/useraccounts.schema';
 
 const exportIncludeFields = [
   '_id',
@@ -243,15 +245,27 @@ export class PraiseController {
     @Request() request: RequestWithAuthContext,
     @Body() data: PraiseCreateInputDto,
   ): Promise<Praise[]> {
-    const praiseItem = await this.praiseService.createPraiseItem(data);
+    const praise = await this.praiseService.createPraiseItem(data);
+
+    let giver: string;
+    const praiseItem = praise[0];
+    if (praiseItem.giver && praiseItem.giver instanceof UserAccount) {
+      if (praiseItem.giver.user && praiseItem.giver.user instanceof User) {
+        giver = praiseItem.giver.user.username;
+      } else {
+        giver = String(praiseItem.giver._id);
+      }
+    } else {
+      giver = String(praiseItem.giver);
+    }
 
     await this.eventLogService.logEventWithAuthContext({
       authContext: request.authContext,
       typeKey: EventLogTypeKey.PRAISE,
-      description: `Giver ${data.giver} created an Praise item with receiver IDS ${data.receiverIds}`,
+      description: `Giver ${giver} created an Praise item with receiver IDS ${data.receiverIds}`,
     });
 
-    return praiseItem;
+    return praise;
   }
 
   @Post('forward')
@@ -268,14 +282,29 @@ export class PraiseController {
     @Request() request: RequestWithAuthContext,
     @Body() data: PraiseForwardInputDto,
   ): Promise<Praise[]> {
-    const praiseItem = await this.praiseService.createPraiseItem(data);
+    const praise = await this.praiseService.createPraiseItem(data);
+
+    let forwarder: string;
+    const praiseItem = praise[0];
+    if (praiseItem.forwarder && praiseItem.forwarder instanceof UserAccount) {
+      if (
+        praiseItem.forwarder.user &&
+        praiseItem.forwarder.user instanceof User
+      ) {
+        forwarder = praiseItem.forwarder.user.username;
+      } else {
+        forwarder = String(praiseItem.forwarder._id);
+      }
+    } else {
+      forwarder = String(praiseItem.forwarder);
+    }
 
     await this.eventLogService.logEventWithAuthContext({
       authContext: request.authContext,
       typeKey: EventLogTypeKey.PRAISE,
-      description: `Forwarder ${data.forwarder} created an Praise item with receiver IDS ${data.receiverIds}`,
+      description: `Forwarder ${forwarder} created an Praise item with receiver IDS ${data.receiverIds}`,
     });
 
-    return praiseItem;
+    return praise;
   }
 }
