@@ -13,7 +13,7 @@ const PlausibleAnalytics = () => {
 
     return () => {
       document.body.removeChild(script);
-    }
+    };
   }, []);
 
   return null;
