@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react';
+import { useEffect, ReactElement } from 'react';
 
-const PlausibleAnalytics = () => {
-  useEffect(() => {
+const PlausibleAnalytics = (): ReactElement | null => {
+  useEffect((): (() => void) => {
     const script = document.createElement('script');
 
     script.src = 'https://plausible.io/js/script.js';
@@ -11,7 +11,7 @@ const PlausibleAnalytics = () => {
 
     document.body.appendChild(script);
 
-    return () => {
+    return (): void => {
       document.body.removeChild(script);
     };
   }, []);
