@@ -62,6 +62,7 @@ export const ephemeralWarning = async (
   await interaction.deleteReply();
   await interaction.followUp({
     content: await renderMessage(key, host, subs),
+    components: [],
     ephemeral: true,
   });
 };
