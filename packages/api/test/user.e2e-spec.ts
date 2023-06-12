@@ -1,5 +1,4 @@
 import './shared/jest';
-import request from 'supertest';
 import { Wallet } from 'ethers';
 import { Praise } from '../src/praise/schemas/praise.schema';
 import {
@@ -14,7 +13,6 @@ import { PeriodStatusType } from '../src/periods/enums/status-type.enum';
 import {
   app,
   testingModule,
-  server,
   usersService,
   usersSeeder,
   praiseService,

@@ -16,7 +16,6 @@ import {
 } from '@nestjs/swagger';
 import { MongooseClassSerializerInterceptor } from '../shared/interceptors/mongoose-class-serializer.interceptor';
 import { ReportManifestDto } from './dto/report-manifest.dto';
-import { EnforceAuthAndPermissions } from '../auth/decorators/enforce-auth-and-permissions.decorator';
 import { Types } from 'mongoose';
 import { ObjectIdPipe } from '../shared/pipes/object-id.pipe';
 import { Public } from '../shared/decorators/public.decorator';

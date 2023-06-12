@@ -1,5 +1,4 @@
 import './shared/jest';
-import request from 'supertest';
 import { Wallet } from 'ethers';
 import {
   authorizedGetRequest,
@@ -18,7 +17,6 @@ import { faker } from '@faker-js/faker';
 import {
   app,
   testingModule,
-  server,
   usersService,
   usersSeeder,
   praiseService,

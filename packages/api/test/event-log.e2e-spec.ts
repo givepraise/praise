@@ -1,5 +1,4 @@
 import './shared/jest';
-import request from 'supertest';
 import { Wallet } from 'ethers';
 import { authorizedGetRequest, loginUser } from './shared/request';
 import { EventLogType } from '../src/event-log/schemas/event-log-type.schema';
@@ -8,7 +7,6 @@ import { EventLog } from '../src/event-log/schemas/event-log.schema';
 import {
   app,
   testingModule,
-  server,
   usersSeeder,
   eventLogService,
   eventLogSeeder,
