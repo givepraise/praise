@@ -146,10 +146,8 @@ export const GiverReceiverTable = ({ type }: Params): JSX.Element | null => {
 
   if (period.status === 'QUANTIFY' && !isAdmin)
     return (
-      <div className="flex items-center w-full h-full">
-        <Notice type="danger">
-          <span>Praise scores are not visible during quantification.</span>
-        </Notice>
+      <div className="flex items-center justify-center w-full h-full">
+        Praise scores are not visible during quantification.
       </div>
     );
 
