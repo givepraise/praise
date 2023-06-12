@@ -150,12 +150,14 @@ export const Nav = (): JSX.Element => {
                 />
               </Menu.Button>
             ) : (
-              <Button
-                className="w-1/3 m-4"
-                onClick={(): void => setLoginDialogOpen(true)}
-              >
-                Sign In
-              </Button>
+              <div className="m-3">
+                <Button
+                  className="w-full"
+                  onClick={(): void => setLoginDialogOpen(true)}
+                >
+                  Sign In
+                </Button>
+              </div>
             )}
           </Menu>
         </div>

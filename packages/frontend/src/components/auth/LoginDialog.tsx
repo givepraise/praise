@@ -80,11 +80,11 @@ export const LoginDialog = ({
                 </div>
                 <div className="flex justify-center w-full">
                   <div>
-                    <div className="mb-6 text-xl font-semibold text-center">
+                    <div className="text-xl font-semibold text-center">
                       Sign In
                     </div>
-                    <div className="mb-6 text-center">
-                      To sign in to praise, first connect a wallet and then sign
+                    <div className="text-center">
+                      To sign in to Praise, first connect a wallet and then sign
                       a verification message.
                     </div>
                   </div>
