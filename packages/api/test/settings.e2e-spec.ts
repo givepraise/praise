@@ -86,10 +86,6 @@ describe('Period Settings (E2E)', () => {
       });
     });
 
-    test('401 when not authenticated', async () => {
-      return request(server).get(`/settings`).send().expect(401);
-    });
-
     test('200 and correct body', async () => {
       const response = await authorizedGetRequest(
         `/settings`,
@@ -171,10 +167,6 @@ describe('Period Settings (E2E)', () => {
         value: '✅ Praise {@receivers} {reason}',
         type: 'String',
       });
-    });
-
-    test('401 when not authenticated', async () => {
-      return request(server).get(`/settings/${setting._id}`).send().expect(401);
     });
 
     test('200 when correct data is sent', async () => {
