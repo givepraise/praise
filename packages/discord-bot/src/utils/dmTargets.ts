@@ -1,5 +1,5 @@
 import { PeriodDetailsDto, User } from '../utils/api-schema';
-import { CommandInteraction, DiscordAPIError } from 'discord.js';
+import { CommandInteraction, DiscordAPIError, EmbedBuilder } from 'discord.js';
 import { Buffer } from 'node:buffer';
 import { FailedToDmUsersList } from '../interfaces/FailedToDmUsersList';
 import { apiGet } from './api';
@@ -11,7 +11,7 @@ import { apiGet } from './api';
 const sendDMs = async (
   interaction: CommandInteraction,
   users: User[],
-  message: string
+  message: EmbedBuilder
 ): Promise<void> => {
   const successful = [];
   const failed: FailedToDmUsersList = {
@@ -38,7 +38,7 @@ const sendDMs = async (
         failed.notFoundUsers.push(userAccount?.name || userId);
         continue;
       }
-      await discordUser.send(message);
+      await discordUser.send({ embeds: [message] });
       successful.push(`${discordUser.user.tag}`);
     } catch (err) {
       const error = err as Error;
@@ -148,7 +148,7 @@ export const selectTargets = async (
   interaction: CommandInteraction,
   type: string,
   period: string | undefined,
-  message: string,
+  message: EmbedBuilder,
   host: string
 ): Promise<void> => {
   const users = await apiGet<User[]>('/users', { headers: { host } })
@@ -157,26 +157,39 @@ export const selectTargets = async (
 
   if (!users) return;
   switch (type) {
-    case 'USERS': {
-      await sendDMs(interaction, users, message);
-      return;
-    }
+    case 'USERS':
     case 'QUANTIFIERS': {
       await sendDMs(
         interaction,
-        users.filter((user) => user.roles.includes('QUANTIFIER')),
+        type === 'QUANTIFIERS'
+          ? users.filter((user) => user.roles.includes('QUANTIFIER'))
+          : users,
         message
       );
       return;
     }
+    case 'RECEIVERS':
     case 'ASSIGNED-QUANTIFIERS':
     case 'UNFINISHED-QUANTIFIERS': {
       if (!period || !period.length) return;
 
-      const selectedPeriod = await apiGet<PeriodDetailsDto>(`/period/${period}`)
+      const selectedPeriod = await apiGet<PeriodDetailsDto>(
+        `/periods/${period}`
+      )
         .then((res) => res.data)
         .catch(() => undefined);
+
       if (!selectedPeriod) return;
+
+      if (type === 'RECEIVERS') {
+        const receivers = selectedPeriod.receivers?.map((r) => r._id);
+        await sendDMs(
+          interaction,
+          users.filter((user) => receivers?.includes(user._id)),
+          message
+        );
+        return;
+      }
 
       const quantifiers = selectedPeriod.quantifiers;
 

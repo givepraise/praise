@@ -41,7 +41,6 @@ export class EthSignatureService {
   /**
    * Logs in the user and returns a JWT token.
    *
-   * @param user User object with information about the user
    * @returns LoginResponse
    */
   async login(
@@ -87,17 +86,116 @@ export class EthSignatureService {
     } as JwtPayload;
 
     // Sign payload to create access token
-    const accessToken = this.jwtService.sign(payload, {
-      expiresIn: '7d',
-      secret: process.env.JWT_SECRET,
-    });
+    const accessToken = this.jwtService.sign(
+      {
+        ...payload,
+        type: 'access',
+      },
+      {
+        expiresIn: '7d',
+        secret: process.env.JWT_SECRET,
+      },
+    );
+
+    // Sign payload to create refresh token
+    const refreshToken = this.jwtService.sign(
+      {
+        ...payload,
+        type: 'refresh',
+      },
+      {
+        expiresIn: '30d',
+        secret: process.env.JWT_SECRET,
+      },
+    );
 
     // Return login response with access token
     return {
+      user,
       accessToken,
       identityEthAddress,
+      refreshToken,
       tokenType: 'Bearer',
+    };
+  }
+
+  /**
+   * Generate new tokens with existing refreshToken.
+   *
+   * @param token String
+   * @param hostname String
+   * @returns LoginResponse
+   */
+  async generateTokensByRefreshToken(
+    token: string,
+    hostname: string,
+  ): Promise<LoginResponseDto> {
+    let tokenPayload :JwtPayload
+    try {
+      tokenPayload = this.jwtService.verify(token, {
+        secret: process.env.JWT_SECRET
+      }) as JwtPayload;
+    } catch (e) {
+      if (e.name === 'TokenExpiredError'){
+        throw new ApiException(errorMessages.JWT_TOKEN_EXPIRED);
+      } else {
+        throw new ApiException(errorMessages.UNAUTHORIZED);
+      }
+    }
+
+    const user = await this.userModel.findOne({ identityEthAddress: tokenPayload.identityEthAddress, }).lean() ;
+    if (!user){
+      throw new ApiException(errorMessages.UNAUTHORIZED);
+    }
+
+    const expectedHostname =
+      process.env.NODE_ENV === 'testing' ? HOSTNAME_TEST : hostname;
+
+    if (
+      expectedHostname !== tokenPayload.hostname ||
+      tokenPayload.type !== 'refresh'
+    ) {
+      throw new ApiException(errorMessages.UNAUTHORIZED);
+    }
+    const payload = {
+      identityEthAddress: tokenPayload.identityEthAddress,
+      hostname: tokenPayload.hostname,
+      roles: tokenPayload.roles,
+      userId: tokenPayload.userId,
+    };
+
+
+    // Sign payload to create access token
+    const accessToken = this.jwtService.sign(
+      {
+        ...payload,
+        type: 'access',
+      },
+      {
+        expiresIn: '7d',
+        secret: process.env.JWT_SECRET,
+      },
+    );
+
+    // Sign payload to create refresh token
+    const refreshToken = this.jwtService.sign(
+      {
+        ...payload,
+        type: 'refresh',
+      },
+      {
+        expiresIn: '30d',
+        secret: process.env.JWT_SECRET,
+      },
+    );
+
+    // Return login response with access token
+    return {
       user,
+      accessToken,
+      identityEthAddress: payload.identityEthAddress,
+      refreshToken,
+      tokenType: 'Bearer',
     };
   }
 }

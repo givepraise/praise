@@ -13,6 +13,7 @@ import { AuthContext } from '../auth-context';
 import { Types } from 'mongoose';
 import { Reflector } from '@nestjs/core';
 import { IS_PUBLIC_KEY } from '../../shared/decorators/public.decorator';
+import { JwtPayload } from '../interfaces/jwt-payload.interface';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -75,15 +76,15 @@ export class AuthGuard implements CanActivate {
       return false;
     }
     try {
-      const payload = await this.jwtService.verify(token, {
+      const payload = (await this.jwtService.verify(token, {
         secret: process.env.JWT_SECRET,
-      });
+      })) as JwtPayload;
 
       // Hostname in JWT payload must match hostname in request
       const expectedHostname =
         process.env.NODE_ENV === 'testing' ? HOSTNAME_TEST : request.hostname;
 
-      if (expectedHostname !== payload.hostname) {
+      if (expectedHostname !== payload.hostname || payload.type !== 'access') {
         return false;
       }
 

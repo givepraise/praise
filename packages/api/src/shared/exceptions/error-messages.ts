@@ -516,4 +516,9 @@ export const errorMessages: { [key: string]: ErrorMessage } = {
     httpStatusCode: 400,
     code: 1106,
   },
+  JWT_TOKEN_EXPIRED: {
+    message: 'Jwt token expired',
+    httpStatusCode: 401,
+    code: 1107,
+  },
 };
