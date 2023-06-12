@@ -20,7 +20,6 @@ export const Routes = (): JSX.Element => {
     }
   }, [tokenSet, address, decodedToken?.identityEthAddress, setTokenSet]);
 
-  // return tokenSet && decodedToken?.identityEthAddress === address ? (
   return (
     <Switch>
       <Route exact path="/activate">
