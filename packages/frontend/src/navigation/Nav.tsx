@@ -163,10 +163,12 @@ export const Nav = (): JSX.Element => {
         </div>
       </div>
 
-      <LoginDialog
-        open={loginDialogOpen}
-        onClose={(): void => setLoginDialogOpen(false)}
-      />
+      {!userId && (
+        <LoginDialog
+          open={loginDialogOpen}
+          onClose={(): void => setLoginDialogOpen(false)}
+        />
+      )}
     </nav>
   );
 };
