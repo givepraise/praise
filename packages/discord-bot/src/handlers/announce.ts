@@ -12,6 +12,7 @@ import {
 } from '../utils/buttons/confirmationButtons';
 import { dmTargetMenu } from '../utils/menus/dmTargetmenu';
 import { selectTargets } from '../utils/dmTargets';
+import { announcementEmbed } from '../utils/embeds/announcementEmbed';
 import { periodSelectMenu } from '../utils/menus/periodSelectMenu';
 import { getUserAccount } from '../utils/getUserAccount';
 
@@ -47,7 +48,7 @@ export const announcementHandler: CommandHandler = async (
   const currentUser = userAccount.user;
 
   if (currentUser.roles.includes('ADMIN')) {
-    const message = interaction.options.getString('message');
+    const message = interaction.options.getString('message', true);
 
     const userSelectionMsg = await interaction.editReply({
       content: 'Which users do you want to send the message to?',
@@ -103,9 +104,7 @@ export const announcementHandler: CommandHandler = async (
           }
           selectedPeriod = '';
           await interaction.editReply({
-            content: `Preview announcement before continuing:\n---\n${
-              message || ''
-            }\n---`,
+            content: `Preview announcement before continuing:\n---\n${message}\n---`,
             components: [
               new ActionRowBuilder<ButtonBuilder>().addComponents([
                 continueButton,
@@ -119,9 +118,7 @@ export const announcementHandler: CommandHandler = async (
           if (!click.isStringSelectMenu()) return;
           selectedPeriod = click.values[0];
           await interaction.editReply({
-            content: `Preview announcement before continuing:\n---\n${
-              message || ''
-            }\n---`,
+            content: `Preview announcement before continuing:\n---\n${message}\n---`,
             components: [
               new ActionRowBuilder<ButtonBuilder>().addComponents([
                 continueButton,
@@ -140,7 +137,7 @@ export const announcementHandler: CommandHandler = async (
             interaction,
             selectedUserType,
             selectedPeriod,
-            message || '',
+            announcementEmbed(member.user, guild, message),
             host
           );
           break;

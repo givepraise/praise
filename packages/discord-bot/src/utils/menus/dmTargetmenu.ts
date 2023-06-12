@@ -23,6 +23,11 @@ export const dmTargetMenu = new StringSelectMenuBuilder()
       value: 'ASSIGNED-QUANTIFIERS',
     },
     {
+      label: 'All period praise receivers',
+      description: 'Send to all receivers praise in a period',
+      value: 'RECEIVERS',
+    },
+    {
       label: 'All unfinished quantifiers',
       description: 'Send to all unfinished quantifiers assigned to a period',
       value: 'UNFINISHED-QUANTIFIERS',
