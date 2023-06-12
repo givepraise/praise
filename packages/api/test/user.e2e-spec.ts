@@ -1,5 +1,4 @@
 import './shared/jest';
-import request from 'supertest';
 import { Wallet } from 'ethers';
 import { Praise } from '../src/praise/schemas/praise.schema';
 import {
@@ -14,7 +13,6 @@ import { PeriodStatusType } from '../src/periods/enums/status-type.enum';
 import {
   app,
   testingModule,
-  server,
   usersService,
   usersSeeder,
   praiseService,
@@ -120,10 +118,6 @@ describe('UserController (E2E)', () => {
       accessToken = response.accessToken;
     });
 
-    test('401 when not authenticated', async () => {
-      await request(server).get('/users').send().expect(401);
-    });
-
     test('200 when authenticated', async () => {
       const response = await authorizedGetRequest(
         '/users',
@@ -181,10 +175,6 @@ describe('UserController (E2E)', () => {
       // Login and get access token
       const response = await loginUser(app, testingModule, wallet);
       accessToken = response.accessToken;
-    });
-
-    test('401 when not authenticated', async () => {
-      return request(server).get(`/users/${user._id}`).send().expect(401);
     });
 
     test('404 when user not found', async () => {

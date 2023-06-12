@@ -7,7 +7,6 @@ import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useRecoilValue } from 'recoil';
 import { useParams } from 'react-router-dom';
-import { toast } from 'react-hot-toast';
 import { Dialog } from '@headlessui/react';
 import { BreadCrumb } from '@/components/ui/BreadCrumb';
 import { Page } from '@/components/ui/Page';
@@ -17,22 +16,18 @@ import {
   SingleUser,
   SingleUserParams,
   useLoadSingleUserDetails,
-  useUserProfile,
 } from '@/model/user/users';
 import { BackLink } from '@/navigation/BackLink';
-import { isResponseOk } from '@/model/api';
 import { UserInfo } from './components/UserInfo';
 import {
   userAccountTypeNumber,
   ReceivedGivenPraiseTable,
 } from './components/ReceivedGivenPraiseTable';
 import { EditProfileDialog } from './components/EditProfileDialog';
-import { UpdateUserRequestDto } from '@/model/user/dto/update-user-request.dto';
 
 const UserDetailsPage = (): JSX.Element | null => {
   const dialogRef = React.useRef(null);
   const { userId } = useParams<SingleUserParams>();
-  const { update } = useUserProfile();
 
   useLoadSingleUserDetails(userId);
   const user = useRecoilValue(SingleUser(userId));
@@ -47,21 +42,6 @@ const UserDetailsPage = (): JSX.Element | null => {
   const [view, setView] = useState<number>(pageViews.receivedPraiseView);
 
   if (!user) return null;
-
-  const handleSaveUserProfile = async (
-    values: UpdateUserRequestDto
-  ): Promise<void> => {
-    const { username, rewardsEthAddress } = values;
-    const response = await update(user._id, username, rewardsEthAddress);
-
-    if (isResponseOk(response)) {
-      toast.success('User profile saved');
-    } else {
-      toast.error('Profile update failed');
-    }
-
-    setIsDialogOpen(false);
-  };
 
   return (
     <Page>
@@ -122,7 +102,6 @@ const UserDetailsPage = (): JSX.Element | null => {
         <div ref={dialogRef}>
           <EditProfileDialog
             onClose={(): void => setIsDialogOpen(false)}
-            onSave={(values): void => void handleSaveUserProfile(values)}
             user={user}
           />
         </div>

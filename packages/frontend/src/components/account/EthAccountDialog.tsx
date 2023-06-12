@@ -14,6 +14,7 @@ import { ActiveTokenSet } from '@/model/auth/auth';
 import { Button } from '../ui/Button';
 import { Box } from '../ui/Box';
 import { shortenEthAddress } from '@/utils/string';
+import { useHistory } from 'react-router-dom';
 
 interface EthAccountDialogProps {
   open?: boolean;
@@ -29,6 +30,7 @@ export const EthAccountDialog = ({
   const { disconnect } = useDisconnect();
   const setActiveTokenSet = useSetRecoilState(ActiveTokenSet);
   const contentRef = useRef(null);
+  const history = useHistory();
 
   const handleCopyAddress = async (): Promise<void> => {
     await navigator.clipboard.writeText(address);
@@ -37,6 +39,7 @@ export const EthAccountDialog = ({
   };
 
   const handleDisconnect = (): void => {
+    history.push('/');
     disconnect();
     setActiveTokenSet(undefined);
     onClose();

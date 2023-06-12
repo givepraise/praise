@@ -22,10 +22,14 @@ import { Theme } from '@/model/theme';
 import { ActiveUserId } from '@/model/auth/auth';
 import { NavItem } from './NavItem';
 import { NavLogo } from './NavLogo';
+import { Button } from '@/components/ui/Button';
+import { useState } from 'react';
+import { LoginDialog } from '@/components/auth/LoginDialog';
 
 export const Nav = (): JSX.Element => {
   const userId = useRecoilValue(ActiveUserId);
   const setTheme = useSetRecoilState(Theme);
+  const [loginDialogOpen, setLoginDialogOpen] = useState(false);
 
   const handleTheme = (theme: string): void => {
     if (theme === 'Dark') {
@@ -46,11 +50,13 @@ export const Nav = (): JSX.Element => {
               <NavLogo />
             </li>
 
-            <NavItem
-              icon={faUser}
-              description="Profile"
-              to={`/users/${userId}`}
-            />
+            {userId && (
+              <NavItem
+                icon={faUser}
+                description="Profile"
+                to={`/users/${userId}`}
+              />
+            )}
             <NavItem icon={faCalendarAlt} description="Periods" to="/periods" />
             <NavItem
               icon={faUserFriends}
@@ -135,16 +141,34 @@ export const Nav = (): JSX.Element => {
 
         <div className="w-full border-t">
           <Menu as="div" className="flex flex-col justify-center">
-            <Menu.Button className="flex items-center justify-between w-full selection:hover:text-warm-gray-500 focus:outline-none">
-              <EthAccount
-                showDownCaret={false}
-                showRightCaret={true}
-                className="w-full px-4 py-3"
-              />
-            </Menu.Button>
+            {userId ? (
+              <Menu.Button className="flex items-center justify-between w-full selection:hover:text-warm-gray-500 focus:outline-none">
+                <EthAccount
+                  showDownCaret={false}
+                  showRightCaret={true}
+                  className="w-full px-4 py-3"
+                />
+              </Menu.Button>
+            ) : (
+              <div className="m-3">
+                <Button
+                  className="w-full"
+                  onClick={(): void => setLoginDialogOpen(true)}
+                >
+                  Sign In
+                </Button>
+              </div>
+            )}
           </Menu>
         </div>
       </div>
+
+      {!userId && (
+        <LoginDialog
+          open={loginDialogOpen}
+          onClose={(): void => setLoginDialogOpen(false)}
+        />
+      )}
     </nav>
   );
 };

@@ -30,7 +30,6 @@ import { EventLogTypeKey } from '../event-log/enums/event-log-type-key';
 @SerializeOptions({
   excludePrefixes: ['__'],
 })
-@EnforceAuthAndPermissions()
 export class PeriodSettingsController {
   constructor(
     private readonly settingsService: SettingsService,
@@ -73,6 +72,7 @@ export class PeriodSettingsController {
   }
 
   @Patch('/:periodId/settings/:settingId')
+  @EnforceAuthAndPermissions()
   @ApiOperation({ summary: 'Set value for a period setting.' })
   @ApiResponse({
     status: 200,

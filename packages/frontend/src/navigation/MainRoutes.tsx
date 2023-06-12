@@ -96,9 +96,7 @@ interface Props {
   userRoles: string[];
 }
 
-export const AuthenticatedRoutes = ({
-  userRoles,
-}: Props): JSX.Element | null => {
+export const MainRoutes = ({ userRoles }: Props): JSX.Element | null => {
   return (
     <Switch>
       <Route exact path={'/reports'}>

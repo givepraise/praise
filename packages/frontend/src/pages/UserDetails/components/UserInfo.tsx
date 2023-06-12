@@ -5,20 +5,18 @@ import {
   faUserLock,
 } from '@fortawesome/free-solid-svg-icons';
 import { faDiscord } from '@fortawesome/free-brands-svg-icons';
-import { toast } from 'react-hot-toast';
 import { Jazzicon } from '@ukstv/jazzicon-react';
 import { useRecoilValue } from 'recoil';
 import { Box } from '@/components/ui/Box';
 import { formatIsoDateUTC, DATE_FORMAT } from '@/utils/date';
-import { classNames } from '@/utils/index';
 import { Button } from '@/components/ui/Button';
-import { useAdminUsers } from '@/model/user/users';
 import { ActiveUserId, HasRole, ROLE_ADMIN } from '@/model/auth/auth';
 import { UserAvatar } from '@/components/user/UserAvatar';
 import { UserWithStatsDto } from '@/model/user/dto/user-with-stats.dto';
 import { UserRole } from '@/model/user/enums/user-role.enum';
 import { shortenEthAddress } from '@/utils/string';
 import { Bio } from './Bio';
+import { UserInfoAdminRolesInput } from './UserInfoAdminRolesInput';
 
 interface Params {
   user: UserWithStatsDto;
@@ -29,32 +27,13 @@ export const UserInfo = ({
   user,
   isDialogOpen,
 }: Params): JSX.Element | null => {
-  const { addRole, removeRole } = useAdminUsers();
-
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
   const activeUserId = useRecoilValue(ActiveUserId);
-
   const isProfilePage = user._id === activeUserId;
 
   const roles = [UserRole.ADMIN, UserRole.FORWARDER, UserRole.QUANTIFIER];
 
   const discordAccount = user.accounts?.find((a) => a.platform === 'DISCORD');
-
-  const handleRole = async (
-    role: UserRole,
-    user: UserWithStatsDto
-  ): Promise<void> => {
-    let resp;
-    const isRemove = user.roles.includes(role);
-    if (isRemove) {
-      resp = await removeRole(user._id, role);
-    } else {
-      resp = await addRole(user._id, role);
-    }
-    if (resp?.status === 200) {
-      toast.success(`Role ${isRemove ? 'removed' : 'added'} successfully!`);
-    }
-  };
 
   return (
     <Box>
@@ -167,33 +146,7 @@ export const UserInfo = ({
         </div>
       )}
 
-      <>
-        {isAdmin && (
-          <div className="flex flex-wrap gap-4 pt-5">
-            {roles.map((role) => (
-              <div
-                key={role}
-                className={classNames(
-                  'flex gap-2 justify-center items-center py-2 px-3 rounded-md bg-themecolor-alt-2',
-                  user.roles.includes(role) ? '' : 'opacity-50'
-                )}
-                onClick={(): void => void handleRole(role, user)}
-              >
-                <input
-                  checked={user.roles.includes(role)}
-                  className="cursor-pointer"
-                  name={role}
-                  type="checkbox"
-                  readOnly
-                />
-                <label className="text-white " htmlFor={role}>
-                  {role}
-                </label>
-              </div>
-            ))}
-          </div>
-        )}
-      </>
+      <>{isAdmin && <UserInfoAdminRolesInput user={user} roles={roles} />}</>
     </Box>
   );
 };

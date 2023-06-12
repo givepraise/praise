@@ -5,15 +5,15 @@ import { faX, faBars, faPrayingHands } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useRecoilValue } from 'recoil';
 import { Nav } from '@/navigation/Nav';
-import { AuthenticatedRoutes } from '@/navigation/AuthenticatedRoutes';
-import { ApiAuthGet } from '@/model/api';
+import { MainRoutes } from '@/navigation/MainRoutes';
+import { ApiGet } from '@/model/api';
 import { LoadScreen } from '@/components/ui/LoadScreen';
 import { ActiveUserRoles, HasRole, ROLE_ADMIN } from '@/model/auth/auth';
 import { usePraiseAppVersion } from '@/model/app';
 import { HeaderBanner } from '@/components/ui/HeaderBanner';
 
-export const AuthenticatedLayout = (): JSX.Element | null => {
-  useRecoilValue(ApiAuthGet({ url: '/settings' })); //Pre-loading settings to force `ApiAuthGet` to initialise properly. Weird.
+export const MainLayout = (): JSX.Element | null => {
+  useRecoilValue(ApiGet({ url: '/settings' })); //Pre-loading settings to force `ApiAuthGet` to initialise properly. Weird.
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const activeUserRoles = useRecoilValue(ActiveUserRoles);
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
@@ -137,7 +137,7 @@ export const AuthenticatedLayout = (): JSX.Element | null => {
 
         <main className="flex justify-center w-full ">
           <React.Suspense fallback={<LoadScreen />}>
-            <AuthenticatedRoutes userRoles={activeUserRoles} />
+            <MainRoutes userRoles={activeUserRoles} />
           </React.Suspense>
         </main>
       </div>

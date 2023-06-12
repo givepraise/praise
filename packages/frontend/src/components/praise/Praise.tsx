@@ -14,17 +14,16 @@ import {
   DATE_FORMAT_LONG_NAME,
 } from '@/utils/date';
 import { SinglePeriodByDate } from '@/model/periods/periods';
-import { HasRole, ROLE_ADMIN } from '@/model/auth/auth';
+import { AccessToken, HasRole, ROLE_ADMIN } from '@/model/auth/auth';
 import { UserPopover } from '@/components/user/UserPopover';
 import { UserName } from '@/components/user/UserName';
 import { SourceName } from './SourceName';
 import { UserAvatarAndName } from '../user/UserAvatarAndName';
-import { InlineLabelClosable } from '../ui/InlineLabelClosable';
 import { Praise as PraiseDto } from '@/model/praise/praise.dto';
 import { idLabel } from '@/model/praise/praise.utils';
 import { UserAccount } from '@/model/useraccount/dto/user-account.dto';
-import { useQuantifyPraise } from '../../model/quantification/quantification';
 import { SingleUser } from '../../model/user/users';
+import { PraiseInlineLabelClosable } from './PraiseInlineLabelClosable';
 
 interface Props {
   praise: PraiseDto;
@@ -53,8 +52,8 @@ export const Praise = ({
 }: Props): JSX.Element | null => {
   const period = useRecoilValue(SinglePeriodByDate(praise?.createdAt));
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
-  const { quantify } = useQuantifyPraise();
   const history = useHistory();
+  const accessToken = useRecoilValue(AccessToken);
 
   // This is a bit of a hack.
   // If `user` can be either a string or a User object, that
@@ -173,18 +172,16 @@ export const Praise = ({
                 className="bg-warm-gray-400"
               />
             )}
-            {dismissed && (
-              <InlineLabelClosable
-                text="Dismissed"
-                className="bg-red-600"
-                onClose={(): void => void quantify(praise._id, 0, false, null)}
+            {dismissed && accessToken && (
+              <PraiseInlineLabelClosable
+                praise={praise}
+                dismissed={dismissed}
               />
             )}
-            {shortDuplicatePraise && (
-              <InlineLabelClosable
-                text={`Duplicate of: #${shortDuplicatePraise}`}
-                className="bg-warm-gray-700"
-                onClose={(): void => void quantify(praise._id, 0, false, null)}
+            {shortDuplicatePraise && accessToken && (
+              <PraiseInlineLabelClosable
+                praise={praise}
+                shortDuplicatePraise={shortDuplicatePraise}
               />
             )}
             <span

@@ -240,8 +240,7 @@ export class QuantificationsController {
   @ApiOperation({ summary: 'Quantify praise item by id' })
   @ApiResponse({
     status: 200,
-    description:
-      'Praise /Applications/Visual Studio Code.app/Contents/Resources/app/out/vs/code/electron-sandbox/workbench/workbench.htmlitems',
+    description: 'Praise items',
     type: [Praise],
   })
   @Permissions(Permission.PraiseQuantify)
