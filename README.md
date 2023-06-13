@@ -48,7 +48,7 @@ yarn
 
 ### 3. Create Discord Bot
 
-Create and setup the Discord bot. Be sure to take not of ENV variables during setup as these will be needed during the next step. You need to have administrative access to a Discord server in order to create a bot. Creating a server is free, we recommend setting up a personal server to use for testing purposes. 
+Create and setup the Discord bot. Be sure to take note of ENV variables during setup as these will be needed during the next step. You need to have administrative access to a Discord server in order to create a bot. Creating a server is free, we recommend setting up a personal server to use for testing purposes. 
 
 [Create the Praise Discord bot](https://givepraise.xyz/docs/server-setup/create-discord-bot)
 
