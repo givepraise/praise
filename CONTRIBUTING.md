@@ -122,7 +122,7 @@ fix: fix website crash bug
 - `feat`: introduce new features to the codebase
 - `docs`: for documentation and README/CONTRIBUTING changes
 - `refactor`: code change that refactors the code
-- `chore`: project config, maintainance
+- `chore`: project config, maintenance
 
 ### Submitting a Pull Request
 
