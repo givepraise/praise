@@ -62,7 +62,6 @@ const exportIncludeFields = [
 @SerializeOptions({
   excludePrefixes: ['__'],
 })
-@EnforceAuthAndPermissions()
 export class PeriodsController {
   constructor(
     private readonly periodsService: PeriodsService,
@@ -228,6 +227,7 @@ export class PeriodsController {
   }
 
   @Post('/')
+  @EnforceAuthAndPermissions()
   @ApiOperation({ summary: 'Create a new period' })
   @ApiResponse({
     status: 200,
@@ -252,6 +252,7 @@ export class PeriodsController {
   }
 
   @Patch(':id')
+  @EnforceAuthAndPermissions()
   @ApiOperation({ summary: 'Update a period' })
   @ApiResponse({
     status: 200,
@@ -280,6 +281,7 @@ export class PeriodsController {
   }
 
   @Patch(':id/close')
+  @EnforceAuthAndPermissions()
   @ApiOperation({ summary: 'Close a period' })
   @ApiResponse({
     status: 200,
@@ -407,6 +409,7 @@ export class PeriodsController {
   }
 
   @Patch(':id/assignQuantifiers')
+  @EnforceAuthAndPermissions()
   @ApiOperation({ summary: 'Assign quantifiers to period' })
   @ApiResponse({
     status: 200,
@@ -434,6 +437,7 @@ export class PeriodsController {
   }
 
   @Patch(':id/replaceQuantifier')
+  @EnforceAuthAndPermissions()
   @ApiOperation({ summary: 'Replace quantifier in period' })
   @ApiResponse({
     status: 200,

@@ -14,14 +14,12 @@ import { EventLogType } from './schemas/event-log-type.schema';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { EventLogPaginatedResponseDto } from './dto/event-log-pagination-model.dto';
 import { MongooseClassSerializerInterceptor } from '../shared/interceptors/mongoose-class-serializer.interceptor';
-import { EnforceAuthAndPermissions } from '../auth/decorators/enforce-auth-and-permissions.decorator';
 
 @Controller('event-log')
 @ApiTags('Event Log')
 @SerializeOptions({
   excludePrefixes: ['__'],
 })
-@EnforceAuthAndPermissions()
 export class EventLogController {
   constructor(private eventLogService: EventLogService) {}
 

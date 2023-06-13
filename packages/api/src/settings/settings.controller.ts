@@ -37,7 +37,6 @@ import { RequestWithAuthContext } from '../auth/interfaces/request-with-auth-con
   excludePrefixes: ['__'],
 })
 @UseInterceptors(MongooseClassSerializerInterceptor(Setting))
-@EnforceAuthAndPermissions()
 export class SettingsController {
   constructor(
     private readonly settingsService: SettingsService,
@@ -86,6 +85,7 @@ export class SettingsController {
     type: Setting,
   })
   @ApiParam({ name: 'id', type: 'string' })
+  @EnforceAuthAndPermissions()
   @Permissions(Permission.SettingsManage)
   async set(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,
@@ -120,6 +120,7 @@ export class SettingsController {
       storage: upploadStorage,
     }),
   )
+  @EnforceAuthAndPermissions()
   @Permissions(Permission.SettingsManage)
   async setWithUpload(
     @Param('id', ObjectIdPipe) id: Types.ObjectId,

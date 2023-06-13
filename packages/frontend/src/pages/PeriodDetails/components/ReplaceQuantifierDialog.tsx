@@ -13,17 +13,23 @@ import { SelectUserRadioGroup } from '@/components/user/SelectUserRadioGroup';
 import { Notice } from '@/components/ui/Notice';
 import { AllQuantifierUsers } from '@/model/user/users';
 import { Button } from '@/components/ui/Button';
+import { useReplaceQuantifier } from '@/model/periods/periods';
+import { Quantifier } from '@/model/useraccount/interfaces/quantifier.interface';
+import { toast } from 'react-hot-toast';
+import { isResponseOk } from '@/model/api';
 
 interface Props {
   onClose(): void;
-  onConfirm(newQuantifierId: string): void | Promise<void>;
+  periodId: string;
+  quantifierToReplace: Quantifier | undefined;
   open: boolean;
   selectedUserId: string | undefined;
 }
 
 export const ReplaceQuantifierDialog = ({
   onClose,
-  onConfirm,
+  periodId,
+  quantifierToReplace,
   open = false,
   selectedUserId,
 }: Props): JSX.Element | null => {
@@ -37,12 +43,32 @@ export const ReplaceQuantifierDialog = ({
     (u) => u._id
   );
 
+  const { replaceQuantifier } = useReplaceQuantifier(periodId);
+
   if (!selectedUserId) return null;
   if (!allQuantifierUsers) return null;
 
   const resetAndClose = (): void => {
     setReplacementUserId(undefined);
     onClose();
+  };
+
+  const handleReplaceQuantifier = async (
+    newQuantifierUserId: string
+  ): Promise<void> => {
+    if (!quantifierToReplace) return;
+    toast.loading('Replacing quantifier...');
+
+    const response = await replaceQuantifier(
+      quantifierToReplace?._id,
+      newQuantifierUserId
+    );
+
+    if (isResponseOk(response)) {
+      toast.success('Replaced quantifier and reset their scores');
+      setTimeout(() => history.go(0), 2000);
+      onClose();
+    }
   };
 
   return (
@@ -97,7 +123,7 @@ export const ReplaceQuantifierDialog = ({
                   onClick={(): void => {
                     if (!replacementUserId) return;
 
-                    void onConfirm(replacementUserId);
+                    void handleReplaceQuantifier(replacementUserId);
                     resetAndClose();
                   }}
                 >

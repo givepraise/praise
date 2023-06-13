@@ -6,18 +6,15 @@ import { useRecoilValue } from 'recoil';
 import sortBy from 'lodash/sortBy';
 import { faArrowRightArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { toast } from 'react-hot-toast';
 import {
   PeriodPageParams,
   SinglePeriod,
-  useReplaceQuantifier,
   useLoadSinglePeriodDetails,
 } from '@/model/periods/periods';
 import { Notice } from '@/components/ui/Notice';
 import { classNames } from '@/utils/index';
 import { UserAvatarAndName } from '@/components/user/UserAvatarAndName';
 import { HasRole, ROLE_ADMIN } from '@/model/auth/auth';
-import { isResponseOk } from '@/model/api';
 import { ReplaceQuantifierDialog } from './ReplaceQuantifierDialog';
 import { Quantifier } from '@/model/useraccount/interfaces/quantifier.interface';
 
@@ -33,25 +30,6 @@ const QuantifierTable = (): JSX.Element => {
   const [quantifierToReplace, setQuantifierToReplace] = useState<
     Quantifier | undefined
   >(undefined);
-
-  const { replaceQuantifier } = useReplaceQuantifier(periodId);
-
-  const handleReplaceQuantifier = async (
-    newQuantifierUserId: string
-  ): Promise<void> => {
-    if (!quantifierToReplace) return;
-    toast.loading('Replacing quantifier...');
-
-    const response = await replaceQuantifier(
-      quantifierToReplace?._id,
-      newQuantifierUserId
-    );
-
-    if (isResponseOk(response)) {
-      toast.success('Replaced quantifier and reset their scores');
-      setTimeout(() => history.go(0), 2000);
-    }
-  };
 
   const columns = React.useMemo(
     () => [
@@ -200,17 +178,18 @@ const QuantifierTable = (): JSX.Element => {
           })}
         </tbody>
       </table>
-      <ReplaceQuantifierDialog
-        open={isReplaceQuantifierDialogOpen}
-        selectedUserId={quantifierToReplace?._id}
-        onClose={(): void => {
-          setIsReplaceQuantifierDialogOpen(false);
-          setQuantifierToReplace(undefined);
-        }}
-        onConfirm={async (newQuantifierUserId): Promise<void> =>
-          await handleReplaceQuantifier(newQuantifierUserId)
-        }
-      />
+      {isAdmin && (
+        <ReplaceQuantifierDialog
+          open={isReplaceQuantifierDialogOpen}
+          selectedUserId={quantifierToReplace?._id}
+          periodId={periodId}
+          quantifierToReplace={quantifierToReplace}
+          onClose={(): void => {
+            setIsReplaceQuantifierDialogOpen(false);
+            setQuantifierToReplace(undefined);
+          }}
+        />
+      )}
     </>
   );
 };

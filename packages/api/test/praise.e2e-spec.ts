@@ -1,5 +1,4 @@
 import './shared/jest';
-import request from 'supertest';
 import { Wallet } from 'ethers';
 import {
   authorizedGetRequest,
@@ -18,7 +17,6 @@ import { faker } from '@faker-js/faker';
 import {
   app,
   testingModule,
-  server,
   usersService,
   usersSeeder,
   praiseService,
@@ -208,10 +206,6 @@ describe('Praise (E2E)', () => {
       });
     });
 
-    test('401 when not authenticated', async () => {
-      return request(server).get('/praise').send().expect(401);
-    });
-
     test('200 when correct data is sent', async () => {
       const response = await authorizedGetRequest(
         '/praise',
@@ -301,10 +295,6 @@ describe('Praise (E2E)', () => {
       });
     });
 
-    test('401 when not authenticated', async () => {
-      return request(server).get(`/praise/${praise._id}`).send().expect(401);
-    });
-
     test('200 when correct data is sent', async () => {
       const response = await authorizedGetRequest(
         `/praise/${praise._id}`,
@@ -388,10 +378,6 @@ describe('Praise (E2E)', () => {
         value: 'YOU ARE PRAISING FOR THE FIRST TIME. WELCOME TO PRAISE!',
         type: 'String',
       });
-    });
-
-    test('401 when not authenticated', async () => {
-      return request(server).post(`/praise`).send().expect(401);
     });
 
     test('403 when user has wrong permissions', async () => {

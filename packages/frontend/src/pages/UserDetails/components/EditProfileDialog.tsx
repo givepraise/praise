@@ -7,10 +7,13 @@ import { Button } from '@/components/ui/Button';
 import { FieldErrorMessage } from '@/components/form/FieldErrorMessage';
 import { UpdateProfileSubmitButton } from './UpdateProfileSubmitButton';
 import { UserWithStatsDto } from '@/model/user/dto/user-with-stats.dto';
+import { useUserProfile } from '@/model/user/users';
+import { UpdateUserRequestDto } from '@/model/user/dto/update-user-request.dto';
+import { isResponseOk } from '@/model/api';
+import { toast } from 'react-hot-toast';
 
 interface PeriodCloseDialogProps {
   onClose(): void;
-  onSave(values): void;
   user: UserWithStatsDto;
 }
 
@@ -51,9 +54,25 @@ const validate = (
 
 export const EditProfileDialog = ({
   onClose,
-  onSave,
   user,
 }: PeriodCloseDialogProps): JSX.Element => {
+  const { update } = useUserProfile();
+
+  const handleSaveUserProfile = async (
+    values: UpdateUserRequestDto
+  ): Promise<void> => {
+    const { username, rewardsEthAddress } = values;
+    const response = await update(user._id, username, rewardsEthAddress);
+
+    if (isResponseOk(response)) {
+      toast.success('User profile saved');
+    } else {
+      toast.error('Profile update failed');
+    }
+
+    onClose();
+  };
+
   return (
     <div className="flex justify-center">
       <div className="flex items-center justify-center min-h-screen">
@@ -72,7 +91,7 @@ export const EditProfileDialog = ({
               Edit Profile
             </Dialog.Title>
             <Form
-              onSubmit={onSave}
+              onSubmit={handleSaveUserProfile}
               validate={validate}
               initialValues={{
                 username: user.username,

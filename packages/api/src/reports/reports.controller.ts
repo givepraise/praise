@@ -16,7 +16,6 @@ import {
 } from '@nestjs/swagger';
 import { MongooseClassSerializerInterceptor } from '../shared/interceptors/mongoose-class-serializer.interceptor';
 import { ReportManifestDto } from './dto/report-manifest.dto';
-import { EnforceAuthAndPermissions } from '../auth/decorators/enforce-auth-and-permissions.decorator';
 import { Types } from 'mongoose';
 import { ObjectIdPipe } from '../shared/pipes/object-id.pipe';
 import { Public } from '../shared/decorators/public.decorator';
@@ -28,7 +27,6 @@ import { ReportsCacheService } from './reports-cache.service';
 @SerializeOptions({
   excludePrefixes: ['__'],
 })
-@EnforceAuthAndPermissions()
 /**
  * Controller for managing reports. See https://github.com/givepraise/reports for more information
  * on how to create reports.

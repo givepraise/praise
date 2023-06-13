@@ -11,7 +11,7 @@ import {
 import React from 'react';
 import { pseudonymNouns, psudonymAdjectives } from '@/utils/users';
 import { useApiAuthClient } from '@/utils/api';
-import { isResponseOk, ApiAuthGet } from '../api';
+import { isResponseOk, ApiGet } from '../api';
 import { AllPeriods } from '../periods/periods';
 import { User } from './dto/user.dto';
 import { UserRole } from './enums/user-role.enum';
@@ -36,7 +36,7 @@ export const AllUsers = atom<User[] | undefined>({
     ({ setSelf, getPromise }): void => {
       setSelf(
         getPromise(
-          ApiAuthGet({
+          ApiGet({
             url: 'users?sortColumn=identityEthAddress&sortType=desc',
           })
         ).then((response) => {
@@ -287,7 +287,7 @@ const DetailedSingleUserQuery = selectorFamily({
     (userId: string) =>
     ({ get }): AxiosResponse<User> | AxiosError => {
       return get(
-        ApiAuthGet({
+        ApiGet({
           url: `/users/${userId}`,
         })
       ) as AxiosResponse<User> | AxiosError;

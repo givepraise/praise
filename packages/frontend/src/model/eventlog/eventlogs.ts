@@ -1,6 +1,6 @@
 import { selector, selectorFamily } from 'recoil';
 import { AxiosError, AxiosResponse } from 'axios';
-import { ApiAuthGet, isResponseOk } from '../api';
+import { ApiGet, isResponseOk } from '../api';
 import { EventLogType } from './dto/event-log-type.dto';
 import { EventLogPaginatedResponseDto } from '@/model/eventlog/dto/event-log-paginated-response.dto';
 
@@ -26,7 +26,7 @@ export const AllEventLogsQuery = selectorFamily({
       const qs = Object.keys(query)
         .map((key) => `${key}=${query[key]}`)
         .join('&');
-      return get(ApiAuthGet({ url: `/event-log${qs ? `?${qs}` : ''}` })) as
+      return get(ApiGet({ url: `/event-log${qs ? `?${qs}` : ''}` })) as
         | AxiosResponse<EventLogPaginatedResponseDto>
         | AxiosError;
     },
@@ -57,7 +57,7 @@ export const AllEventLogTypesQuery = selector({
   key: 'AllEventLogTypesQuery',
   get: ({ get }): AxiosResponse<EventLogType[]> | AxiosError => {
     return get(
-      ApiAuthGet({
+      ApiGet({
         url: '/event-log/types',
       })
     ) as AxiosResponse<EventLogType[]> | AxiosError;
