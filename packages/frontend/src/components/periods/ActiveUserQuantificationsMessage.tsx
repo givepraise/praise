@@ -1,6 +1,9 @@
 import { Link } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
-import { AllActiveUserQuantificationPeriods } from '@/model/periods/periods';
+import {
+  AllActiveUserQuantificationPeriods,
+  useLoadAllQuantifyPeriodDetails,
+} from '@/model/periods/periods';
 import { PeriodDetailsDto } from '@/model/periods/dto/period-details.dto';
 
 interface QuantifierPeriodMessageProps {
@@ -18,9 +21,10 @@ const QuantifierPeriodMessage = ({
 };
 
 export const ActiveUserQuantificationsMessage = (): JSX.Element | null => {
-  const activeUserQuantificationPeriods = useRecoilValue(
-    AllActiveUserQuantificationPeriods
-  );
+  // const activeUserQuantificationPeriods = useRecoilValue(
+  //   AllActiveUserQuantificationPeriods
+  // );
+  const activeUserQuantificationPeriods = useLoadAllQuantifyPeriodDetails();
   if (
     !activeUserQuantificationPeriods ||
     !Array.isArray(activeUserQuantificationPeriods) ||

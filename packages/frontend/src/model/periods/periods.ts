@@ -437,6 +437,38 @@ export const AllActiveUserQuantificationPeriods = selector({
   },
 });
 
+export const useLoadAllQuantifyPeriodDetails = ():
+  | PeriodDetailsDto[]
+  | null => {
+  const periods = useRecoilValue(AllPeriods);
+  const quantificationPeriods: PeriodDetailsDto[] = [];
+
+  const saveAllQuantifyPeriodDetails = useRecoilCallback(
+    ({ set }) =>
+      async (periods: PeriodDetailsDto[]) => {
+        for (const period of periods) {
+          if (period.status === 'QUANTIFY') {
+            const response = (await DetailedSinglePeriodQuery(period._id)) as
+              | AxiosResponse<PeriodDetailsDto>
+              | AxiosError;
+            if (
+              isResponseOk(response) &&
+              (!period ||
+                isDateEqualOrAfter(response.data.updatedAt, period.updatedAt))
+            ) {
+              set(SinglePeriod(period._id), response.data);
+            }
+            quantificationPeriods.push(period);
+          }
+        }
+      }
+  );
+
+  saveAllQuantifyPeriodDetails(periods);
+
+  return quantificationPeriods;
+};
+
 const useSaveGiverReceiverPraiseItems = (
   response: AxiosResponse<Praise[]> | AxiosError,
   listKey: string
