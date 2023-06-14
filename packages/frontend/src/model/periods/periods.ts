@@ -445,10 +445,10 @@ export const useLoadAllQuantifyPeriodDetails = ():
 
   const saveAllQuantifyPeriodDetails = useRecoilCallback(
     ({ set }) =>
-      async (periods: PeriodDetailsDto[]) => {
+      (periods: PeriodDetailsDto[]) => {
         for (const period of periods) {
           if (period.status === 'QUANTIFY') {
-            const response = (await DetailedSinglePeriodQuery(period._id)) as
+            const response = DetailedSinglePeriodQuery(period._id) as
               | AxiosResponse<PeriodDetailsDto>
               | AxiosError;
             if (
