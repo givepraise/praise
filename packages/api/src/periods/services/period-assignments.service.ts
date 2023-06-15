@@ -267,6 +267,7 @@ export class PeriodAssignmentsService {
         createdAt: dateRangeQuery,
         _id: { $in: originalQuantifierQuantificationPraiseIds },
       })
+      .populate('quantifications')
       .lean();
 
     const newQuantifierAccounts = await this.userAccountModel
@@ -290,19 +291,16 @@ export class PeriodAssignmentsService {
       });
     }
 
-    const quantificationsToUpdate = await this.quantificationModel
-      .find({
-        // Quantification within time period
-        createdAt: dateRangeQuery,
-        // Original quantifier
-        quantifier: new Types.ObjectId(currentQuantifierId),
-      })
-      .lean();
+    const quantificationsToUpdate = affectedPraiseIds.map((p) =>
+      p.quantifications.find(
+        (q) => q.quantifier.toString() === currentQuantifierId,
+      ),
+    );
 
     // Update quantifications
     await this.quantificationModel.updateMany(
       {
-        _id: { $in: quantificationsToUpdate.map((q) => q._id) },
+        _id: { $in: quantificationsToUpdate.map((q) => q?._id) },
       },
       {
         $set: {
@@ -322,7 +320,7 @@ export class PeriodAssignmentsService {
     // Update praise scores
     await this.praiseModel.updateMany(
       {
-        _id: { $in: quantificationsToUpdate.map((q) => q.praise) },
+        _id: { $in: quantificationsToUpdate.map((q) => q?.praise) },
       },
       {
         $set: {
