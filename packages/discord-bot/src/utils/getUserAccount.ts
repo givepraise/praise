@@ -14,7 +14,7 @@ const createUserAccount = async (
 ): Promise<UserAccount> => {
   const newUserAccount: CreateUserAccountInputDto = {
     accountId: user.id,
-    name: user.username + '#' + user.discriminator,
+    name: user.username,
     platform: 'DISCORD',
   };
   if (user.avatar) newUserAccount.avatarId = user.avatar;
@@ -32,12 +32,9 @@ const updateUserAccount = async (
   user: User,
   host: string
 ): Promise<UserAccount> => {
-  if (
-    ua.name !== user.username + '#' + user.discriminator ||
-    ua.avatarId !== user.avatar
-  ) {
+  if ((ua.name !== user.username, ua.avatarId !== user.avatar)) {
     const updatedUserAccount: UpdateUserAccountInputDto = {
-      name: user.username + '#' + user.discriminator,
+      name: user.username,
     };
     if (user.avatar) updatedUserAccount.avatarId = user.avatar;
     const response = await apiPatch<
