@@ -168,16 +168,17 @@ export class UsersService {
       await this.periodService.findActivePeriods();
 
     if (role === AuthRole.QUANTIFIER && activePeriods.length > 0) {
-      const dateRanges: PeriodDateRangeDto[] = await Promise.all(
-        activePeriods.map((period) =>
-          this.periodService.getPeriodDateRangeQuery(period),
-        ),
-      );
-      const assignedPraiseCount =
-        await this.praiseService.countPraiseWithinDateRanges(dateRanges, {
-          'quantifications.quantifier': _id,
-        });
-      if (assignedPraiseCount > 0)
+      let isAssignedQuantifier = false;
+      for (const period of activePeriods) {
+        const periodDetails = await this.periodService.findPeriodDetails(
+          period._id,
+        );
+        if (periodDetails.quantifiers?.find((q) => q._id.equals(_id))) {
+          isAssignedQuantifier = true;
+          break;
+        }
+      }
+      if (isAssignedQuantifier)
         throw new ApiException(errorMessages.CAN_NOT_REMOVE_QUANTIFIER);
     }
 
