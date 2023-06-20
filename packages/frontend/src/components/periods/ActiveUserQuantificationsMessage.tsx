@@ -21,16 +21,17 @@ const QuantifierPeriodMessage = ({
 };
 
 export const ActiveUserQuantificationsMessage = (): JSX.Element | null => {
-  // const activeUserQuantificationPeriods = useRecoilValue(
-  //   AllActiveUserQuantificationPeriods
-  // );
-  const activeUserQuantificationPeriods = useLoadAllQuantifyPeriodDetails();
+  useLoadAllQuantifyPeriodDetails();
+  const activeUserQuantificationPeriods = useRecoilValue(
+    AllActiveUserQuantificationPeriods
+  );
   if (
     !activeUserQuantificationPeriods ||
     !Array.isArray(activeUserQuantificationPeriods) ||
     activeUserQuantificationPeriods.length === 0
-  )
+  ) {
     return null;
+  }
 
   return (
     <div>
