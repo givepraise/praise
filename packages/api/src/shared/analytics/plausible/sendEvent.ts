@@ -4,6 +4,7 @@ import { logger } from '../../logger';
 interface PlausibleEventInput {
   userAgent: string;
   xForwardedFor: string;
+  url: string;
   eventName?: string;
   props?: any;
 }
@@ -12,20 +13,19 @@ export async function sendPageViewEvent(
   input: PlausibleEventInput,
 ): Promise<void> {
   const endpoint = 'https://plausible.io/api/event';
-
+  const { userAgent, xForwardedFor, url, eventName, props } = input;
   const headers = {
-    'User-Agent': input.userAgent,
-    'X-Forwarded-For': input.xForwardedFor,
+    'User-Agent': userAgent,
+    'X-Forwarded-For': xForwardedFor,
     'Content-Type': 'application/json',
   };
 
-  const domain = process.env.PRAISE_DOMAIN_IN_PLAUSIBLE;
-  const url = process.env.PRAISE_URL_IN_PLAUSIBLE;
+  const domain = process.env.PLAUSIBLE_DOMAIN;
   const body = {
-    name: input.eventName || 'pageview',
+    name: eventName || 'pageview',
     domain,
     url,
-    props: input.props,
+    props,
   };
 
   try {
