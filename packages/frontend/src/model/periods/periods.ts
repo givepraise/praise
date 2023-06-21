@@ -437,6 +437,33 @@ export const AllActiveUserQuantificationPeriods = selector({
   },
 });
 
+export const useLoadAllQuantifyPeriodDetails = (): void => {
+  const periods = useRecoilValue(AllPeriods);
+
+  const loadPeriodDetails = useRecoilCallback(({ set, snapshot }) => {
+    return async (periodId: string): Promise<void> => {
+      await snapshot
+        .getPromise(DetailedSinglePeriodQuery(periodId))
+        .then((response) => {
+          if (isResponseOk(response)) {
+            const period = response.data;
+            set(SinglePeriod(period._id), period);
+          }
+        });
+    };
+  });
+
+  React.useEffect(() => {
+    if (!periods) return;
+    for (const period of periods) {
+      if (period.status === 'QUANTIFY' && !period.numberOfPraise) {
+        // Having no numberOfPraise attribute means that the period details have not been loaded yet.
+        void loadPeriodDetails(period._id);
+      }
+    }
+  }, [periods, loadPeriodDetails]);
+};
+
 const useSaveGiverReceiverPraiseItems = (
   response: AxiosResponse<Praise[]> | AxiosError,
   listKey: string
