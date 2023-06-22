@@ -79,7 +79,7 @@ const ReportsRunPage = (): JSX.Element | null => {
               text={csv}
               filename={`${response.manifest.name}.csv`}
             />
-            <CopyToClipboard text={json} />
+            <CopyToClipboard text={csv} />
           </div>
         </div>
         <div className="p-3 mt-5 bg-black bg-opacity-5">
