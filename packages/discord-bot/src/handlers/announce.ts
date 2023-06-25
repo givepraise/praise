@@ -1,5 +1,4 @@
 import {
-  StringSelectMenuInteraction,
   ActionRowBuilder,
   ButtonBuilder,
   StringSelectMenuBuilder,
@@ -16,7 +15,7 @@ import { announcementEmbed } from '../utils/embeds/announcementEmbed';
 import { periodSelectMenu } from '../utils/menus/periodSelectMenu';
 import { getUserAccount } from '../utils/getUserAccount';
 
-import { apiClient } from '../utils/api';
+import { apiGet } from '../utils/api';
 import { PeriodPaginatedResponseDto } from '../utils/api-schema';
 import { renderMessage } from '../utils/renderMessage';
 
@@ -48,127 +47,134 @@ export const announcementHandler: CommandHandler = async (
   const currentUser = userAccount.user;
 
   if (currentUser.roles.includes('ADMIN')) {
-    const message = interaction.options.getString('message', true);
-
-    const userSelectionMsg = await interaction.editReply({
-      content: 'Which users do you want to send the message to?',
-      components: [
-        new ActionRowBuilder<StringSelectMenuBuilder>().addComponents([
-          dmTargetMenu,
-        ]),
-      ],
-    });
-
-    const collector = userSelectionMsg.createMessageComponentCollector({
-      filter: (click) => click.user.id === interaction.user.id,
-      time: 900000,
-    });
-    let selectedUserType: string;
-    let selectedPeriod: string | undefined;
-    collector.on('collect', async (click) => {
-      await click.deferUpdate();
-      switch (click.customId) {
-        case 'dm-menu': {
-          if (!click.isStringSelectMenu()) break;
-          const menu: StringSelectMenuInteraction = click;
-          selectedUserType = menu.values[0];
-          if (
-            selectedUserType === 'ASSIGNED-QUANTIFIERS' ||
-            selectedUserType === 'UNFINISHED-QUANTIFIERS'
-          ) {
-            const openPeriods = await apiClient
-              .get<PeriodPaginatedResponseDto>('/periods', {
-                headers: { host },
-              })
-              .then((res) =>
-                res.data.docs.filter((doc) => doc.status === 'QUANTIFY')
-              )
-              .catch(() => undefined);
-
-            if (!openPeriods || !openPeriods.length) {
-              await interaction.editReply({
-                content: 'No periods open for quantification.',
-                components: [],
-              });
-              return;
-            }
-            await interaction.editReply({
-              content: 'Which period are you referring to?',
-              components: [
-                new ActionRowBuilder<StringSelectMenuBuilder>().addComponents([
-                  periodSelectMenu(openPeriods),
-                ]),
-              ],
-            });
-            break;
-          }
-          selectedPeriod = '';
-          await interaction.editReply({
-            content: `Preview announcement before continuing:\n---\n${message}\n---`,
-            components: [
-              new ActionRowBuilder<ButtonBuilder>().addComponents([
-                continueButton,
-                cancelButton,
-              ]),
-            ],
-          });
-          break;
-        }
-        case 'period-menu': {
-          if (!click.isStringSelectMenu()) return;
-          selectedPeriod = click.values[0];
-          await interaction.editReply({
-            content: `Preview announcement before continuing:\n---\n${message}\n---`,
-            components: [
-              new ActionRowBuilder<ButtonBuilder>().addComponents([
-                continueButton,
-                cancelButton,
-              ]),
-            ],
-          });
-          break;
-        }
-        case 'continue': {
-          await interaction.editReply({
-            content: 'Sending…',
-            components: [],
-          });
-          await selectTargets(
-            interaction,
-            selectedUserType,
-            selectedPeriod,
-            announcementEmbed(member.user, guild, message),
-            host
-          );
-          break;
-        }
-        case 'cancel': {
-          await interaction.editReply({
-            content: 'User cancelled Interaction.',
-            components: [],
-          });
-          return;
-        }
-      }
-    });
-
-    collector.on('end', async (collected) => {
-      const successfulEndEvents = ['cancel', 'continue'];
-      const ended = collected.some((clk) =>
-        successfulEndEvents.includes(clk.customId)
-      );
-      if (!ended) {
-        await interaction.followUp({
-          content: 'Interaction timed out...',
-          embeds: [],
-          components: [],
-        });
-      }
-    });
-  } else {
     await interaction.editReply({
       content:
         'You do not have the needed permissions to use this command. If you would like to perform admin actions, you would need to be granted an `ADMIN` role on the Praise Dashboard.',
     });
+    return;
   }
+
+  const message = interaction.options.getString('message', true);
+
+  const userSelectionMsg = await interaction.editReply({
+    content: 'Which users do you want to send the message to?',
+    components: [
+      new ActionRowBuilder<StringSelectMenuBuilder>().addComponents([
+        dmTargetMenu,
+      ]),
+    ],
+  });
+
+  const collector = userSelectionMsg.createMessageComponentCollector({
+    filter: (click) => click.user.id === interaction.user.id,
+    time: 900000,
+  });
+
+  let selectedUserType: string;
+  let selectedPeriod: string | undefined;
+
+  collector.on('collect', async (click) => {
+    await click.deferUpdate();
+    switch (click.customId) {
+      case 'dm-menu': {
+        if (!click.isStringSelectMenu()) break;
+        selectedUserType = click.values[0];
+        if (
+          selectedUserType === 'ASSIGNED-QUANTIFIERS' ||
+          selectedUserType === 'UNFINISHED-QUANTIFIERS' ||
+          selectedUserType === 'RECEIVERS'
+        ) {
+          const openPeriods = await apiGet<PeriodPaginatedResponseDto>(
+            '/periods',
+            {
+              headers: { host },
+            }
+          )
+            .then((res) =>
+              res.data.docs.filter((doc) => doc.status === 'QUANTIFY')
+            )
+            .catch(() => undefined);
+
+          if (!openPeriods || !openPeriods.length) {
+            await interaction.editReply({
+              content: 'No periods open for quantification.',
+              components: [],
+            });
+            return;
+          }
+
+          await interaction.editReply({
+            content: 'Which period are you referring to?',
+            components: [
+              new ActionRowBuilder<StringSelectMenuBuilder>().addComponents([
+                periodSelectMenu(openPeriods),
+              ]),
+            ],
+          });
+          break;
+        }
+        selectedPeriod = '';
+        await interaction.editReply({
+          content: `Preview announcement before continuing:\n---\n${message}\n---`,
+          components: [
+            new ActionRowBuilder<ButtonBuilder>().addComponents([
+              continueButton,
+              cancelButton,
+            ]),
+          ],
+        });
+        break;
+      }
+      case 'period-menu': {
+        if (!click.isStringSelectMenu()) return;
+        selectedPeriod = click.values[0];
+        await interaction.editReply({
+          content: `Preview announcement before continuing:\n---\n${message}\n---`,
+          components: [
+            new ActionRowBuilder<ButtonBuilder>().addComponents([
+              continueButton,
+              cancelButton,
+            ]),
+          ],
+        });
+        break;
+      }
+      case 'continue': {
+        await interaction.editReply({
+          content: 'Sending…',
+          components: [],
+        });
+        await selectTargets(
+          interaction,
+          selectedUserType,
+          selectedPeriod,
+          announcementEmbed(member.user, guild, message),
+          host
+        );
+        break;
+      }
+      case 'cancel': {
+        await interaction.editReply({
+          content: 'User cancelled Interaction.',
+          embeds: [],
+          components: [],
+        });
+        return;
+      }
+    }
+  });
+
+  collector.on('end', async (collected) => {
+    const successfulEndEvents = ['cancel', 'continue'];
+    const ended = collected.some((clk) =>
+      successfulEndEvents.includes(clk.customId)
+    );
+    if (!ended) {
+      await interaction.followUp({
+        content: 'Interaction timed out...',
+        embeds: [],
+        components: [],
+      });
+    }
+  });
 };

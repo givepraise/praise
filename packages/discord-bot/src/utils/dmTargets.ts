@@ -156,6 +156,7 @@ export const selectTargets = async (
     .catch(() => undefined);
 
   if (!users) return;
+
   switch (type) {
     case 'USERS':
     case 'QUANTIFIERS': {
