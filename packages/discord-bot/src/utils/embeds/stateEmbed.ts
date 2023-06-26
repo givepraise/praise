@@ -49,8 +49,6 @@ export const getStateEmbed = (state: UserState): EmbedBuilder => {
                 account.user
               }\n> Date of Activation: ${formatDate(
                 new Date(account.activationDate)
-              )}\n> Last Active: ${formatDate(
-                new Date(account.latestUsageDate)
               )}`
           )
           .join('\n\n') ||

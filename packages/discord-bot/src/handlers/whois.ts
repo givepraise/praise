@@ -93,12 +93,6 @@ export const whoisHandler: CommandHandler = async (
     });
 
     if (user) {
-      user.updatedAt &&
-        fields.push({
-          name: 'Latest activity',
-          value: new Date(user.updatedAt).toDateString(),
-        });
-
       user.receivedTotalScore &&
         fields.push({
           name: 'Received praise total score',
