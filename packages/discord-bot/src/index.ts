@@ -66,12 +66,15 @@ discordClient.on('interactionCreate', async (interaction): Promise<void> => {
       discordClient,
       interaction.guild.id
     );
-    if (community)
+    console.log(community);
+
+    if (community) {
       await command.execute(discordClient, interaction, community.hostname);
-    else
+    } else {
       await interaction.editReply({
         embeds: [communityNotCreatedError(process.env.WEB_URL as string)],
       });
+    }
   } catch {
     logger.error(
       `Interaction /${interaction.commandName} failed for ${
