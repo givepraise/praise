@@ -47,7 +47,7 @@ export const announcementHandler: CommandHandler = async (
 
   const currentUser = userAccount.user;
 
-  if (currentUser.roles.includes('ADMIN')) {
+  if (!currentUser.roles.includes('ADMIN')) {
     await interaction.editReply({
       content:
         'You do not have the needed permissions to use this command. If you would like to perform admin actions, you would need to be granted an `ADMIN` role on the Praise Dashboard.',
