@@ -18,6 +18,8 @@ import { getUserAccount } from '../utils/getUserAccount';
 import { apiGet } from '../utils/api';
 import { PeriodPaginatedResponseDto } from '../utils/api-schema';
 import { renderMessage } from '../utils/renderMessage';
+import { Period } from '../utils/api-schema';
+import { logger } from '../utils/logger';
 
 /**
  * Executes command /announce
@@ -84,16 +86,27 @@ export const announcementHandler: CommandHandler = async (
           selectedUserType === 'UNFINISHED-QUANTIFIERS' ||
           selectedUserType === 'RECEIVERS'
         ) {
-          const openPeriods = await apiGet<PeriodPaginatedResponseDto>(
-            '/periods',
-            {
-              headers: { host },
-            }
-          )
-            .then((res) =>
-              res.data.docs.filter((doc) => doc.status === 'QUANTIFY')
-            )
-            .catch(() => undefined);
+          let periods: Period[] = [];
+
+          try {
+            const response = await apiGet<PeriodPaginatedResponseDto>(
+              'periods',
+              {
+                headers: { host: host },
+              }
+            );
+            periods = [...response.data.docs];
+          } catch (err) {
+            logger.error(err);
+            await interaction.editReply(
+              'No praise periods found. Try again after having created a period and quantified some praise.'
+            );
+            return;
+          }
+
+          const openPeriods = periods.filter(
+            (doc) => doc.status === 'QUANTIFY'
+          );
 
           if (!openPeriods || !openPeriods.length) {
             await interaction.editReply({
@@ -144,6 +157,12 @@ export const announcementHandler: CommandHandler = async (
           content: 'Sending…',
           components: [],
         });
+
+        // debug log
+        logger.debug(
+          `Running /admin announce for users: ${selectedUserType} & period: ${selectedPeriod}`
+        );
+
         await selectTargets(
           interaction,
           selectedUserType,

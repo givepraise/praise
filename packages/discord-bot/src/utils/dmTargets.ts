@@ -3,6 +3,8 @@ import { CommandInteraction, DiscordAPIError, EmbedBuilder } from 'discord.js';
 import { Buffer } from 'node:buffer';
 import { FailedToDmUsersList } from '../interfaces/FailedToDmUsersList';
 import { apiGet } from './api';
+import { logger } from './logger';
+import { UserSelectMenuBuilder } from '@discordjs/builders';
 
 /**
  * Send a custom direct message to a list of users
@@ -13,6 +15,12 @@ const sendDMs = async (
   users: User[],
   message: EmbedBuilder
 ): Promise<void> => {
+  logger.debug(
+    `Sending DMs to users: ${users
+      .map((u) => `${u._id} - ${u.username}`)
+      .join(', ')} with message: ${message}`
+  );
+
   const successful = [];
   const failed: FailedToDmUsersList = {
     invalidUsers: <string[]>[],
@@ -172,50 +180,57 @@ export const selectTargets = async (
     case 'RECEIVERS':
     case 'ASSIGNED-QUANTIFIERS':
     case 'UNFINISHED-QUANTIFIERS': {
-      if (!period || !period.length) return;
+      try {
+        const selectedPeriod = await apiGet<PeriodDetailsDto>(
+          `/periods/${period}`
+        ).then((res) => res.data);
 
-      const selectedPeriod = await apiGet<PeriodDetailsDto>(
-        `/periods/${period}`
-      )
-        .then((res) => res.data)
-        .catch(() => undefined);
+        logger.debug(`/admin announce to ${type} for  ${selectedPeriod}`);
 
-      if (!selectedPeriod) return;
+        if (type === 'RECEIVERS') {
+          const receivers = selectedPeriod.receivers?.map((r) => r._id);
+          await sendDMs(
+            interaction,
+            users.filter((user) => receivers?.includes(user._id)),
+            message
+          );
+          return;
+        }
 
-      if (type === 'RECEIVERS') {
-        const receivers = selectedPeriod.receivers?.map((r) => r._id);
-        await sendDMs(
-          interaction,
-          users.filter((user) => receivers?.includes(user._id)),
-          message
-        );
-        return;
-      }
+        if (!selectedPeriod || !selectedPeriod.quantifiers) {
+          await interaction.editReply(
+            'Quantifiers for selected period not found.'
+          );
+          return;
+        }
+        const quantifiers = selectedPeriod.quantifiers;
 
-      const quantifiers = selectedPeriod.quantifiers;
-
-      if (!quantifiers) return;
-
-      if (type === 'UNFINISHED-QUANTIFIERS') {
-        const q = quantifiers
-          .filter(
-            (quantifier) => quantifier.finishedCount !== quantifier.praiseCount
-          )
-          .map((q) => q._id);
+        if (type === 'UNFINISHED-QUANTIFIERS') {
+          const q = quantifiers
+            .filter(
+              (quantifier) =>
+                quantifier.finishedCount !== quantifier.praiseCount
+            )
+            .map((q) => q._id);
+          await sendDMs(
+            interaction,
+            users.filter((user) => q.includes(user._id)),
+            message
+          );
+          return;
+        }
+        const q = quantifiers.map((q) => q._id);
         await sendDMs(
           interaction,
           users.filter((user) => q.includes(user._id)),
           message
         );
         return;
+      } catch (err) {
+        await interaction.editReply('Error: Unable to find selected period');
+        logger.error((err as Error).message);
+        return;
       }
-      const q = quantifiers.map((q) => q._id);
-      await sendDMs(
-        interaction,
-        users.filter((user) => q.includes(user._id)),
-        message
-      );
-      return;
     }
   }
 };
