@@ -4,7 +4,6 @@ import { Buffer } from 'node:buffer';
 import { FailedToDmUsersList } from '../interfaces/FailedToDmUsersList';
 import { apiGet } from './api';
 import { logger } from './logger';
-import { UserSelectMenuBuilder } from '@discordjs/builders';
 
 /**
  * Send a custom direct message to a list of users
@@ -18,7 +17,7 @@ const sendDMs = async (
   logger.debug(
     `Sending DMs to users: ${users
       .map((u) => `${u._id} - ${u.username}`)
-      .join(', ')} with message: ${message}`
+      .join(', ')} with message: ${JSON.stringify(message.toJSON())}`
   );
 
   const successful = [];
@@ -180,12 +179,16 @@ export const selectTargets = async (
     case 'RECEIVERS':
     case 'ASSIGNED-QUANTIFIERS':
     case 'UNFINISHED-QUANTIFIERS': {
+      if (!period) return;
+
       try {
         const selectedPeriod = await apiGet<PeriodDetailsDto>(
           `/periods/${period}`
         ).then((res) => res.data);
 
-        logger.debug(`/admin announce to ${type} for  ${selectedPeriod}`);
+        logger.debug(
+          `/admin announce to ${type} for  ${selectedPeriod.name} (${selectedPeriod._id})`
+        );
 
         if (type === 'RECEIVERS') {
           const receivers = selectedPeriod.receivers?.map((r) => r._id);

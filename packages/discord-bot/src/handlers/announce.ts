@@ -16,9 +16,8 @@ import { periodSelectMenu } from '../utils/menus/periodSelectMenu';
 import { getUserAccount } from '../utils/getUserAccount';
 
 import { apiGet } from '../utils/api';
-import { PeriodPaginatedResponseDto } from '../utils/api-schema';
+import { PeriodPaginatedResponseDto, Period } from '../utils/api-schema';
 import { renderMessage } from '../utils/renderMessage';
-import { Period } from '../utils/api-schema';
 import { logger } from '../utils/logger';
 
 /**
@@ -160,7 +159,9 @@ export const announcementHandler: CommandHandler = async (
 
         // debug log
         logger.debug(
-          `Running /admin announce for users: ${selectedUserType} & period: ${selectedPeriod}`
+          `Running /admin announce for users: ${selectedUserType} & period: ${
+            selectedPeriod || 'undefined'
+          }`
         );
 
         await selectTargets(
