@@ -96,17 +96,25 @@ export const praiseHandler: CommandHandler = async (
             host
           );
 
-          await givePraise(
-            interaction,
-            guild,
-            member as GuildMember,
-            giverAccount,
-            parsedReceivers,
-            receiverOptions,
-            reason,
-            host,
-            responseUrl
-          );
+          if (giverAccount && giverAccount.user) {
+            await givePraise(
+              interaction,
+              guild,
+              member as GuildMember,
+              giverAccount,
+              parsedReceivers,
+              receiverOptions,
+              reason,
+              host,
+              responseUrl
+            );
+          }
+
+          i.update({
+            content:
+              i.message.content +
+              '\nRetry failed... Retry praise after activating on the Praise dashboard',
+          });
         });
       } catch {
         await interaction.editReply(
