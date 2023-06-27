@@ -1,4 +1,4 @@
-import { ComponentType, Guild, GuildMember, User } from 'discord.js';
+import { ComponentType, GuildMember } from 'discord.js';
 import { parseReceivers } from '../utils/parseReceivers';
 
 import { ephemeralWarning } from '../utils/renderMessage';
@@ -110,7 +110,7 @@ export const praiseHandler: CommandHandler = async (
             );
           }
 
-          i.update({
+          await i.update({
             content:
               i.message.content +
               '\nRetry failed... Retry praise after activating on the Praise dashboard',

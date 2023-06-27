@@ -9,11 +9,9 @@ import {
   UserAccount,
   Praise,
 } from '../utils/api-schema';
-import { renderMessage } from './renderMessage';
+import { renderMessage, ephemeralWarning } from './renderMessage';
 import { ParsedReceivers } from './parseReceivers';
 import { ChatInputCommandInteraction, Guild, GuildMember } from 'discord.js';
-import { ephemeralWarning } from './renderMessage';
-import { User } from 'discord.js';
 
 export const givePraise = async (
   interaction: ChatInputCommandInteraction,
@@ -25,7 +23,7 @@ export const givePraise = async (
   reason: string,
   host: string,
   responseUrl: string
-) => {
+): Promise<void> => {
   if (
     !parsedReceivers.validReceiverIds ||
     parsedReceivers.validReceiverIds?.length === 0
@@ -84,7 +82,6 @@ export const givePraise = async (
       ],
       components: [],
     });
-    ``;
     praiseItems = await createPraise(
       interaction,
       giverAccount,
@@ -114,7 +111,7 @@ export const givePraise = async (
           (receiver) =>
             receiver.userAccount.accountId === praise.receiver.accountId
         )[0],
-        member as GuildMember,
+        member,
         reason,
         responseUrl,
         host,
@@ -134,7 +131,7 @@ export const givePraise = async (
         receivers: parsedReceivers.undefinedReceivers.map((id) =>
           id.replace(/[<>]/, '')
         ),
-        user: member.user as User,
+        user: member.user,
       }
     );
     warningMsgParts.push(warning);
@@ -142,7 +139,7 @@ export const givePraise = async (
 
   if (parsedReceivers.roleMentions) {
     const warning = await renderMessage('PRAISE_TO_ROLE_WARNING', host, {
-      user: member.user as User,
+      user: member.user,
       receivers: parsedReceivers.roleMentions,
     });
     warningMsgParts.push(warning);

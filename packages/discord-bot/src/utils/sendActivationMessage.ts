@@ -15,7 +15,7 @@ export const sendActivationMessage = async (
   interaction: ChatInputCommandInteraction,
   host: string,
   member: GuildMember | APIInteractionGuildMember,
-  retry: boolean = false
+  retry = false
 ): Promise<Message | undefined> => {
   try {
     const userAccount = await getUserAccount(
