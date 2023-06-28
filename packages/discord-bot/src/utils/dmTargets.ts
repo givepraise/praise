@@ -183,7 +183,8 @@ export const selectTargets = async (
 
       try {
         const selectedPeriod = await apiGet<PeriodDetailsDto>(
-          `/periods/${period}`
+          `/periods/${period}`,
+          { headers: { host } }
         ).then((res) => res.data);
 
         logger.debug(

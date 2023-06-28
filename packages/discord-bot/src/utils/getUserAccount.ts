@@ -22,7 +22,7 @@ const createUserAccount = async (
     CreateUserAccountResponseDto,
     CreateUserAccountInputDto
   >('/useraccounts', newUserAccount, {
-    headers: { host: host },
+    headers: { host },
   });
   return response.data;
 };
@@ -41,7 +41,7 @@ const updateUserAccount = async (
       UpdateUserAccountResponseDto,
       UpdateUserAccountInputDto
     >(`/useraccounts/${ua._id}`, updatedUserAccount, {
-      headers: { host: host },
+      headers: { host },
     });
     return response.data;
   }
@@ -61,7 +61,7 @@ export const getUserAccount = async (
   const data = await apiGet<UserAccount[]>(
     `/useraccounts/?accountId=${user.id}`,
     {
-      headers: { host: host },
+      headers: { host },
     }
   )
     .then((res) => res.data.filter((acc) => acc.platform === 'DISCORD'))
