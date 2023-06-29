@@ -70,7 +70,7 @@ export const LoginDialog = ({
           </div>
           <div className="w-full mt-6">
             <div className="flex flex-col w-full">
-              <div className="relative p-6 py-6 m-auto space-y-8 border-none rounded-none shadow-none bg-none w-96 dark:bg-slate-900">
+              <div className="relative p-6 py-6 m-auto space-y-8 border-none rounded-none shadow-none bg-none w-96 dark:bg-slate-600 dark:text-white">
                 <div className="absolute top-0 left-0 right-0 flex justify-center">
                   <FontAwesomeIcon
                     icon={faSignIn}
