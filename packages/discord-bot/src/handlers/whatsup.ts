@@ -61,7 +61,7 @@ export const whatsupHandler: CommandHandler = async (
   const praiseResponse = await apiGet<PraisePaginatedResponseDto>(
     '/praise?limit=100&page=1&sortColumn=createdAt&sortType=desc',
     {
-      headers: { host: host },
+      headers: { host },
     }
   );
 

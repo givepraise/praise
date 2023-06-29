@@ -50,7 +50,7 @@ export const whoamiHandler: CommandHandler = async (
 
       const activatedAccounts = await apiClient
         .get<UserAccount[]>(`useraccounts?user=${ua.user._id}`, {
-          headers: { host: host },
+          headers: { host },
         })
         .then((res) => res.data);
       for (const account of activatedAccounts) {
