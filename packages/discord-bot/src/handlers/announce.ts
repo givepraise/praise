@@ -91,7 +91,7 @@ export const announcementHandler: CommandHandler = async (
             const response = await apiGet<PeriodPaginatedResponseDto>(
               'periods',
               {
-                headers: { host: host },
+                headers: { host },
               }
             );
             periods = [...response.data.docs];

@@ -31,7 +31,7 @@ export const leaderboardHandler: CommandHandler = async (
     const response = await apiClient.get<PeriodPaginatedResponseDto>(
       'periods',
       {
-        headers: { host: host },
+        headers: { host },
       }
     );
     periods = [...response.data.docs];
@@ -62,7 +62,7 @@ export const leaderboardHandler: CommandHandler = async (
     const response = await apiClient.get<PeriodDetailsDto>(
       `periods/${latestClosedPeriod?._id}`,
       {
-        headers: { host: host },
+        headers: { host },
       }
     );
     await interaction.editReply({

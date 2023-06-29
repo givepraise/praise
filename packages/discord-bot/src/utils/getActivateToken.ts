@@ -18,7 +18,7 @@ export const getActivateToken = async (
     `/useraccounts/${userAccount._id}`,
     ua,
     {
-      headers: { host: host },
+      headers: { host },
     }
   )
     .then((res) => res.data)
