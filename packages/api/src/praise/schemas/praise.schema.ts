@@ -53,20 +53,20 @@ export class Praise {
     example: 'for making edits in the welcome text',
     type: 'string',
   })
-  @Prop({ required: true, minlength: 5, maxlength: 280 })
+  @Prop({ required: true, minlength: 5, maxlength: 500 })
   @IsString()
   @MinLength(5)
-  @MaxLength(280)
+  @MaxLength(500)
   reasonRaw: string;
 
   @ApiResponseProperty({
     example: 'for making edits in the welcome text',
     type: 'string',
   })
-  @Prop({ required: true, minlength: 5, maxlength: 280 })
+  @Prop({ required: true, minlength: 5, maxlength: 500 })
   @IsString()
   @MinLength(5)
-  @MaxLength(280)
+  @MaxLength(500)
   reason: string;
 
   @ApiResponseProperty({

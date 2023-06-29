@@ -446,8 +446,8 @@ describe('Praise (E2E)', () => {
       expect(rb[0]).toBeProperlySerialized();
     });
 
-    // test, API should return 400 when praise reason contains more than 280 characters
-    test('400 when reason is more than 280 characters', async () => {
+    // test, API should return 400 when praise reason contains more than 500 characters
+    test('400 when reason is more than 500 characters', async () => {
       const giver = await userAccountsSeeder.seedUserAccount();
       const receiver = await userAccountsSeeder.seedUserAccount();
 
@@ -475,10 +475,10 @@ describe('Praise (E2E)', () => {
 
       expect(response.status).toBe(400);
       expect(response.body.message).toContain(
-        'reason must be shorter than or equal to 280 characters',
+        'reason must be shorter than or equal to 500 characters',
       );
       expect(response.body.message).toContain(
-        'reasonRaw must be shorter than or equal to 280 characters',
+        'reasonRaw must be shorter than or equal to 500 characters',
       );
     });
 
