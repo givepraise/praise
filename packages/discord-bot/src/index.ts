@@ -50,7 +50,7 @@ discordClient.on('interactionCreate', async (interaction): Promise<void> => {
 
   try {
     if (!interaction.guild) {
-      await interaction.editReply(await renderMessage('DM_ERROR'));
+      await interaction.reply(await renderMessage('DM_ERROR'));
       return;
     }
 
@@ -71,7 +71,7 @@ discordClient.on('interactionCreate', async (interaction): Promise<void> => {
     if (community) {
       await command.execute(discordClient, interaction, community.hostname);
     } else {
-      await interaction.editReply({
+      await interaction.reply({
         embeds: [communityNotCreatedError(process.env.WEB_URL as string)],
       });
     }
@@ -83,10 +83,10 @@ discordClient.on('interactionCreate', async (interaction): Promise<void> => {
         interaction.guildId || interaction.applicationId
       })`
     );
-    await interaction.editReply({
-      content: `There was an error while executing the \`/${interaction.commandName}\` command.`,
-    });
-    return;
+    const content = `There was an error while executing the \`/${interaction.commandName}\` command`;
+
+    if (interaction.deferred) await interaction.editReply({ content });
+    else await interaction.reply({ content });
   }
 });
 

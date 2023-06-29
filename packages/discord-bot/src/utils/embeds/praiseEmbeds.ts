@@ -1,4 +1,4 @@
-import { User, EmbedBuilder, Role } from 'discord.js';
+import { User, EmbedBuilder, Role, Embed } from 'discord.js';
 import { renderMessage } from '../renderMessage';
 
 export const praiseRoleError = async (
@@ -17,7 +17,9 @@ export const praiseRoleError = async (
 
 export const communityNotCreatedError = (webUrl: string): EmbedBuilder => {
   return new EmbedBuilder()
-    .setTitle('🔴 No Praise Community has been created for this Discord Server')
+    .setTitle(
+      '🔴  No Praise Community has been created for this Discord Server'
+    )
     .setDescription(
       `Follow below link and create a Praise community. Then return to discord to complete linking the bot to your community.\n\n[Create your praise community](${webUrl})`
     );
@@ -31,9 +33,16 @@ export const praiseWelcomeEmbed = (
   hostId: string,
   guildId: string
 ): EmbedBuilder => {
-  return new EmbedBuilder().setDescription(
-    `✅ Praise community created\n✅ Praise bot added to Discord\n${
-      isActive ? '✅' : '🔴'
-    } Praise bot linked to community\n\nOne final step before you can start praising! Follow below link and sign a message with your wallet to secure the connection between the bot and the newly setup community.\n[Link Praise Bot to "${name}"](${webUrl}/discord-bot/link?nonce=${nonce}&communityId=${hostId}&guildId=${guildId})`
-  );
+  if (!isActive) {
+    return new EmbedBuilder()
+      .setTitle('🔴  The bot has not yet been linked with a Praise Community.')
+      .setDescription(
+        `Follow below link and sign a message with your wallet to secure the connection between the bot and the newly setup community.\n[Link Praise Bot to "${name}"](${webUrl}/discord-bot/link?nonce=${nonce}&communityId=${hostId}&guildId=${guildId}`
+      );
+  }
+  return new EmbedBuilder()
+    .setTitle('Welcome to Praise!')
+    .setDescription(
+      `✅ Praise community created\n✅ Praise bot added to Discord\n✅ Praise bot linked to community\n`
+    );
 };
