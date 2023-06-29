@@ -44,7 +44,7 @@ export const getDefaultSetting = (
     case 'FORWARDER_ROLE_WARNING':
       return "**❌ You don't have the permission to use this command.**";
     case 'INVALID_REASON_LENGTH':
-      return 'Reason should be between 5 to 280 characters';
+      return 'Reason should be between 5 to 500 characters';
     case 'FORWARD_FORWARD_FAILED':
       return 'Forward Failed :(';
     case 'PRAISE_FAILED':
