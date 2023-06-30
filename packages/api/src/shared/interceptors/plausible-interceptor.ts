@@ -24,10 +24,9 @@ export class PlausibleInterceptor implements NestInterceptor {
         await sendPageViewEvent({
           userAgent: userAgent,
           xForwardedFor: xForwardedFor,
-          eventName: `${request.originalUrl}-${request.method}`,
+          eventName: request.method,
+          url: `api://${request.originalUrl}`,
           props: {
-            endpointUrl: request.originalUrl,
-            httpMethod: request.method,
             httpStatusCode: response.statusCode,
           },
         });
