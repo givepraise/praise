@@ -1,7 +1,7 @@
 import { AxiosError, AxiosResponse } from 'axios';
 import { selectorFamily, SerializableParam } from 'recoil';
 import { AccessToken } from './auth/auth';
-import { makeApiAuthClient } from '../utils/api';
+import { makeApiAuthClient, makeApiClient } from '../utils/api';
 import { ApiErrorResponseData } from 'shared/interfaces/api-error-reponse-data.interface';
 
 export type RequestParams = {
@@ -76,6 +76,16 @@ export const ApiAuthGet = selectorFamily<AxiosResponse<unknown>, RequestParams>(
       },
   }
 );
+
+export const ApiGet = selectorFamily<AxiosResponse<unknown>, RequestParams>({
+  key: 'ApiGet',
+  get: (params: RequestParams) => async (): Promise<AxiosResponse<never>> => {
+    const { config, url, handleErrorsAutomatically = true } = params;
+    const apiClient = makeApiClient(handleErrorsAutomatically);
+    const response = await apiClient.get(url, config);
+    return response;
+  },
+});
 
 /**
  * Authenticated POST request

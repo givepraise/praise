@@ -2,7 +2,7 @@ import { AxiosError, AxiosResponse } from 'axios';
 import { atom, selectorFamily, useRecoilCallback } from 'recoil';
 import { isEmpty } from 'lodash';
 import { useApiAuthClient } from '@/utils/api';
-import { isResponseOk, ApiAuthGet } from '../api';
+import { isResponseOk, ApiGet } from '../api';
 import { Setting } from './dto/setting.dto';
 import { SetSettingDto } from './dto/set-setting.dto';
 
@@ -21,7 +21,7 @@ export const AllSettings = atom<Setting[] | undefined>({
     ({ setSelf, getPromise }): void => {
       setSelf(
         getPromise(
-          ApiAuthGet({
+          ApiGet({
             url: '/settings',
           })
         ).then((response) => {

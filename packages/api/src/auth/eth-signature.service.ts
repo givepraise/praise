@@ -130,21 +130,23 @@ export class EthSignatureService {
     token: string,
     hostname: string,
   ): Promise<LoginResponseDto> {
-    let tokenPayload :JwtPayload
+    let tokenPayload: JwtPayload;
     try {
       tokenPayload = this.jwtService.verify(token, {
-        secret: process.env.JWT_SECRET
+        secret: process.env.JWT_SECRET,
       }) as JwtPayload;
     } catch (e) {
-      if (e.name === 'TokenExpiredError'){
+      if (e.name === 'TokenExpiredError') {
         throw new ApiException(errorMessages.JWT_TOKEN_EXPIRED);
       } else {
         throw new ApiException(errorMessages.UNAUTHORIZED);
       }
     }
 
-    const user = await this.userModel.findOne({ identityEthAddress: tokenPayload.identityEthAddress, }).lean() ;
-    if (!user){
+    const user = await this.userModel
+      .findOne({ identityEthAddress: tokenPayload.identityEthAddress })
+      .lean();
+    if (!user) {
       throw new ApiException(errorMessages.UNAUTHORIZED);
     }
 
@@ -163,7 +165,6 @@ export class EthSignatureService {
       roles: tokenPayload.roles,
       userId: tokenPayload.userId,
     };
-
 
     // Sign payload to create access token
     const accessToken = this.jwtService.sign(

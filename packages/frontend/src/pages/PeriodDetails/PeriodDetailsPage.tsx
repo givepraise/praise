@@ -55,14 +55,13 @@ export const PeriodDetailsPage = (): JSX.Element | null => {
   const detailsResponse = useLoadSinglePeriodDetails(periodId); // Load additional period details
   const period = useRecoilValue(SinglePeriod(periodId));
   const activeUserId = useRecoilValue(ActiveUserId);
-  const periodQuantifierPraise = usePeriodQuantifierPraise(
-    periodId,
-    activeUserId || ''
-  );
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
   const { path, url } = useRouteMatch();
 
-  if (!detailsResponse || !period || !periodQuantifierPraise) return null;
+  usePeriodQuantifierPraise(periodId, activeUserId || '');
+
+  // if (!detailsResponse || !period || !periodQuantifierPraise) return null;
+  if (!detailsResponse || !period) return null;
 
   return (
     <Page variant={'wide'}>
@@ -103,12 +102,14 @@ export const PeriodDetailsPage = (): JSX.Element | null => {
                 icon={faBalanceScaleLeft}
                 replace
               />
-              <NavItem
-                to={`${url}/settings`}
-                description="Settings"
-                icon={faCog}
-                replace
-              />
+              {isAdmin && (
+                <NavItem
+                  to={`${url}/settings`}
+                  description="Settings"
+                  icon={faCog}
+                  replace
+                />
+              )}
               <NavItem
                 to={`${url}/analytics`}
                 description="Analytics"

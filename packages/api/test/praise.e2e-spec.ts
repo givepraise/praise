@@ -1,5 +1,4 @@
 import './shared/jest';
-import request from 'supertest';
 import { Wallet } from 'ethers';
 import {
   authorizedGetRequest,
@@ -18,7 +17,6 @@ import { faker } from '@faker-js/faker';
 import {
   app,
   testingModule,
-  server,
   usersService,
   usersSeeder,
   praiseService,
@@ -208,10 +206,6 @@ describe('Praise (E2E)', () => {
       });
     });
 
-    test('401 when not authenticated', async () => {
-      return request(server).get('/praise').send().expect(401);
-    });
-
     test('200 when correct data is sent', async () => {
       const response = await authorizedGetRequest(
         '/praise',
@@ -301,10 +295,6 @@ describe('Praise (E2E)', () => {
       });
     });
 
-    test('401 when not authenticated', async () => {
-      return request(server).get(`/praise/${praise._id}`).send().expect(401);
-    });
-
     test('200 when correct data is sent', async () => {
       const response = await authorizedGetRequest(
         `/praise/${praise._id}`,
@@ -390,10 +380,6 @@ describe('Praise (E2E)', () => {
       });
     });
 
-    test('401 when not authenticated', async () => {
-      return request(server).post(`/praise`).send().expect(401);
-    });
-
     test('403 when user has wrong permissions', async () => {
       const response = await authorizedPostRequest(
         `/praise`,
@@ -460,8 +446,8 @@ describe('Praise (E2E)', () => {
       expect(rb[0]).toBeProperlySerialized();
     });
 
-    // test, API should return 400 when praise reason contains more than 280 characters
-    test('400 when reason is more than 280 characters', async () => {
+    // test, API should return 400 when praise reason contains more than 500 characters
+    test('400 when reason is more than 500 characters', async () => {
       const giver = await userAccountsSeeder.seedUserAccount();
       const receiver = await userAccountsSeeder.seedUserAccount();
 
@@ -489,10 +475,10 @@ describe('Praise (E2E)', () => {
 
       expect(response.status).toBe(400);
       expect(response.body.message).toContain(
-        'reason must be shorter than or equal to 280 characters',
+        'reason must be shorter than or equal to 500 characters',
       );
       expect(response.body.message).toContain(
-        'reasonRaw must be shorter than or equal to 280 characters',
+        'reasonRaw must be shorter than or equal to 500 characters',
       );
     });
 

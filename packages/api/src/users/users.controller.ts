@@ -56,7 +56,6 @@ const exportIncludeFields = [
 @SerializeOptions({
   excludePrefixes: ['__'],
 })
-@EnforceAuthAndPermissions()
 export class UsersController {
   constructor(
     private readonly usersService: UsersService,
@@ -220,6 +219,7 @@ export class UsersController {
   }
 
   @Patch(':id')
+  @EnforceAuthAndPermissions()
   @Permissions(Permission.UserUpdateProfile)
   @ApiOperation({
     summary: 'Updates a user',
@@ -239,6 +239,7 @@ export class UsersController {
   }
 
   @Patch(':id/addRole')
+  @EnforceAuthAndPermissions()
   @Permissions(Permission.UsersManageRoles)
   @ApiResponse({
     status: 200,
@@ -264,6 +265,7 @@ export class UsersController {
   }
 
   @Patch(':id/removeRole')
+  @EnforceAuthAndPermissions()
   @Permissions(Permission.UsersManageRoles)
   @ApiResponse({
     status: 200,

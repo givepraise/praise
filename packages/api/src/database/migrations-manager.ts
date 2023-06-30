@@ -65,9 +65,19 @@ export class MigrationsManager {
         try {
           const user = await usersService.findOneByEth(owner);
           logger.debug(`[${community.hostname}] Setting roles for ${owner}`);
+
+          // These are the roles that every owner should have
+          const ownerRoles = [AuthRole.ROOT, AuthRole.ADMIN, AuthRole.USER];
+
+          // Don't remove existing roles
+          user.roles.forEach((role) => {
+            if (!ownerRoles.includes(role)) {
+              ownerRoles.push(role);
+            }
+          });
           await usersService.update(user._id, {
             username: user.username.toLocaleLowerCase(),
-            roles: [AuthRole.ROOT, AuthRole.ADMIN, AuthRole.USER],
+            roles: ownerRoles,
           });
         } catch (err) {
           logger.debug(
