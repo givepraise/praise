@@ -82,6 +82,7 @@ export const givePraise = async (
       ],
       components: [],
     });
+
     praiseItems = await createPraise(
       interaction,
       giverAccount,
@@ -124,16 +125,12 @@ export const givePraise = async (
   const warningMsgParts: string[] = [];
 
   if (parsedReceivers.undefinedReceivers) {
-    const warning = await renderMessage(
-      'PRAISE_UNDEFINED_RECEIVERS_WARNING',
-      host,
-      {
-        receivers: parsedReceivers.undefinedReceivers.map((id) =>
-          id.replace(/[<>]/, '')
-        ),
-        user: member.user,
-      }
-    );
+    const warning = await renderMessage('', host, {
+      receivers: parsedReceivers.undefinedReceivers.map((id) =>
+        id.replace(/[<>]/, '')
+      ),
+      user: member.user,
+    });
     warningMsgParts.push(warning);
   }
 

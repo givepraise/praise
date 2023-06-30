@@ -97,6 +97,7 @@ export const praiseHandler: CommandHandler = async (
           );
 
           if (giverAccount && giverAccount.user) {
+            await collector.stop();
             await givePraise(
               interaction,
               guild,
@@ -108,6 +109,7 @@ export const praiseHandler: CommandHandler = async (
               host,
               responseUrl
             );
+            return;
           }
 
           await i.update({
