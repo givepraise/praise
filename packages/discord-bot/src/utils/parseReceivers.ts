@@ -1,4 +1,4 @@
-interface ParsedReceivers {
+export interface ParsedReceivers {
   validReceiverIds: RegExpMatchArray | null;
   undefinedReceivers: RegExpMatchArray | null;
   roleMentions: RegExpMatchArray | null;

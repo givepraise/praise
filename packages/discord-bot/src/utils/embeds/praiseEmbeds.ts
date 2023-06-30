@@ -1,4 +1,4 @@
-import { User, EmbedBuilder, Role, Embed } from 'discord.js';
+import { User, EmbedBuilder, Role } from 'discord.js';
 import { renderMessage } from '../renderMessage';
 
 export const praiseRoleError = async (
@@ -43,6 +43,6 @@ export const praiseWelcomeEmbed = (
   return new EmbedBuilder()
     .setTitle('Welcome to Praise!')
     .setDescription(
-      `✅ Praise community created\n✅ Praise bot added to Discord\n✅ Praise bot linked to community\n`
+      '✅ Praise community created\n✅ Praise bot added to Discord\n✅ Praise bot linked to community\n'
     );
 };

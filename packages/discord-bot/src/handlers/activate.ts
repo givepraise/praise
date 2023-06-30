@@ -1,8 +1,6 @@
 import { CommandHandler } from '../interfaces/CommandHandler';
-import { getUserAccount } from '../utils/getUserAccount';
-import { GuildMember } from 'discord.js';
-import { getActivateToken } from '../utils/getActivateToken';
 import { renderMessage } from '../utils/renderMessage';
+import { sendActivationMessage } from '../utils/sendActivationMessage';
 
 /**
  * Executes command /activate
@@ -21,45 +19,5 @@ export const activationHandler: CommandHandler = async (
     return;
   }
 
-  try {
-    const userAccount = await getUserAccount(
-      (member as GuildMember).user,
-      host
-    );
-    if (userAccount.user && userAccount.user !== null) {
-      await interaction.editReply({
-        content: await renderMessage(
-          'PRAISE_ACCOUNT_ALREADY_ACTIVATED_ERROR',
-          host
-        ),
-      });
-      return;
-    }
-
-    const activateToken = await getActivateToken(userAccount, host);
-
-    if (!activateToken) {
-      await interaction.editReply({
-        content: 'Unable to activate user account.',
-      });
-      return;
-    }
-
-    const hostUrl =
-      process.env.NODE_ENV === 'development'
-        ? process.env.FRONTEND_URL
-        : `https://${host}`;
-
-    const activationURL = `${hostUrl || 'undefined:/'}/activate?accountId=${
-      member.user.id
-    }&platform=DISCORD&token=${activateToken}`;
-
-    await interaction.editReply({
-      content: `To activate your account, follow this link and sign a message using your Ethereum wallet. [Activate my account!](${activationURL})`,
-    });
-  } catch (error) {
-    await interaction.editReply({
-      content: 'Unable to activate user account.',
-    });
-  }
+  await sendActivationMessage(interaction, host, member);
 };

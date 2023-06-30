@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 ### Changed
+- **Discord bot**: Improved user onboarding - Activation flow when praising first-time #1070
 
 ### Deprecated
 
