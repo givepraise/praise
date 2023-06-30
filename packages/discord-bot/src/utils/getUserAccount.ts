@@ -14,7 +14,7 @@ const createUserAccount = async (
 ): Promise<UserAccount> => {
   const newUserAccount: CreateUserAccountInputDto = {
     accountId: user.id,
-    name: user.username + '#' + user.discriminator,
+    name: user.username,
     platform: 'DISCORD',
   };
   if (user.avatar) newUserAccount.avatarId = user.avatar;
@@ -22,7 +22,7 @@ const createUserAccount = async (
     CreateUserAccountResponseDto,
     CreateUserAccountInputDto
   >('/useraccounts', newUserAccount, {
-    headers: { host: host },
+    headers: { host },
   });
   return response.data;
 };
@@ -32,19 +32,16 @@ const updateUserAccount = async (
   user: User,
   host: string
 ): Promise<UserAccount> => {
-  if (
-    ua.name !== user.username + '#' + user.discriminator ||
-    ua.avatarId !== user.avatar
-  ) {
+  if ((ua.name !== user.username, ua.avatarId !== user.avatar)) {
     const updatedUserAccount: UpdateUserAccountInputDto = {
-      name: user.username + '#' + user.discriminator,
+      name: user.username,
     };
     if (user.avatar) updatedUserAccount.avatarId = user.avatar;
     const response = await apiPatch<
       UpdateUserAccountResponseDto,
       UpdateUserAccountInputDto
     >(`/useraccounts/${ua._id}`, updatedUserAccount, {
-      headers: { host: host },
+      headers: { host },
     });
     return response.data;
   }
@@ -64,7 +61,7 @@ export const getUserAccount = async (
   const data = await apiGet<UserAccount[]>(
     `/useraccounts/?accountId=${user.id}`,
     {
-      headers: { host: host },
+      headers: { host },
     }
   )
     .then((res) => res.data.filter((acc) => acc.platform === 'DISCORD'))

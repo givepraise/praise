@@ -2,7 +2,6 @@ interface ActivatedAccount {
   platform: string;
   user: string;
   activationDate: string;
-  latestUsageDate: string;
 }
 
 export interface UserState {
