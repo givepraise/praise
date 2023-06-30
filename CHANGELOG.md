@@ -29,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Devops**: Added docker-compose installation script and modified scripts #754
 - **Devops**: Allow mongodb port number to be configurable in .env #760
 - **Devops**: Enhanced the multi-setup scripts #761
+- **Discord bot**: Improved user onboarding - Activation flow when praising first-time #1070
 
 ## [0.13.0] - 2022-11-18
 
