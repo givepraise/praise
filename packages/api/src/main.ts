@@ -18,6 +18,7 @@ import { MigrationsManager } from './database/migrations-manager';
 import { join } from 'path';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { isDocker } from './shared/isDocker';
+import { PlausibleInterceptor } from './shared/interceptors/plausible-interceptor';
 
 async function bootstrap() {
   // Check that all required ENV variables are set
@@ -63,6 +64,8 @@ async function bootstrap() {
   app.useGlobalFilters(new MongoServerErrorFilter());
   app.useGlobalFilters(new MongoValidationErrorFilter());
   app.useGlobalFilters(new ServiceExceptionFilter());
+
+  app.useGlobalInterceptors(new PlausibleInterceptor());
 
   // Serve static files from the upload folder
   const uploadsPath = isDocker()
