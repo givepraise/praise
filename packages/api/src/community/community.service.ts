@@ -20,7 +20,7 @@ import { databaseExists } from '../database/utils/database-exists';
 import { hostNameToDbName } from '../database/utils/host-name-to-db-name';
 import { PaginateModel } from '../shared/interfaces/paginate-model.interface';
 import { IsNameAvailableResponseDto } from './dto/is-name-available-response-dto';
-import { sendCommunityCreatedEmail } from '../shared/email/sendCommunityCreatedEmail';
+import { EmailService } from '../email/email.service';
 
 @Injectable()
 export class CommunityService {
@@ -31,6 +31,7 @@ export class CommunityService {
     private communityModel: PaginateModel<Community>,
     @InjectConnection('praise')
     private readonly connection: Connection,
+    private readonly emailService: EmailService,
   ) {
     this.mongodb = connection.getClient();
   }
@@ -119,7 +120,7 @@ export class CommunityService {
     // Create and setup community database
     const migrationsManager = new MigrationsManager();
     await migrationsManager.migrate(community);
-    await sendCommunityCreatedEmail({
+    await this.emailService.sendCommunityCreatedEmail({
       to: community.email,
       payload: {
         communityName: community.name,

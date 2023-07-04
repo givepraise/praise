@@ -7,6 +7,7 @@ import { ConstantsProvider } from '../constants/constants.provider';
 import { AuthGuardModule } from '../auth/auth-guard.module';
 import { dbUrlMain } from '../database/utils/db-url-main';
 import { EventLogModule } from '../event-log/event-log.module';
+import { EmailService } from '../email/email.service';
 
 @Module({
   imports: [
@@ -24,7 +25,7 @@ import { EventLogModule } from '../event-log/event-log.module';
     EventLogModule,
   ],
   controllers: [CommunityController],
-  providers: [CommunityService, ConstantsProvider],
+  providers: [EmailService, CommunityService, ConstantsProvider],
   exports: [CommunityService],
 })
 export class CommunityModule {}
