@@ -8,4 +8,5 @@ export class CreateCommunityInputDto extends PickType(Community, [
   'owners',
   'hostname',
   'discordGuildId',
+  'twitterBot',
 ]) {}

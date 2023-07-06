@@ -17,6 +17,7 @@ import { isValidCommunityName } from '../utils/is-valid-community-name';
 import { isValidOwners } from '../utils/is-valid-owners';
 import { isValidHostname } from '../utils/is-valid-hostname';
 import mongoosePaginate from 'mongoose-paginate-v2';
+import { TwitterBot } from './twitterBot.schema';
 
 export type CommunityDocument = Community & Document;
 
@@ -144,6 +145,10 @@ export class Community {
     required: true,
   })
   discordLinkState: string;
+
+  @ApiProperty({ required: false, type: TwitterBot })
+  @Prop({ required: false, type: TwitterBot })
+  twitterBot: TwitterBot;
 }
 
 export const CommunitySchema = SchemaFactory.createForClass(Community);
