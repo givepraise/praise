@@ -10,13 +10,16 @@ import {
   IsEnum,
   IsOptional,
   IsString,
+  ValidateNested,
 } from 'class-validator';
+import { Type } from 'class-transformer';
 import { DiscordLinkState } from '../enums/discord-link-state';
 import { IsEthAddress } from '../../shared/validators/is-eth-address.validator';
 import { isValidCommunityName } from '../utils/is-valid-community-name';
 import { isValidOwners } from '../utils/is-valid-owners';
 import { isValidHostname } from '../utils/is-valid-hostname';
 import mongoosePaginate from 'mongoose-paginate-v2';
+import { TwitterBot, TwitterBotSchema } from './twitterBot.schema';
 
 export type CommunityDocument = Community & Document;
 
@@ -98,7 +101,7 @@ export class Community {
     required: true,
   })
   @IsArray()
-  // owners should contain creator so it has at least one owner
+  // owners should contain creator, so it has at least one owner
   @ArrayMinSize(1)
   @Prop({
     type: [String],
@@ -145,9 +148,23 @@ export class Community {
   })
   discordLinkState: string;
 
-  @ApiProperty({ example: 'twitter bot' })
-  @Prop({ required: false, type: String })
-  twitterBot: string;
+  @ApiProperty({
+    example:
+      '{\n' +
+      '    "bearerToken":"AAAAAAAAAAAAAAAAAAAAAMsDPC...",\n' +
+      '    "consumerKey":"9NPsm8UF6qIu...",\n' +
+      '    "consumerSecret":"ciwhh1lli5S...",\n' +
+      '    "accessToken":"165569343217...",\n' +
+      '    "tokenSecret":"jv2kTUl2NBYbj...",\n' +
+      '    "twitterBotId":e.g. 1655693432172494852,\n' +
+      '    "twitterBotUsername":"e.g. givethpraise"\n' +
+      '  }',
+  })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => TwitterBot)
+  @Prop({ type: TwitterBotSchema, required: false })
+  twitterBot?: TwitterBot;
 }
 
 export const CommunitySchema = SchemaFactory.createForClass(Community);

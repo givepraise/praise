@@ -1,40 +1,53 @@
-// import { IsNumber, IsString } from 'class-validator';
-// import { Prop } from '@nestjs/mongoose';
-// import { ApiProperty } from '@nestjs/swagger';
-//
-// export class TwitterBot {
-//   @ApiProperty({ example: 'e.g. 1655693432172494852', required: true })
-//   @IsNumber()
-//   @Prop({ required: true })
-//   twitterBotId: number;
-//
-//   @ApiProperty({ example: 'e.g. givethpraise', required: true })
-//   @IsString()
-//   @Prop({ required: true })
-//   twitterBotUsername: string;
-//
-//   @ApiProperty({ example: 'AAAAAAAAAAAAAAAAAAAAAMsTng...', required: true })
-//   @IsString()
-//   @Prop({ required: true })
-//   bearerToken: string;
-//
-//   @ApiProperty({ example: '9NPsm8UF6q...', required: true })
-//   @IsString()
-//   @Prop({ required: true })
-//   consumerKey: string;
-//
-//   @ApiProperty({ example: '9NPsm8UF6q...', required: true })
-//   @IsString()
-//   @Prop({ required: true })
-//   consumerSecret: string;
-//
-//   @ApiProperty({ example: '9NPsm8UF6q...', required: true })
-//   @IsString()
-//   @Prop({ required: true })
-//   accessToken: string;
-//
-//   @ApiProperty({ example: '9NPsm8UF6q...', required: true })
-//   @IsString()
-//   @Prop({ required: true })
-//   tokenSecret: string;
-// }
+import { IsNumber, IsOptional, IsString } from 'class-validator';
+import { Prop, SchemaFactory } from '@nestjs/mongoose';
+import { ApiProperty } from '@nestjs/swagger';
+import { ExposeId } from '../../shared/decorators/expose-id.decorator';
+import { Types } from 'mongoose';
+
+export class TwitterBot {
+  @ApiProperty({
+    example: '621f802b813dbdba9eeaf7b4',
+    type: 'string',
+  })
+  @IsOptional()
+  @IsString()
+  @ExposeId()
+  _id: Types.ObjectId;
+
+  @ApiProperty({ example: 'e.g. 1655693432172494852', required: true })
+  @IsNumber()
+  @Prop({ required: true })
+  twitterBotId: number;
+
+  @ApiProperty({ example: 'e.g. givethpraise', required: true })
+  @IsString()
+  @Prop({ required: true })
+  twitterBotUsername: string;
+
+  @ApiProperty({ example: 'AAAAAAAAAAAAAAAAAAAAAMsTng...', required: true })
+  @IsString()
+  @Prop({ required: true })
+  bearerToken: string;
+
+  @ApiProperty({ example: '9NPsm8UF6q...', required: true })
+  @IsString()
+  @Prop({ required: true })
+  consumerKey: string;
+
+  @ApiProperty({ example: '9NPsm8UF6q...', required: true })
+  @IsString()
+  @Prop({ required: true })
+  consumerSecret: string;
+
+  @ApiProperty({ example: '9NPsm8UF6q...', required: true })
+  @IsString()
+  @Prop({ required: true })
+  accessToken: string;
+
+  @ApiProperty({ example: '9NPsm8UF6q...', required: true })
+  @IsString()
+  @Prop({ required: true })
+  tokenSecret: string;
+}
+
+export const TwitterBotSchema = SchemaFactory.createForClass(TwitterBot);

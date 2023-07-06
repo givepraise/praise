@@ -38,7 +38,14 @@ export const CommunitySchema = new Schema({
   },
   twitterBot: {
     required: false,
-    type: String,
+    type: {
+      twitterBotId: { type: Number, required: true },
+      bearerToken: { type: String, required: true },
+      consumerKey: { type: String, required: true },
+      consumerSecret: { type: String, required: true },
+      accessToken: { type: String, required: true },
+      tokenSecret: { type: String, required: true },
+    },
   },
 });
 

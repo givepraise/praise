@@ -942,6 +942,24 @@ export interface components {
       /** @example eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MmIwNmY3NjU1ODA0YjE2MjllODQxNTkiLCJpZGVudGl0eUV0aEFkZHJlc3MiOiIweGEzMmFFQ2RhNzUyY0Y0RUY4OTk1NmU4M2Q2MEMwNDgzNWQ0RkE4NjciLCJyb2xlcyI6WyJVU0VSIiwiQURNSU4iXSwiaXNSZWZyZXNoIjpmYWxzZSwiaWF0IjoxNjcwMzE1OTk4LCJleHAiOjE2NzAzMTk1OTh9.qKvucMZLVbz_1TnsxaSqYX1i5CSpver6fFJTf3pABVA */
       refreshToken: string;
     };
+    TwitterBot: {
+      /** @example 621f802b813dbdba9eeaf7b4 */
+      _id: string;
+      /** @example e.g. 1655693432172494852 */
+      twitterBotId: number;
+      /** @example e.g. givethpraise */
+      twitterBotUsername: string;
+      /** @example AAAAAAAAAAAAAAAAAAAAAMsTng... */
+      bearerToken: string;
+      /** @example 9NPsm8UF6q... */
+      consumerKey: string;
+      /** @example 9NPsm8UF6q... */
+      consumerSecret: string;
+      /** @example 9NPsm8UF6q... */
+      accessToken: string;
+      /** @example 9NPsm8UF6q... */
+      tokenSecret: string;
+    };
     CreateCommunityInputDto: {
       /** @example banklessdao.givepraise.xyz */
       hostname: string;
@@ -960,8 +978,18 @@ export interface components {
       owners: string[];
       /** @example 0980987846534 */
       discordGuildId?: string;
-      /** @example twitter bot */
-      twitterBot: string;
+      /**
+       * @example {
+       *     "bearerToken":"AAAAAAAAAAAAAAAAAAAAAMsDPC...",
+       *     "consumerKey":"9NPsm8UF6qIu...",
+       *     "consumerSecret":"ciwhh1lli5S...",
+       *     "accessToken":"165569343217...",
+       *     "tokenSecret":"jv2kTUl2NBYbj...",
+       *     "twitterBotId":1655693432172494852,
+       *     "twitterBotUsername":"givethpraise"
+       *   }
+       */
+      twitterBot: components['schemas']['TwitterBot'];
     };
     Community: {
       /** @example 621f802b813dbdba9eeaf7b4 */
@@ -989,8 +1017,18 @@ export interface components {
       isPublic: boolean;
       /** @enum {string} */
       discordLinkState: 'NOT_SET' | 'PENDING' | 'ACTIVE' | 'DEACTIVE';
-      /** @example twitter bot */
-      twitterBot: string;
+      /**
+       * @example {
+       *     "bearerToken":"AAAAAAAAAAAAAAAAAAAAAMsDPC...",
+       *     "consumerKey":"9NPsm8UF6qIu...",
+       *     "consumerSecret":"ciwhh1lli5S...",
+       *     "accessToken":"165569343217...",
+       *     "tokenSecret":"jv2kTUl2NBYbj...",
+       *     "twitterBotId":1655693432172494852,
+       *     "twitterBotUsername":"givethpraise"
+       *   }
+       */
+      twitterBot: components['schemas']['TwitterBot'];
     };
     UpdateCommunityInputDto: {
       /** @example banklessdao.givepraise.xyz */
