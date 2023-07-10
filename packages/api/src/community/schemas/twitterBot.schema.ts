@@ -1,8 +1,10 @@
 import { IsNumber, IsOptional, IsString } from 'class-validator';
-import { Prop, SchemaFactory } from '@nestjs/mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 import { ExposeId } from '../../shared/decorators/expose-id.decorator';
 import { Types } from 'mongoose';
+
+@Schema({ timestamps: true })
 
 export class TwitterBot {
   @ApiProperty({

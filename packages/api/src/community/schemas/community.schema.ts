@@ -149,6 +149,7 @@ export class Community {
   discordLinkState: string;
 
   @ApiProperty({
+    required: false,
     example:
       '{\n' +
       '    "bearerToken":"AAAAAAAAAAAAAAAAAAAAAMsDPC...",\n' +

@@ -985,11 +985,11 @@ export interface components {
        *     "consumerSecret":"ciwhh1lli5S...",
        *     "accessToken":"165569343217...",
        *     "tokenSecret":"jv2kTUl2NBYbj...",
-       *     "twitterBotId":1655693432172494852,
-       *     "twitterBotUsername":"givethpraise"
+       *     "twitterBotId":e.g. 1655693432172494852,
+       *     "twitterBotUsername":"e.g. givethpraise"
        *   }
        */
-      twitterBot: components['schemas']['TwitterBot'];
+      twitterBot?: components['schemas']['TwitterBot'];
     };
     Community: {
       /** @example 621f802b813dbdba9eeaf7b4 */
@@ -1024,11 +1024,11 @@ export interface components {
        *     "consumerSecret":"ciwhh1lli5S...",
        *     "accessToken":"165569343217...",
        *     "tokenSecret":"jv2kTUl2NBYbj...",
-       *     "twitterBotId":1655693432172494852,
-       *     "twitterBotUsername":"givethpraise"
+       *     "twitterBotId":e.g. 1655693432172494852,
+       *     "twitterBotUsername":"e.g. givethpraise"
        *   }
        */
-      twitterBot: components['schemas']['TwitterBot'];
+      twitterBot?: components['schemas']['TwitterBot'];
     };
     UpdateCommunityInputDto: {
       /** @example banklessdao.givepraise.xyz */
