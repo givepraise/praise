@@ -106,7 +106,7 @@ export const praiseHandler: CommandHandler = async (
         collector.on('collect', async (i) => {
           if (i.customId === `activate-${member.user.id}`) {
             const buttonIndex = i.message.components[0].components.findIndex(
-              (c) => c.customId == `activate-${member.user.id}`
+              (c) => c.customId === `activate-${member.user.id}`
             );
             const builder = new ActionRowBuilder<ButtonBuilder>();
             ActionRowBuilder.from(i.message.components[0]).components.forEach(

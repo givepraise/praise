@@ -76,7 +76,8 @@ export const sendActivationMessage = async (
     }
 
     const response = await interaction.editReply({
-      content: `In order to dish praise, you need to activate your account by clicking the Activate button below, and signing a message with your Ethereum wallet: `,
+      content:
+        'In order to dish praise, you need to activate your account by clicking the Activate button below, and signing a message with your Ethereum wallet: ',
       components: [row],
     });
 
