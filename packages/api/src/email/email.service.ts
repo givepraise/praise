@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import sgMail from '@sendgrid/mail';
-import { EmailTemplate } from './templates/EmailTemplateInterface';
 import { logger } from '../shared/logger';
+import { MailDataRequired } from '@sendgrid/helpers/classes/mail';
 
 @Injectable()
 export class EmailService {
@@ -14,27 +14,27 @@ export class EmailService {
 
   public async sendEmail(params: {
     to: string;
-    template: EmailTemplate;
+    templateId: string;
     payload: any;
+    subject: string;
   }) {
-    const { to, template, payload } = params;
-    const msg = {
-      to,
+    const { to, templateId, payload, subject } = params;
+    const msg: MailDataRequired = {
       from: this.from,
-      subject: template.subject,
-      html: template.html(payload),
+      templateId,
+      subject,
+      personalizations: [
+        {
+          to,
+          dynamicTemplateData: payload,
+        },
+      ],
     };
     try {
       await sgMail.send(msg);
-      logger.info('Email sent', {
-        to,
-        subject: template.subject,
-      });
+      logger.info('Email sent', params);
     } catch (error) {
-      logger.error(`Send email error ${error}`, {
-        to,
-        subject: template.subject,
-      });
+      logger.error(`Send email error ${error}`, params);
     }
   }
 
@@ -45,17 +45,12 @@ export class EmailService {
     };
   }) {
     const { to, payload } = params;
-    const welcomeTemplate: EmailTemplate = {
-      subject: 'Welcome to Our Service!',
-      html: (payload: any) => `
-        <h1>Welcome, ${payload.name}!</h1>
-        <p>We are excited to have you on board.</p>
-      `,
-    };
+    const templateId = 'welcomeTemplate';
 
     return this.sendEmail({
       to,
-      template: welcomeTemplate,
+      templateId,
+      subject: 'Welcome to the community!',
       payload,
     });
   }
@@ -67,17 +62,14 @@ export class EmailService {
     };
   }) {
     const { to, payload } = params;
-    const communityCreatedTemplate: EmailTemplate = {
-      subject: 'Congratulations for Creating a Community',
-      html: (payload: any) => `
-        <h1>Congratulations for creating, ${payload.communityName} community!</h1>
-      `,
-    };
+    const templateId = 'communityCreatedTemplate';
+    const subject = 'Congratulations for Creating a Community';
 
     return this.sendEmail({
-      to,
-      template: communityCreatedTemplate,
+      subject,
+      templateId,
       payload,
+      to,
     });
   }
 }
