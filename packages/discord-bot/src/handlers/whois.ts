@@ -58,7 +58,7 @@ export const whoisHandler: CommandHandler = async (
     const response = await apiClient.get<PraisePaginatedResponseDto>(
       `/praise?limit=100&page=1&receiver=${userAccount._id}&sortType=desc&sortColumn=score`,
       {
-        headers: { host: host },
+        headers: { host },
       }
     );
 
@@ -79,7 +79,7 @@ export const whoisHandler: CommandHandler = async (
       userAccount.user
         ? apiClient
             .get<UserWithStatsDto>(`/users/${userAccount.user._id}`, {
-              headers: { host: host },
+              headers: { host },
             })
             .then((res) => res.data)
         : Promise.resolve(null),
@@ -93,12 +93,6 @@ export const whoisHandler: CommandHandler = async (
     });
 
     if (user) {
-      user.updatedAt &&
-        fields.push({
-          name: 'Latest activity',
-          value: new Date(user.updatedAt).toDateString(),
-        });
-
       user.receivedTotalScore &&
         fields.push({
           name: 'Received praise total score',

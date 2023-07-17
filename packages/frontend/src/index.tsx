@@ -14,6 +14,7 @@ import { Web3Provider } from './providers/Web3Provider';
 import { AwaitMetamaskInit } from './components/AwaitMetaMaskInit';
 import { LightDarkTheme } from './components/LightDarkTheme';
 import { ErrorBoundaryTopLevel } from './components/ErrorBoundaryTopLevel';
+import PlausibleAnalytics from '@/components/PlausibleAnalytics';
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const root = createRoot(document.getElementById('root')!);
@@ -30,6 +31,7 @@ root.render(
                   <ErrorBoundaryTopLevel>
                     <Routes />
                   </ErrorBoundaryTopLevel>
+                  <PlausibleAnalytics />
                 </React.Suspense>
               </LightDarkTheme>
             </AwaitMetamaskInit>

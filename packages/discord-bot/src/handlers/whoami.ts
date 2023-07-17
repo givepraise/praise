@@ -50,7 +50,7 @@ export const whoamiHandler: CommandHandler = async (
 
       const activatedAccounts = await apiClient
         .get<UserAccount[]>(`useraccounts?user=${ua.user._id}`, {
-          headers: { host: host },
+          headers: { host },
         })
         .then((res) => res.data);
       for (const account of activatedAccounts) {
@@ -58,7 +58,6 @@ export const whoamiHandler: CommandHandler = async (
           platform: account.platform,
           user: account.name,
           activationDate: account.createdAt,
-          latestUsageDate: account.updatedAt,
         });
       }
     } else {
@@ -67,7 +66,6 @@ export const whoamiHandler: CommandHandler = async (
           platform: 'DISCORD',
           user: ua.name,
           activationDate: ua.createdAt,
-          latestUsageDate: ua.updatedAt,
         });
       }
     }
