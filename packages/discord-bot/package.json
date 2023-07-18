@@ -14,7 +14,7 @@
     "discord.js": "^14.5.0",
     "env-cmd": "^10.1.0",
     "keyv": "^4.5.2",
-    "mongoose": "^6.10.2",
+    "mongoose": "^6.11.3",
     "randomstring": "^1.2.2",
     "ts-node": "^10.5.0",
     "winston": "^3.8.2",
