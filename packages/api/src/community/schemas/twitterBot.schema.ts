@@ -4,7 +4,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { ExposeId } from '../../shared/decorators/expose-id.decorator';
 import { Types } from 'mongoose';
 
-@Schema({ timestamps: true })
+@Schema()
 
 export class TwitterBot {
   @ApiProperty({
@@ -16,10 +16,10 @@ export class TwitterBot {
   @ExposeId()
   _id: Types.ObjectId;
 
-  @ApiProperty({ example: 'e.g. 1655693432172494852', required: true })
-  @IsNumber()
+  @ApiProperty({ example: 'e.g. "1655693432172494852"', required: true })
+  @IsString()
   @Prop({ required: true })
-  twitterBotId: number;
+  twitterBotId: string;
 
   @ApiProperty({ example: 'e.g. givethpraise', required: true })
   @IsString()
