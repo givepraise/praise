@@ -23,7 +23,12 @@ import { CacheModule } from '@nestjs/cache-manager';
 
 @Module({
   imports: [
-    MongooseModule.forRoot(process.env.MONGO_ADMIN_URI || ''),
+    MongooseModule.forRoot(process.env.MONGO_ADMIN_URI || '', {
+      maxPoolSize: 100,
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      bufferCommands: false,
+    }),
     ThrottlerModule.forRoot({
       ttl: 60,
       limit: process.env.NODE_ENV === 'testing' ? 1000 : 100, // 10 requests per minute, except in development
