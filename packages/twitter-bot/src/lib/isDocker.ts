@@ -1,0 +1,30 @@
+import { statSync, readFileSync } from 'fs';
+
+let isDockerCached: boolean;
+
+function hasDockerEnv(): boolean {
+	try {
+		statSync('/.dockerenv');
+		return true;
+	} catch {
+		return false;
+	}
+}
+
+function hasDockerCGroup(): boolean {
+	try {
+		return readFileSync('/proc/self/cgroup', 'utf8').includes('docker');
+	} catch {
+		return false;
+	}
+}
+
+function isDocker(): boolean {
+	if (isDockerCached === undefined) {
+		isDockerCached = hasDockerEnv() || hasDockerCGroup();
+	}
+
+	return isDockerCached;
+}
+
+export default isDocker;

@@ -11,3 +11,5 @@ node_modules
 .env
 yarn-error.log
 .idea
+/packages/twitter-bot/log.txt
+/packages/twitter-bot/tweetsCache.sqlite

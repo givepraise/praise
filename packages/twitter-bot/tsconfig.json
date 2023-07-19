@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "target": "es2019" ,
+    "module": "commonjs",
+    "esModuleInterop": true,
+  },
+  "exclude": ["./build", "node_modules"]
+}

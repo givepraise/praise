@@ -1,0 +1,90 @@
+{
+  "root": true,
+  "plugins": [
+    "import",
+    "unused-imports",
+    "@typescript-eslint"
+  ],
+  "extends": [
+    "esnext",
+    "node",
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:prettier/recommended",
+    "prettier",
+    "plugin:import/recommended",
+    "plugin:import/typescript",
+    "plugin:import/warnings",
+    "plugin:import/errors"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "rules": {
+    "import/no-unresolved": "error",
+    "no-use-before-define": ["error", {"functions": false, "classes": false, "variables": false}],
+    "import/order": ["error", {
+      "groups": ["builtin", "external", ["internal", "parent", "sibling"], "index", "object", "type"]
+    }],
+    "unused-imports/no-unused-imports": "error",
+    "unused-imports/no-unused-vars": [
+      "warn",
+      { "vars": "all", "varsIgnorePattern": "^_", "args": "after-used", "argsIgnorePattern": "^_" }
+    ],
+    "import/named": "error",
+    "import/extensions": [
+      "error",
+      "ignorePackages",
+      {
+        "js": "never",
+        "jsx": "never",
+        "ts": "never",
+        "tsx": "never"
+      }
+    ],
+    "no-param-reassign": [
+      2,
+      {
+        "props": false
+      }
+    ],
+    "no-underscore-dangle": 0,
+    "no-unused-vars": [
+      "error",
+      {
+        "vars": "all",
+        "args": "after-used",
+        "ignoreRestSiblings": true,
+        "argsIgnorePattern": "^_"
+      }
+    ],
+    "prettier/prettier": ["error", {
+      "singleQuote": true,
+      "useTabs": true,
+      "tabWidth": 4,
+      "semi": true,
+      "jsxSingleQuote": true,
+      "trailingComma": "all",
+      "arrowParens": "avoid",
+      "endOfLine": "auto",
+      "printWidth": 90
+    }]
+  },
+  "env": {
+    "jest": true,
+    "browser": true
+  },
+  "globals": {
+    "FileReader": true,
+    "window": true
+  },
+  "settings": {
+    "import/parsers": {
+      "@typescript-eslint/parser": [".ts", ".tsx"]
+    },
+    "import/resolver": {
+      "node": {
+        "moduleDirectory": ["node_modules", "src/"],
+        "extensions": [".js", ".jsx", ".ts", ".tsx"]
+      }
+    }
+  }
+}
