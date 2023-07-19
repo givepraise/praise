@@ -1,4 +1,9 @@
-import { ComponentType, GuildMember } from 'discord.js';
+import {
+  ComponentType,
+  GuildMember,
+  ActionRowBuilder,
+  ButtonBuilder,
+} from 'discord.js';
 import { parseReceivers } from '../utils/parseReceivers';
 
 import { ephemeralWarning } from '../utils/renderMessage';
@@ -80,17 +85,48 @@ export const praiseHandler: CommandHandler = async (
         member,
         true
       );
-      if (!response) return;
+      if (!response) {
+        await interaction.editReply("Error: Can't run activation flow");
+        return;
+      }
+
+      const [message, activationUrl] = response;
 
       try {
-        const collector = response.createMessageComponentCollector({
+        const collector = message.createMessageComponentCollector({
           filter: (i) =>
-            i.user.id === interaction.user.id && i.customId === 'retry',
+            i.user.id === interaction.user.id &&
+            (i.customId === 'retry' ||
+              i.customId === `activate-${member.user.id}`) &&
+            i.isButton(),
           componentType: ComponentType.Button,
           time: 600000,
         });
 
         collector.on('collect', async (i) => {
+          if (i.customId === `activate-${member.user.id}`) {
+            const buttonIndex = i.message.components[0].components.findIndex(
+              (c) => c.customId === `activate-${member.user.id}`
+            );
+            const builder = new ActionRowBuilder<ButtonBuilder>();
+            ActionRowBuilder.from(i.message.components[0]).components.forEach(
+              (i, index) => {
+                if (i instanceof ButtonBuilder) {
+                  if (index === buttonIndex) i.setDisabled(true);
+                  builder.addComponents(i);
+                }
+              }
+            );
+            await i.update({
+              content: i.message.content,
+              components: [builder],
+            });
+            await i.followUp({
+              content: `Open this link and sign a message with your Ethereum wallet to activate: ${activationUrl}`,
+              ephemeral: true,
+            });
+            return;
+          }
           giverAccount = await getUserAccount(
             (member as GuildMember).user,
             host

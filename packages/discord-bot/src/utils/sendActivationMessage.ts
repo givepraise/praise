@@ -6,17 +6,18 @@ import {
   ActionRowBuilder,
   ButtonBuilder,
   Message,
+  ButtonInteraction,
 } from 'discord.js';
 import { getUserAccount } from '../utils/getUserAccount';
 import { getActivateToken } from '../utils/getActivateToken';
 import { renderMessage } from '../utils/renderMessage';
 
 export const sendActivationMessage = async (
-  interaction: ChatInputCommandInteraction,
+  interaction: ChatInputCommandInteraction | ButtonInteraction,
   host: string,
   member: GuildMember | APIInteractionGuildMember,
   retry = false
-): Promise<Message | undefined> => {
+): Promise<[Message, string] | undefined> => {
   try {
     const userAccount = await getUserAccount(
       (member as GuildMember).user,
@@ -50,25 +51,37 @@ export const sendActivationMessage = async (
       member.user.id
     }&platform=DISCORD&token=${activateToken}`;
 
-    const activateButton = new ButtonBuilder()
-      .setLabel('Activate')
-      .setURL(activationURL)
-      .setStyle(ButtonStyle.Link);
-    const retryButton = new ButtonBuilder()
-      .setCustomId('retry')
-      .setLabel('Retry')
-      .setStyle(ButtonStyle.Success);
+    const row = new ActionRowBuilder<ButtonBuilder>();
 
-    const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
-      activateButton
-    );
-    if (retry) row.addComponents(retryButton);
+    if (retry) {
+      row.addComponents(
+        new ButtonBuilder()
+          .setLabel('Activate')
+          .setCustomId(`activate-${member.user.id}`)
+          .setStyle(ButtonStyle.Primary)
+      );
+      row.addComponents(
+        new ButtonBuilder()
+          .setCustomId('retry')
+          .setLabel('Retry')
+          .setStyle(ButtonStyle.Success)
+      );
+    } else {
+      row.addComponents(
+        new ButtonBuilder()
+          .setLabel('Activate')
+          .setURL(activationURL)
+          .setStyle(ButtonStyle.Link)
+      );
+    }
 
     const response = await interaction.editReply({
-      content: `In order to dish praise, you need to activate your account by following this link and signing a message using your Ethereum wallet. [Activate my account!](${activationURL})`,
+      content:
+        'In order to dish praise, you need to activate your account by clicking the Activate button below, and signing a message with your Ethereum wallet: ',
       components: [row],
     });
-    return response;
+
+    return [response, activationURL];
   } catch (error) {
     await interaction.editReply({
       content: 'Unable to activate user account.',
