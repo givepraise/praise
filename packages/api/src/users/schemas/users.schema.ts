@@ -3,7 +3,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 import { Types } from 'mongoose';
 import { AuthRole } from '../../auth/enums/auth-role.enum';
-import { ApiProperty, ApiResponseProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiResponseProperty, OmitType } from '@nestjs/swagger';
 import { ExposeId } from '../../shared/decorators/expose-id.decorator';
 import { IsOptional, IsString } from 'class-validator';
 import { IsEthAddress } from '../../shared/validators/is-eth-address.validator';
@@ -15,7 +15,9 @@ import {
 
 export type UserDocument = User & Document;
 
-@Schema({ timestamps: true })
+@Schema({
+  timestamps: true,
+})
 export class User {
   constructor(partial?: Partial<User>) {
     if (partial) {
@@ -118,3 +120,10 @@ export const UsersExportSqlSchema = `
  "createdAt" TIMESTAMP, 
  "updatedAt" TIMESTAMP
 `;
+
+// Importing this class from another file causes the error:
+// TypeError: Cannot read properties of undefined (reading 'prototype')
+// TODO: Figure out why this is happening
+export class UserNoUserAccountsDto extends OmitType(User, [
+  'accounts',
+] as const) {}

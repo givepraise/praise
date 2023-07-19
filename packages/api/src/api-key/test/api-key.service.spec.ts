@@ -11,7 +11,7 @@ describe('ApiKeyService', () => {
       imports: [AppModule, ApiKeyModule],
     }).compile();
 
-    service = module.get<ApiKeyService>(ApiKeyService);
+    service = await module.resolve<ApiKeyService>(ApiKeyService);
   });
 
   it('should be defined', () => {

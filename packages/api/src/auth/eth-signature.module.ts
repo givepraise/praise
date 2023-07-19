@@ -5,6 +5,7 @@ import { EventLogModule } from '../event-log/event-log.module';
 import { UsersModule } from '../users/users.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from '../users/schemas/users.schema';
+import { DbService } from '../database/services/db.service';
 
 @Module({
   imports: [
@@ -12,7 +13,7 @@ import { User, UserSchema } from '../users/schemas/users.schema';
     EventLogModule,
     UsersModule,
   ],
-  providers: [EthSignatureService],
+  providers: [EthSignatureService, DbService],
   controllers: [EthSignatureController],
 })
 export class EthSignatureModule {}

@@ -11,7 +11,7 @@ describe('ApiKeyController', () => {
       imports: [AppModule, ApiKeyModule],
     }).compile();
 
-    controller = module.get<ApiKeyController>(ApiKeyController);
+    controller = await module.resolve<ApiKeyController>(ApiKeyController);
   });
 
   it('should be defined', () => {

@@ -16,6 +16,7 @@ import { EventLogModule } from '../event-log/event-log.module';
 import { PeriodsService } from '../periods/services/periods.service';
 import { PraiseService } from '../praise/services/praise.service';
 import { UsersModule } from '../users/users.module';
+import { DbService } from '../database/services/db.service';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { UsersModule } from '../users/users.module';
     ConstantsProvider,
     PraiseService,
     PeriodsService,
+    DbService,
   ],
   exports: [QuantificationsService],
 })

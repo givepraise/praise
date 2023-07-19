@@ -17,7 +17,9 @@ describe('SettingsController', () => {
       providers: [SettingsService, ConstantsProvider],
     }).compile();
 
-    settingsController = module.get<SettingsController>(SettingsController);
+    settingsController = await module.resolve<SettingsController>(
+      SettingsController,
+    );
     jest.clearAllMocks();
   });
 

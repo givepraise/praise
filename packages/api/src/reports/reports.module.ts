@@ -14,6 +14,7 @@ import {
   ReportCacheItem,
   ReportCacheItemSchema,
 } from './schemas/report-cache-item.schema';
+import { DbService } from '../database/services/db.service';
 
 @Module({
   imports: [
@@ -25,6 +26,11 @@ import {
     ]),
   ],
   controllers: [ReportsController],
-  providers: [ReportsService, ReportsCacheService, ConstantsProvider],
+  providers: [
+    ReportsService,
+    ReportsCacheService,
+    ConstantsProvider,
+    DbService,
+  ],
 })
 export class ReportsModule {}

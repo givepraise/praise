@@ -1,44 +1,56 @@
 import { UpdateUserRoleInputDto } from './dto/update-user-role-input.dto';
-import { User, UserDocument } from './schemas/users.schema';
-import { InjectModel } from '@nestjs/mongoose';
+import { User, UserSchema } from './schemas/users.schema';
 import { Cursor, Model, Types } from 'mongoose';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Scope } from '@nestjs/common';
 import { UpdateUserInputDto } from './dto/update-user-input.dto';
 import { CreateUserInputDto } from './dto/create-user-input.dto';
 import { ApiException } from '../shared/exceptions/api-exception';
 import { UserAccount } from '../useraccounts/schemas/useraccounts.schema';
 import { AuthRole } from '../auth/enums/auth-role.enum';
 import { UserWithStatsDto } from './dto/user-with-stats.dto';
-import { Praise, PraiseDocument } from '../praise/schemas/praise.schema';
+import { Praise, PraiseSchema } from '../praise/schemas/praise.schema';
 import { UserStatsDto } from './dto/user-stats.dto';
-import { PeriodDateRangeDto } from '../periods/dto/period-date-range.dto';
 import { Period } from '../periods/schemas/periods.schema';
 import { PeriodsService } from '../periods/services/periods.service';
-import { PraiseService } from '../praise/services/praise.service';
 import { errorMessages } from '../shared/exceptions/error-messages';
 import { logger } from '../shared/logger';
 import { randomBytes } from 'crypto';
+import { DbService } from '../database/services/db.service';
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class UsersService {
-  constructor(
-    @InjectModel(User.name)
-    private userModel: Model<UserDocument>,
-    @InjectModel(Praise.name)
-    private praiseModel: Model<PraiseDocument>,
-    private periodService: PeriodsService,
-    private praiseService: PraiseService,
-  ) {}
+  private userModel: Model<User>;
+  private praiseModel: Model<Praise>;
 
-  getModel(): Model<UserDocument> {
+  constructor(
+    private periodService: PeriodsService,
+    private dbService: DbService,
+  ) {
+    this.userModel = this.dbService.getModel<User>(User.name, UserSchema);
+    this.praiseModel = this.dbService.getModel<Praise>(
+      Praise.name,
+      PraiseSchema,
+    );
+  }
+
+  getModel(): Model<User> {
     return this.userModel;
   }
 
   async findAll(): Promise<User[]> {
-    return this.userModel.find().populate('accounts').lean();
+    return this.userModel.aggregate<User>([
+      {
+        $lookup: {
+          from: 'useraccounts',
+          localField: '_id',
+          foreignField: 'user',
+          as: 'accounts',
+        },
+      },
+    ]);
   }
 
-  async getUserStats(user: UserDocument): Promise<UserStatsDto | null> {
+  async getUserStats(user: User): Promise<UserStatsDto | null> {
     if (!user.accounts || user.accounts.length === 0) return null;
     const accountIds = user.accounts?.map((a) => new Types.ObjectId(a._id));
 
@@ -81,11 +93,20 @@ export class UsersService {
   }
 
   async findOne(query: any): Promise<UserWithStatsDto> {
-    const user = await this.userModel
-      .findOne(query)
-      .populate('accounts')
-      .lean();
-    if (!user) throw new ApiException(errorMessages.USER_NOT_FOUND);
+    const users = await this.userModel.aggregate<User>([
+      { $match: query },
+      {
+        $lookup: {
+          from: 'useraccounts',
+          localField: '_id',
+          foreignField: 'user',
+          as: 'accounts',
+        },
+      },
+    ]);
+    if (!users || !Array.isArray(users) || users.length === 0)
+      throw new ApiException(errorMessages.USER_NOT_FOUND);
+    const user = users[0];
     const userStats = await this.getUserStats(user);
     return { ...user, ...userStats };
   }

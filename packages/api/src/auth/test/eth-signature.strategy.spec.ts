@@ -33,10 +33,13 @@ describe('EthSignatureStrategy', () => {
       ],
     }).compile();
 
-    usersService = module.get<UsersService>(UsersService);
-    ethSignatureStrategy =
-      module.get<EthSignatureStrategy>(EthSignatureStrategy);
-    ethSignatureService = module.get<EthSignatureService>(EthSignatureService);
+    usersService = await module.resolve<UsersService>(UsersService);
+    ethSignatureStrategy = await module.resolve<EthSignatureStrategy>(
+      EthSignatureStrategy,
+    );
+    ethSignatureService = await module.resolve<EthSignatureService>(
+      EthSignatureService,
+    );
   });
 
   describe('validate', () => {

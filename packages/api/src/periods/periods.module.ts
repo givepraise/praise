@@ -18,6 +18,7 @@ import {
   QuantificationsSchema,
 } from '../quantifications/schemas/quantifications.schema';
 import { ConstantsProvider } from '../constants/constants.provider';
+import { DbService } from '../database/services/db.service';
 
 @Module({
   imports: [
@@ -33,7 +34,12 @@ import { ConstantsProvider } from '../constants/constants.provider';
     PraiseModule,
   ],
   controllers: [PeriodsController],
-  providers: [PeriodsService, PeriodAssignmentsService, ConstantsProvider],
+  providers: [
+    PeriodsService,
+    PeriodAssignmentsService,
+    ConstantsProvider,
+    DbService,
+  ],
   exports: [
     PeriodsService,
     MongooseModule.forFeature([{ name: Period.name, schema: PeriodSchema }]),

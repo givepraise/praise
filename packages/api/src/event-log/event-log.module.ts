@@ -13,6 +13,7 @@ import {
   UserAccountSchema,
 } from '../useraccounts/schemas/useraccounts.schema';
 import { User, UserSchema } from '../users/schemas/users.schema';
+import { DbService } from '../database/services/db.service';
 @Module({
   imports: [
     MongooseModule.forFeature([
@@ -23,7 +24,7 @@ import { User, UserSchema } from '../users/schemas/users.schema';
     ]),
   ],
   controllers: [EventLogController],
-  providers: [EventLogService, ConstantsProvider],
+  providers: [EventLogService, ConstantsProvider, DbService],
   exports: [EventLogService],
 })
 export class EventLogModule {}

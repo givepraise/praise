@@ -1,27 +1,31 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, Scope, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 import { LoginResponseDto } from './dto/login-response.dto';
-import { EventLogService } from '../event-log/event-log.service';
 import { ApiException } from '../shared/exceptions/api-exception';
 import { errorMessages } from '../shared/exceptions/error-messages';
 import { HOSTNAME_TEST } from '../constants/constants.provider';
 import { ethers } from 'ethers';
-import { User, UserDocument } from '../users/schemas/users.schema';
+import { User, UserSchema } from '../users/schemas/users.schema';
 import { Model } from 'mongoose';
-import { InjectModel } from '@nestjs/mongoose';
+import { DbService } from '../database/services/db.service';
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 /**
  * Authenticate users using their Ethereum signature.
  */
 export class EthSignatureService {
+  private userModel: Model<User>;
+
   constructor(
     private readonly jwtService: JwtService,
-    private readonly eventLogService: EventLogService,
-    @InjectModel(User.name)
-    private userModel: Model<UserDocument>,
-  ) {}
+    private dbService: DbService,
+  ) {
+    this.userModel = this.dbService.getPaginateModel<User>(
+      User.name,
+      UserSchema,
+    );
+  }
 
   /**
    * Generates a login message that will be signed by the frontend user, and validated by the API.

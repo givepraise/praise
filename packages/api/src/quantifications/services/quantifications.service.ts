@@ -1,9 +1,8 @@
 import { SettingsService } from '../../settings/settings.service';
-import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Quantification } from '../schemas/quantifications.schema';
 import { sum, has } from 'lodash';
-import { Praise } from '../../praise/schemas/praise.schema';
+import { Praise, PraiseSchema } from '../../praise/schemas/praise.schema';
 import { ApiException } from '../../shared/exceptions/api-exception';
 import { PraiseService } from '../../praise/services/praise.service';
 import { PeriodsService } from '../../periods/services/periods.service';
@@ -13,17 +12,30 @@ import { PeriodStatusType } from '../../periods/enums/status-type.enum';
 import { isQuantificationCompleted } from '../utils/is-quantification-completed';
 import { EventLogTypeKey } from '../../event-log/enums/event-log-type-key';
 import { logger } from '../../shared/logger';
+import { QuantificationSchema } from '../../database/schemas/quantification/quantification.schema';
+import { DbService } from '../../database/services/db.service';
+import { Injectable, Scope } from '@nestjs/common';
 
+@Injectable({ scope: Scope.REQUEST })
 export class QuantificationsService {
+  private quantificationModel: Model<Quantification>;
+  private praiseModel: Model<Praise>;
+
   constructor(
-    @InjectModel(Quantification.name)
-    private quantificationModel: Model<Quantification>,
-    @InjectModel(Praise.name)
-    private praiseModel: Model<Praise>,
+    private dbService: DbService,
     private settingsService: SettingsService,
     private praiseService: PraiseService,
     private periodService: PeriodsService,
-  ) {}
+  ) {
+    this.quantificationModel = this.dbService.getModel<Quantification>(
+      Quantification.name,
+      QuantificationSchema,
+    );
+    this.praiseModel = this.dbService.getModel<Praise>(
+      Praise.name,
+      PraiseSchema,
+    );
+  }
 
   /**
    * Digits of precision for rounding calculated scores

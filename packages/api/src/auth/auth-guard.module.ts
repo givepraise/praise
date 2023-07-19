@@ -5,6 +5,7 @@ import { ApiKeyService } from '../api-key/api-key.service';
 import { ConstantsProvider } from '../constants/constants.provider';
 import { EventLogModule } from '../event-log/event-log.module';
 import { AuthGuard } from './guards/auth.guard';
+import { DbService } from '../database/services/db.service';
 
 @Global()
 @Module({
@@ -17,7 +18,7 @@ import { AuthGuard } from './guards/auth.guard';
     ApiKeyModule,
     EventLogModule,
   ],
-  providers: [AuthGuard, ApiKeyService, ConstantsProvider],
+  providers: [AuthGuard, ApiKeyService, ConstantsProvider, DbService],
   exports: [AuthGuard],
 })
 export class AuthGuardModule {}

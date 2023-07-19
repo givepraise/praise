@@ -1,25 +1,26 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
 import { Cursor, Model, Types } from 'mongoose';
-import {
-  UserAccount,
-  UserAccountDocument,
-} from './schemas/useraccounts.schema';
+import { UserAccount, UserAccountSchema } from './schemas/useraccounts.schema';
 import { ApiException } from '../shared/exceptions/api-exception';
 import { CreateUserAccountInputDto } from './dto/create-user-account-input.dto';
 import { UpdateUserAccountInputDto } from './dto/update-user-account-input.dto';
 import { CreateUserAccountResponseDto } from './dto/create-user-account-response.dto';
 import { FindUserAccountFilterDto } from './dto/find-user-account-filter.dto';
 import { errorMessages } from '../shared/exceptions/error-messages';
+import { DbService } from '../database/services/db.service';
 
 @Injectable()
 export class UserAccountsService {
-  constructor(
-    @InjectModel(UserAccount.name)
-    private userAccountModel: Model<UserAccountDocument>,
-  ) {}
+  private userAccountModel: Model<UserAccount>;
 
-  getModel(): Model<UserAccountDocument> {
+  constructor(private dbService: DbService) {
+    this.userAccountModel = this.dbService.getModel<UserAccount>(
+      UserAccount.name,
+      UserAccountSchema,
+    );
+  }
+
+  getModel(): Model<UserAccount> {
     return this.userAccountModel;
   }
 

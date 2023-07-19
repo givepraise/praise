@@ -6,6 +6,7 @@ import { UserAccountsController } from './useraccounts.controller';
 import { EventLogModule } from '../event-log/event-log.module';
 import { UsersModule } from '../users/users.module';
 import { ConstantsProvider } from '../constants/constants.provider';
+import { DbService } from '../database/services/db.service';
 
 @Module({
   imports: [
@@ -16,7 +17,7 @@ import { ConstantsProvider } from '../constants/constants.provider';
     UsersModule,
   ],
   controllers: [UserAccountsController],
-  providers: [UserAccountsService, ConstantsProvider],
+  providers: [UserAccountsService, ConstantsProvider, DbService],
   exports: [UserAccountsService],
 })
 export class UserAccountsModule {}

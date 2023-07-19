@@ -1,14 +1,17 @@
 import { ExportInputDto } from '../../shared/dto/export-input.dto';
 import { Cursor, Model } from 'mongoose';
-import { InjectModel } from '@nestjs/mongoose';
-import { Praise } from '../../praise/schemas/praise.schema';
+import { Praise, PraiseSchema } from '../../praise/schemas/praise.schema';
 import { exportInputToQuery } from '../../shared/export.shared';
+import { DbService } from '../../database/services/db.service';
+import { Injectable, Scope } from '@nestjs/common';
 
+@Injectable({ scope: Scope.REQUEST })
 export class QuantificationsExportService {
-  constructor(
-    @InjectModel(Praise.name)
-    private praiseModel: Model<Praise>,
-  ) {}
+  private praiseModel: Model<Praise>;
+
+  constructor(private dbService: DbService) {
+    this.praiseModel = this.dbService.getModel<Praise>('praise', PraiseSchema);
+  }
 
   /**
    * Counts the number of quantifications that match the given query

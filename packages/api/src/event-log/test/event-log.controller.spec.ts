@@ -14,7 +14,7 @@ describe('EventLogController', () => {
       providers: [EventLogService],
     }).compile();
 
-    controller = module.get<EventLogController>(EventLogController);
+    controller = await module.resolve<EventLogController>(EventLogController);
   });
 
   it('should be defined', () => {

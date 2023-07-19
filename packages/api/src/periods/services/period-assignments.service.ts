@@ -1,14 +1,16 @@
 import { AuthRole } from '../../auth/enums/auth-role.enum';
 import { Quantifier } from '../../praise/interfaces/quantifier.interface';
 import { Receiver } from '../../praise/interfaces/receiver.interface';
-import { Praise } from '../../praise/schemas/praise.schema';
+import { Praise, PraiseSchema } from '../../praise/schemas/praise.schema';
 import { Quantification } from '../../quantifications/schemas/quantifications.schema';
 import { SettingsService } from '../../settings/settings.service';
 import { ApiException } from '../../shared/exceptions/api-exception';
-import { UserAccount } from '../../useraccounts/schemas/useraccounts.schema';
-import { User } from '../../users/schemas/users.schema';
-import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
+import {
+  UserAccount,
+  UserAccountSchema,
+} from '../../useraccounts/schemas/useraccounts.schema';
+import { User, UserSchema } from '../../users/schemas/users.schema';
+import { Injectable, Scope } from '@nestjs/common';
 import { Model, Types } from 'mongoose';
 import flatten from 'lodash/flatten';
 import intersection from 'lodash/intersection';
@@ -27,27 +29,44 @@ import { ReplaceQuantifierResponseDto } from '../dto/replace-quantifier-response
 import { VerifyQuantifierPoolSizeDto } from '../dto/verify-quantifiers-pool-size.dto';
 import { PeriodStatusType } from '../enums/status-type.enum';
 import { QuantifierPoolById } from '../interfaces/quantifier-pool-by-id.interface';
-import { Period } from '../schemas/periods.schema';
+import { Period, PeriodSchema } from '../schemas/periods.schema';
 import { PeriodsService } from './periods.service';
 import { errorMessages } from '../../shared/exceptions/error-messages';
 import { logger } from '../../shared/logger';
+import { DbService } from '../../database/services/db.service';
+import { QuantificationSchema } from '../../database/schemas/quantification/quantification.schema';
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class PeriodAssignmentsService {
+  private periodModel: Model<Period>;
+  private praiseModel: Model<Praise>;
+  private userModel: Model<User>;
+  private userAccountModel: Model<UserAccount>;
+  private quantificationModel: Model<Quantification>;
+
   constructor(
-    @InjectModel(Period.name)
-    private periodModel: typeof Model<Period>,
-    @InjectModel(Praise.name)
-    private praiseModel: Model<Praise>,
-    @InjectModel(User.name)
-    private userModel: Model<User>,
-    @InjectModel(UserAccount.name)
-    private userAccountModel: Model<UserAccount>,
-    @InjectModel(Quantification.name)
-    private quantificationModel: Model<Quantification>,
     private settingsService: SettingsService,
     private periodsService: PeriodsService,
-  ) {}
+    private dbService: DbService,
+  ) {
+    this.periodModel = this.dbService.getModel<Period>(
+      Period.name,
+      PeriodSchema,
+    );
+    this.praiseModel = this.dbService.getModel<Praise>(
+      Praise.name,
+      PraiseSchema,
+    );
+    this.userModel = this.dbService.getModel<User>(User.name, UserSchema);
+    this.userAccountModel = this.dbService.getModel<UserAccount>(
+      UserAccount.name,
+      UserAccountSchema,
+    );
+    this.quantificationModel = this.dbService.getModel<Quantification>(
+      Quantification.name,
+      QuantificationSchema,
+    );
+  }
 
   /**
    * Return quantifier pool size and needed quantifier pool size

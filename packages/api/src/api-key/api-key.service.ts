@@ -1,7 +1,6 @@
-import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
+import { Injectable, Scope } from '@nestjs/common';
 import { Model, Types } from 'mongoose';
-import { ApiKey, ApiKeyDocument } from './schemas/api-key.schema';
+import { ApiKey, ApiKeySchema } from './schemas/api-key.schema';
 import * as bcrypt from 'bcrypt';
 import { CreateApiKeyInputDto } from './dto/create-api-key-input.dto';
 import { CreateApiKeyResponseDto } from './dto/create-api-key-response';
@@ -9,20 +8,27 @@ import { ApiException } from '../shared/exceptions/api-exception';
 import { randomBytes } from 'crypto';
 import { ConstantsProvider } from '../constants/constants.provider';
 import { errorMessages } from '../shared/exceptions/error-messages';
+import { DbService } from '../database/services/db.service';
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class ApiKeyService {
+  private readonly apiKeyModel: Model<ApiKey>;
+
   constructor(
-    @InjectModel(ApiKey.name)
-    private readonly apiKeyModel: Model<ApiKeyDocument>,
     private readonly constantsProvider: ConstantsProvider,
-  ) {}
+    private dbService: DbService,
+  ) {
+    this.apiKeyModel = this.dbService.getModel<ApiKey>(
+      ApiKey.name,
+      ApiKeySchema,
+    );
+  }
 
   /**
    * Returns the Mongoose model for the API key document.
    * @returns {Model<ApiKeyDocument>} The Mongoose model for the API key document.
    */
-  getModel(): Model<ApiKeyDocument> {
+  getModel(): Model<ApiKey> {
     return this.apiKeyModel;
   }
 

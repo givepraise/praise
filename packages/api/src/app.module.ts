@@ -14,7 +14,6 @@ import { ActivateModule } from './activate/activate.module';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { CommunityModule } from './community/community.module';
-import { MultiTenantConnectionService } from './database/services/multi-tenant-connection-service';
 import { RequestLoggerMiddleware } from './shared/middlewares/request-logger.middleware';
 import { AuthGuardModule } from './auth/auth-guard.module';
 import { PingMiddleware } from './shared/middlewares/ping.middleware';
@@ -25,9 +24,7 @@ import { ConnectionCacheService } from './database/services/connection-cache.ser
 
 @Module({
   imports: [
-    MongooseModule.forRootAsync({
-      useClass: MultiTenantConnectionService,
-    }),
+    MongooseModule.forRoot(process.env.MONGO_ADMIN_URI || ''),
     ThrottlerModule.forRoot({
       ttl: 60,
       limit: process.env.NODE_ENV === 'testing' ? 1000 : 100, // 10 requests per minute, except in development

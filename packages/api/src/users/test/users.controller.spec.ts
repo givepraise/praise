@@ -19,8 +19,8 @@ describe('UsersController', () => {
       providers: [UsersService],
     }).compile();
 
-    usersController = module.get<UsersController>(UsersController);
-    usersService = module.get<UsersService>(UsersService);
+    usersController = await module.resolve<UsersController>(UsersController);
+    usersService = await module.resolve<UsersService>(UsersService);
     jest.clearAllMocks();
   });
 

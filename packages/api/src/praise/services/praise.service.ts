@@ -1,41 +1,57 @@
-import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { Praise } from '../schemas/praise.schema';
+import { Praise, PraiseSchema } from '../schemas/praise.schema';
 import { ApiException } from '../../shared/exceptions/api-exception';
 import { SettingsService } from '../../settings/settings.service';
 import { PraisePaginatedQueryDto } from '../dto/praise-paginated-query.dto';
 import { PraisePaginatedResponseDto } from '../dto/praise-paginated-response.dto';
-import { Period } from '../../periods/schemas/periods.schema';
-import { Injectable } from '@nestjs/common';
+import { Period, PeriodSchema } from '../../periods/schemas/periods.schema';
+import { Injectable, Scope } from '@nestjs/common';
 import { PeriodDateRangeDto } from '../../periods/dto/period-date-range.dto';
 import { PraiseCreateInputDto } from '../dto/praise-create-input.dto';
 import {
   UserAccount,
-  UserAccountDocument,
+  UserAccountSchema,
 } from '../../useraccounts/schemas/useraccounts.schema';
 import { PraiseForwardInputDto } from '../dto/praise-forward-input.dto';
 import { errorMessages } from '../../shared/exceptions/error-messages';
 import { PaginateModel } from '../../shared/interfaces/paginate-model.interface';
-import { User } from '../../users/schemas/users.schema';
+import { User, UserSchema } from '../../users/schemas/users.schema';
 import { Setting } from '../../settings/schemas/settings.schema';
 import { valueToValueRealized } from '../../settings/utils/value-to-value-realized.util';
 import { Quantification } from '../../quantifications/schemas/quantifications.schema';
+import { DbService } from '../../database/services/db.service';
+import { QuantificationSchema } from '../../database/schemas/quantification/quantification.schema';
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class PraiseService {
+  private praiseModel: PaginateModel<Praise>;
+  private periodModel: Model<Period>;
+  private userAccountModel: Model<UserAccount>;
+  private userModel: Model<User>;
+  private quantificationModel: Model<Quantification>;
+
   constructor(
-    @InjectModel(Praise.name)
-    private praiseModel: PaginateModel<Praise>,
-    @InjectModel(Period.name)
-    private periodModel: Model<Period>,
-    @InjectModel(UserAccount.name)
-    private userAccountModel: Model<UserAccountDocument>,
-    @InjectModel(User.name)
-    private userModel: Model<User>,
-    @InjectModel(Quantification.name)
-    private quantificationModel: Model<Quantification>,
     private settingsService: SettingsService,
-  ) {}
+    private dbService: DbService,
+  ) {
+    this.praiseModel = this.dbService.getPaginateModel<Praise>(
+      Praise.name,
+      PraiseSchema,
+    );
+    this.periodModel = this.dbService.getModel<Period>(
+      Period.name,
+      PeriodSchema,
+    );
+    this.userAccountModel = this.dbService.getModel<UserAccount>(
+      UserAccount.name,
+      UserAccountSchema,
+    );
+    this.userModel = this.dbService.getModel<User>(User.name, UserSchema);
+    this.quantificationModel = this.dbService.getModel<Quantification>(
+      Quantification.name,
+      QuantificationSchema,
+    );
+  }
 
   /**
    * Convenience method to get the Praise Model

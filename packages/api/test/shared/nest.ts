@@ -151,40 +151,55 @@ export async function startNest(): Promise<void> {
   await app.init();
 
   // Services
-  activateService = testingModule.get<ActivateService>(ActivateService);
-  apiKeyService = testingModule.get<ApiKeyService>(ApiKeyService);
-  communityService = testingModule.get<CommunityService>(CommunityService);
-  ethSignatureService =
-    testingModule.get<EthSignatureService>(EthSignatureService);
-  eventLogService = testingModule.get<EventLogService>(EventLogService);
-  periodsService = testingModule.get<PeriodsService>(PeriodsService);
-  periodsAssignmentService = testingModule.get<PeriodAssignmentsService>(
-    PeriodAssignmentsService,
+  activateService = await testingModule.resolve<ActivateService>(
+    ActivateService,
   );
-  praiseService = testingModule.get<PraiseService>(PraiseService);
-  quantificationsService = testingModule.get<QuantificationsService>(
+  apiKeyService = await testingModule.resolve<ApiKeyService>(ApiKeyService);
+  communityService = await testingModule.resolve<CommunityService>(
+    CommunityService,
+  );
+  ethSignatureService = await testingModule.resolve<EthSignatureService>(
+    EthSignatureService,
+  );
+  eventLogService = await testingModule.resolve<EventLogService>(
+    EventLogService,
+  );
+  periodsService = await testingModule.resolve<PeriodsService>(PeriodsService);
+  periodsAssignmentService =
+    await testingModule.resolve<PeriodAssignmentsService>(
+      PeriodAssignmentsService,
+    );
+  praiseService = await testingModule.resolve<PraiseService>(PraiseService);
+  quantificationsService = await testingModule.resolve<QuantificationsService>(
     QuantificationsService,
   );
-  settingsService = testingModule.get<SettingsService>(SettingsService);
-  usersService = testingModule.get<UsersService>(UsersService);
-  userAccountsService =
-    testingModule.get<UserAccountsService>(UserAccountsService);
+  settingsService = await testingModule.resolve<SettingsService>(
+    SettingsService,
+  );
+  usersService = await testingModule.resolve<UsersService>(UsersService);
+  userAccountsService = await testingModule.resolve<UserAccountsService>(
+    UserAccountsService,
+  );
 
   //Seeders
-  apiKeySeeder = testingModule.get<ApiKeySeeder>(ApiKeySeeder);
-  communitiesSeeder = testingModule.get<CommunitiesSeeder>(CommunitiesSeeder);
-  eventLogSeeder = testingModule.get<EventLogSeeder>(EventLogSeeder);
-  periodsSeeder = testingModule.get<PeriodsSeeder>(PeriodsSeeder);
-  periodSettingsSeeder =
-    testingModule.get<PeriodSettingsSeeder>(PeriodSettingsSeeder);
-  praiseSeeder = testingModule.get<PraiseSeeder>(PraiseSeeder);
-  quantificationsSeeder = testingModule.get<QuantificationsSeeder>(
+  apiKeySeeder = await testingModule.resolve<ApiKeySeeder>(ApiKeySeeder);
+  communitiesSeeder = await testingModule.resolve<CommunitiesSeeder>(
+    CommunitiesSeeder,
+  );
+  eventLogSeeder = await testingModule.resolve<EventLogSeeder>(EventLogSeeder);
+  periodsSeeder = await testingModule.resolve<PeriodsSeeder>(PeriodsSeeder);
+  periodSettingsSeeder = await testingModule.resolve<PeriodSettingsSeeder>(
+    PeriodSettingsSeeder,
+  );
+  praiseSeeder = await testingModule.resolve<PraiseSeeder>(PraiseSeeder);
+  quantificationsSeeder = await testingModule.resolve<QuantificationsSeeder>(
     QuantificationsSeeder,
   );
-  settingsSeeder = testingModule.get<SettingsSeeder>(SettingsSeeder);
-  userAccountsSeeder =
-    testingModule.get<UserAccountsSeeder>(UserAccountsSeeder);
-  usersSeeder = testingModule.get<UsersSeeder>(UsersSeeder);
+  settingsSeeder = await testingModule.resolve<SettingsSeeder>(SettingsSeeder);
+  userAccountsSeeder = await testingModule.resolve<UserAccountsSeeder>(
+    UserAccountsSeeder,
+  );
+  usersSeeder = await testingModule.resolve<UsersSeeder>(UsersSeeder);
 }
 
 beforeAll(async () => {
