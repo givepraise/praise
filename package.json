@@ -16,6 +16,7 @@
     "api:start": "yarn workspace api run load-env nest start",
     "discord-bot:build-docker": "docker compose -f ./docker-compose.local.yml build discord-bot --no-cache",
     "discord-bot:start": "yarn workspace discord-bot start",
+    "twitter-bot:start": "yarn workspace twitter-bot start",
     "frontend:build-docker": "docker compose -f ./docker-compose.local.yml build frontend --no-cache",
     "build-docker": "docker compose build --no-cache",
     "start-docker:local": "docker compose -f ./docker-compose.local.yml up -d",
@@ -39,5 +40,5 @@
     "prettier": "^2.5.1",
     "typescript": "^4.5.5"
   },
-  "packageManager": "yarn@3.4.1"
+  "packageManager": "yarn@3.6.1"
 }
