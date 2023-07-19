@@ -252,7 +252,7 @@ export class QuantificationsController {
     @Request() request: RequestWithAuthContext,
   ): Promise<Praise[]> {
     const userId = new Types.ObjectId(request.authContext?.userId);
-    const user = await this.usersService.findOne(userId);
+    const user = await this.usersService.findOneById(userId);
 
     if (!userId || !user) {
       throw new ApiException(errorMessages.USER_NOT_FOUND);

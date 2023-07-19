@@ -223,7 +223,7 @@ describe('Quantifications (E2E)', () => {
     });
   });
 
-  describe('PUT /api/quantifications/{id}', () => {
+  describe('PATCH /api/quantifications/{id}', () => {
     let praise: Praise;
     let period: Period;
     let setting: Setting;
