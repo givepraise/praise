@@ -42,125 +42,121 @@ export const Nav = (): JSX.Element => {
   };
 
   return (
-    <nav className="flex flex-col w-64 h-screen text-sm border-r shadow-m lg:fixed bg-warm-gray-50 dark:bg-slate-900 dark:text-white">
-      <div className="flex flex-col justify-between h-full">
-        <div className="w-full">
-          <ul className="relative h-full p-0 m-0 list-none">
-            <li className="relative flex justify-center w-full p-5">
-              <NavLogo />
-            </li>
+    <nav className="flex flex-col w-64 h-screen overflow-auto text-sm border-r shadow-m lg:fixed bg-warm-gray-50 dark:bg-slate-900 dark:text-white">
+      <div className="flex items-center justify-center w-full p-5">
+        <NavLogo />
+      </div>
+      <ul className="p-0 m-0 list-none">
+        {userId && (
+          <NavItem
+            icon={faUser}
+            description="Profile"
+            to={`/users/${userId}`}
+          />
+        )}
+        <NavItem icon={faCalendarAlt} description="Periods" to="/periods" />
+        <NavItem
+          icon={faUserFriends}
+          description="Users"
+          to="/users"
+          exact={true}
+        />
+        <NavItem
+          icon={faChartArea}
+          description="Analytics"
+          to="/analytics"
+          exact={true}
+        />
+        <NavItem
+          icon={faTableList}
+          description="Reports"
+          to="/reports"
+          exact={true}
+        />
+        <NavItem
+          icon={faCoins}
+          description="Rewards"
+          to="/rewards"
+          exact={true}
+        />
+        <NavItem icon={faBook} description="Logs" to="/eventlogs" />
+        <AdminOnly>
+          <NavItem
+            icon={faCog}
+            description="Settings"
+            to="/settings/application"
+          />
+        </AdminOnly>
+      </ul>
 
-            {userId && (
-              <NavItem
-                icon={faUser}
-                description="Profile"
-                to={`/users/${userId}`}
+      <div className="flex-grow" />
+
+      <ul className="hidden tall:block">
+        <NavItem
+          icon={faBullhorn}
+          description="Give us feedback"
+          to="https://praise.sleekplan.app/"
+          iconClassName="text-themecolor-3"
+        />
+        <NavItem
+          icon={faFire}
+          description="Latest changes"
+          to="https://github.com/givepraise/praise/releases"
+          iconClassName="text-themecolor-3"
+        />
+        <NavItem
+          icon={faFileLines}
+          description="Docs"
+          to="https://givepraise.xyz/docs/"
+          iconClassName="text-themecolor-3"
+        />
+      </ul>
+
+      <div
+        className="hidden px-2 py-3 m-3 border-2 rounded-lg cursor-pointer dark:flex border-slate-700"
+        onClick={(): void => handleTheme('Light')}
+      >
+        <div className="inline-block w-8 px-1 text-center text-themecolor-3">
+          <FontAwesomeIcon icon={faSun} size="lg" />
+        </div>
+        <div className="flex-auto inline-block whitespace-nowrap">
+          Light mode
+        </div>
+      </div>
+
+      <div
+        className="flex px-2 py-3 m-3 border-2 rounded-lg cursor-pointer dark:hidden "
+        onClick={(): void => handleTheme('Dark')}
+      >
+        <div className="inline-block w-8 pl-1 text-center text-themecolor-3">
+          <FontAwesomeIcon icon={faMoon} size="lg" />
+        </div>
+        <div className="flex-auto inline-block whitespace-nowrap">
+          Dark mode
+        </div>
+      </div>
+
+      <div className="sticky bottom-0 w-full border-t bg-warm-gray-50 dark:bg-slate-900">
+        <Menu as="div" className="flex flex-col justify-center">
+          {userId ? (
+            <Menu.Button className="flex items-center justify-between w-full selection:hover:text-warm-gray-500 focus:outline-none">
+              <EthAccount
+                showDownCaret={false}
+                showRightCaret={true}
+                className="w-full p-5"
               />
-            )}
-            <NavItem icon={faCalendarAlt} description="Periods" to="/periods" />
-            <NavItem
-              icon={faUserFriends}
-              description="Users"
-              to="/users"
-              exact={true}
-            />
-            <NavItem
-              icon={faChartArea}
-              description="Analytics"
-              to="/analytics"
-              exact={true}
-            />
-            <NavItem
-              icon={faTableList}
-              description="Reports"
-              to="/reports"
-              exact={true}
-            />
-            <NavItem
-              icon={faCoins}
-              description="Rewards"
-              to="/rewards"
-              exact={true}
-            />
-            <NavItem icon={faBook} description="Logs" to="/eventlogs" />
-            <AdminOnly>
-              <NavItem
-                icon={faCog}
-                description="Settings"
-                to="/settings/application"
-              />
-            </AdminOnly>
-          </ul>
-        </div>
-
-        <div className="flex flex-col justify-end mt-auto h-60">
-          <ul>
-            <NavItem
-              icon={faBullhorn}
-              description="Give us feedback"
-              to="https://praise.sleekplan.app/"
-              iconClassName="text-themecolor-3"
-            />
-            <NavItem
-              icon={faFire}
-              description="Latest changes"
-              to="https://github.com/givepraise/praise/releases"
-              iconClassName="text-themecolor-3"
-            />
-            <NavItem
-              icon={faFileLines}
-              description="Docs"
-              to="https://givepraise.xyz/docs/"
-              iconClassName="text-themecolor-3"
-            />
-          </ul>
-          <div
-            className="hidden px-2 py-3 m-3 border-2 rounded-lg cursor-pointer dark:flex border-slate-700"
-            onClick={(): void => handleTheme('Light')}
-          >
-            <div className="inline-block w-8 px-1 text-center text-themecolor-3">
-              <FontAwesomeIcon icon={faSun} size="lg" />
+            </Menu.Button>
+          ) : (
+            <div className="m-3">
+              <Button
+                className="w-full"
+                onClick={(): void => setLoginDialogOpen(true)}
+              >
+                Sign In
+              </Button>
             </div>
-            <div className="flex-auto inline-block whitespace-nowrap">
-              Light mode
-            </div>
-          </div>
-
-          <div
-            className="flex px-2 py-3 m-3 border-2 rounded-lg cursor-pointer dark:hidden "
-            onClick={(): void => handleTheme('Dark')}
-          >
-            <div className="inline-block w-8 pl-1 text-center text-themecolor-3">
-              <FontAwesomeIcon icon={faMoon} size="lg" />
-            </div>
-            <div className="flex-auto inline-block whitespace-nowrap">
-              Dark mode
-            </div>
-          </div>
-        </div>
-
-        <div className="w-full border-t">
-          <Menu as="div" className="flex flex-col justify-center">
-            {userId ? (
-              <Menu.Button className="flex items-center justify-between w-full selection:hover:text-warm-gray-500 focus:outline-none">
-                <EthAccount
-                  showDownCaret={false}
-                  showRightCaret={true}
-                  className="w-full px-4 py-3"
-                />
-              </Menu.Button>
-            ) : (
-              <div className="m-3">
-                <Button
-                  className="w-full"
-                  onClick={(): void => setLoginDialogOpen(true)}
-                >
-                  Sign In
-                </Button>
-              </div>
-            )}
-          </Menu>
-        </div>
+          )}
+        </Menu>
       </div>
 
       {!userId && (
