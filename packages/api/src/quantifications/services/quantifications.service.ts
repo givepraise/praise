@@ -15,6 +15,10 @@ import { logger } from '../../shared/logger';
 import { QuantificationSchema } from '../../database/schemas/quantification/quantification.schema';
 import { DbService } from '../../database/services/db.service';
 import { Injectable, Scope } from '@nestjs/common';
+import {
+  UserAccount,
+  UserAccountSchema,
+} from '../../useraccounts/schemas/useraccounts.schema';
 
 @Injectable({ scope: Scope.REQUEST })
 export class QuantificationsService {
@@ -27,6 +31,7 @@ export class QuantificationsService {
     private praiseService: PraiseService,
     private periodService: PeriodsService,
   ) {
+    this.dbService.getModel<UserAccount>(UserAccount.name, UserAccountSchema); // Ensure UserAccount model is registered for population
     this.quantificationModel = this.dbService.getModel<Quantification>(
       Quantification.name,
       QuantificationSchema,

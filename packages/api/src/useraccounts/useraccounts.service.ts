@@ -8,12 +8,14 @@ import { CreateUserAccountResponseDto } from './dto/create-user-account-response
 import { FindUserAccountFilterDto } from './dto/find-user-account-filter.dto';
 import { errorMessages } from '../shared/exceptions/error-messages';
 import { DbService } from '../database/services/db.service';
+import { User, UserSchema } from '../users/schemas/users.schema';
 
 @Injectable()
 export class UserAccountsService {
   private userAccountModel: Model<UserAccount>;
 
   constructor(private dbService: DbService) {
+    this.dbService.getModel<User>(User.name, UserSchema); // Ensure User model is registered for population
     this.userAccountModel = this.dbService.getModel<UserAccount>(
       UserAccount.name,
       UserAccountSchema,
