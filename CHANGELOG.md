@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **API**: Refactors the API to use request scoped services and simplifies the database connection logic. We no longer attempt to cache db connections ourselves but instead rely on the MongoDb node.js package #1103
 - **Discord bot**: Improved user onboarding - Activation flow when praising first-time #1070
 
 ### Deprecated
