@@ -21,6 +21,12 @@ import { isQuantificationCompleted } from '../../quantifications/utils/is-quanti
 import { PaginateModel } from '../../shared/interfaces/paginate-model.interface';
 import { logger } from '../../shared/logger';
 import { DbService } from '../../database/services/db.service';
+import { Quantification } from '../../quantifications/schemas/quantifications.schema';
+import { QuantificationSchema } from '../../database/schemas/quantification/quantification.schema';
+import {
+  UserAccount,
+  UserAccountSchema,
+} from '../../useraccounts/schemas/useraccounts.schema';
 
 @Injectable({ scope: Scope.REQUEST })
 export class PeriodsService {
@@ -31,6 +37,11 @@ export class PeriodsService {
     private dbService: DbService,
     private settingsService: SettingsService,
   ) {
+    this.dbService.getModel<Quantification>(
+      Quantification.name,
+      QuantificationSchema,
+    ); // Ensure Quantification model is registered for population
+    this.dbService.getModel<UserAccount>(UserAccount.name, UserAccountSchema); // Ensure UserAccount model is registered for population
     this.periodModel = this.dbService.getPaginateModel<Period>(
       Period.name,
       PeriodSchema,

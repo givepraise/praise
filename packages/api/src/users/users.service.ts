@@ -5,7 +5,10 @@ import { Injectable, Scope } from '@nestjs/common';
 import { UpdateUserInputDto } from './dto/update-user-input.dto';
 import { CreateUserInputDto } from './dto/create-user-input.dto';
 import { ApiException } from '../shared/exceptions/api-exception';
-import { UserAccount } from '../useraccounts/schemas/useraccounts.schema';
+import {
+  UserAccount,
+  UserAccountSchema,
+} from '../useraccounts/schemas/useraccounts.schema';
 import { AuthRole } from '../auth/enums/auth-role.enum';
 import { UserWithStatsDto } from './dto/user-with-stats.dto';
 import { Praise, PraiseSchema } from '../praise/schemas/praise.schema';
@@ -26,6 +29,7 @@ export class UsersService {
     private periodService: PeriodsService,
     private dbService: DbService,
   ) {
+    this.dbService.getModel<UserAccount>(UserAccount.name, UserAccountSchema); // Ensure User model is registered for population
     this.userModel = this.dbService.getModel<User>(User.name, UserSchema);
     this.praiseModel = this.dbService.getModel<Praise>(
       Praise.name,

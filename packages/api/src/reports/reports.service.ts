@@ -10,7 +10,7 @@ import {
   UserAccount,
   UserAccountSchema,
 } from '../useraccounts/schemas/useraccounts.schema';
-import { User } from '../users/schemas/users.schema';
+import { User, UserSchema } from '../users/schemas/users.schema';
 import { DbService } from '../database/services/db.service';
 
 const PROMPT_SUMMARY = `Below is a table of praise items describing contributions made by community member {user}. Summarize, what kind of work does {user} do for the community? The first column is a score representing the impact of the contribution, the second column describes the contribution. The higher impact score a contribution has the more it impacts your description of {user}. Also comment when in time contributions were made. The older the less impactful a contribution is. Max 400 characters. Paragraphs separated by "\n". Max 3 paragraphs.`;
@@ -31,6 +31,7 @@ export class ReportsService {
     this.octokit = new Octokit({
       userAgent: 'Praise API',
     });
+    this.dbService.getModel<User>(User.name, UserSchema); // Ensure User model is registered for population
     this.userAccountModel = this.dbService.getModel<UserAccount>(
       UserAccount.name,
       UserAccountSchema,
