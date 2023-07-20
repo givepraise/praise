@@ -1,16 +1,20 @@
-import { InjectModel } from '@nestjs/mongoose';
-import { Praise } from '../schemas/praise.schema';
-import { Injectable } from '@nestjs/common';
+import { Praise, PraiseSchema } from '../schemas/praise.schema';
+import { Injectable, Scope } from '@nestjs/common';
 import { ExportInputDto } from '../../shared/dto/export-input.dto';
 import { Cursor, Model } from 'mongoose';
 import { exportInputToQuery } from '../../shared/export.shared';
+import { DbService } from '../../database/services/db.service';
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class PraiseExportService {
-  constructor(
-    @InjectModel(Praise.name)
-    private praiseModel: Model<Praise>,
-  ) {}
+  private praiseModel: Model<Praise>;
+
+  constructor(private dbService: DbService) {
+    this.praiseModel = this.dbService.getModel<Praise>(
+      Praise.name,
+      PraiseSchema,
+    );
+  }
 
   /**
    * Creates a cursor for all users in the database

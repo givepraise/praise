@@ -4,11 +4,14 @@ import { ApiException } from '../shared/exceptions/api-exception';
 import { errorMessages } from '../shared/exceptions/error-messages';
 import { ReportManifestDto } from './dto/report-manifest.dto';
 import { Model, Types } from 'mongoose';
-import { InjectModel } from '@nestjs/mongoose';
-import { Praise } from '../praise/schemas/praise.schema';
+import { Praise, PraiseSchema } from '../praise/schemas/praise.schema';
 import { queryOpenAi } from '../shared/query-open-ai';
-import { UserAccount } from '../useraccounts/schemas/useraccounts.schema';
+import {
+  UserAccount,
+  UserAccountSchema,
+} from '../useraccounts/schemas/useraccounts.schema';
 import { User } from '../users/schemas/users.schema';
+import { DbService } from '../database/services/db.service';
 
 const PROMPT_SUMMARY = `Below is a table of praise items describing contributions made by community member {user}. Summarize, what kind of work does {user} do for the community? The first column is a score representing the impact of the contribution, the second column describes the contribution. The higher impact score a contribution has the more it impacts your description of {user}. Also comment when in time contributions were made. The older the less impactful a contribution is. Max 400 characters. Paragraphs separated by "\n". Max 3 paragraphs.`;
 
@@ -21,17 +24,21 @@ export class ReportsService {
   private repo = 'reports';
   private basePath = 'reports';
 
-  constructor(
-    @InjectModel(User.name)
-    private userModel: Model<User>,
-    @InjectModel(UserAccount.name)
-    private userAccountModel: Model<UserAccount>,
-    @InjectModel(Praise.name)
-    private praiseModel: Model<Praise>,
-  ) {
+  private userAccountModel: Model<UserAccount>;
+  private praiseModel: Model<Praise>;
+
+  constructor(private dbService: DbService) {
     this.octokit = new Octokit({
       userAgent: 'Praise API',
     });
+    this.userAccountModel = this.dbService.getModel<UserAccount>(
+      UserAccount.name,
+      UserAccountSchema,
+    );
+    this.praiseModel = this.dbService.getModel<Praise>(
+      Praise.name,
+      PraiseSchema,
+    );
   }
 
   async listAllReports(): Promise<ReportManifestDto[]> {

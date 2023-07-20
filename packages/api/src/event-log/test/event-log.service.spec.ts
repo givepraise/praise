@@ -11,7 +11,7 @@ describe('EventLogService', () => {
       imports: [AppModule, EventLogModule],
     }).compile();
 
-    service = module.get<EventLogService>(EventLogService);
+    service = await module.resolve<EventLogService>(EventLogService);
   });
 
   it('should be defined', () => {

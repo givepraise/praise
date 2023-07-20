@@ -9,21 +9,22 @@ import { EventLogModule } from '../event-log/event-log.module';
 import { Period, PeriodSchema } from '../periods/schemas/periods.schema';
 import {
   PeriodSetting,
-  PeriodSettingsSchema,
+  PeriodSettingSchema,
 } from './schemas/periodsettings.schema';
 import { PeriodSettingsController } from './periodsettings.controller';
+import { DbService } from '../database/services/db.service';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: Setting.name, schema: SettingSchema },
-      { name: PeriodSetting.name, schema: PeriodSettingsSchema },
+      { name: PeriodSetting.name, schema: PeriodSettingSchema },
       { name: Period.name, schema: PeriodSchema },
     ]),
     EventLogModule,
   ],
   controllers: [SettingsController, PeriodSettingsController],
-  providers: [SettingsService, FileUtilsProvider, ConstantsProvider],
+  providers: [SettingsService, FileUtilsProvider, ConstantsProvider, DbService],
   exports: [SettingsService],
 })
 export class SettingsModule {}

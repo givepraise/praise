@@ -1,12 +1,11 @@
 import { errorMessages } from '../../shared/exceptions/error-messages';
 import { PeriodDateRangeDto } from '../dto/period-date-range.dto';
-import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
+import { Injectable, Scope } from '@nestjs/common';
 import { isString } from 'class-validator';
 import { parseISO, add, compareAsc } from 'date-fns';
 import { Cursor, Model, Types } from 'mongoose';
 import { PraiseWithUserAccountsWithUserRefDto } from '../../praise/dto/praise-with-user-accounts-with-user-ref.dto';
-import { Praise } from '../../praise/schemas/praise.schema';
+import { Praise, PraiseSchema } from '../../praise/schemas/praise.schema';
 import { PaginatedQueryDto } from '../../shared/dto/pagination-query.dto';
 import { ApiException } from '../../shared/exceptions/api-exception';
 import { CreatePeriodInputDto } from '../dto/create-period-input.dto';
@@ -16,22 +15,31 @@ import { PeriodDetailsDto } from '../dto/period-details.dto';
 import { PeriodPaginatedResponseDto } from '../dto/period-paginated-response.dto';
 import { UpdatePeriodInputDto } from '../dto/update-period-input.dto';
 import { PeriodStatusType } from '../enums/status-type.enum';
-import { Period } from '../schemas/periods.schema';
+import { Period, PeriodSchema } from '../schemas/periods.schema';
 import { SettingsService } from '../../settings/settings.service';
 import { isQuantificationCompleted } from '../../quantifications/utils/is-quantification-completed';
 import { PaginateModel } from '../../shared/interfaces/paginate-model.interface';
 import { logger } from '../../shared/logger';
+import { DbService } from '../../database/services/db.service';
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class PeriodsService {
-  constructor(
-    @InjectModel(Period.name)
-    private periodModel: PaginateModel<Period>,
-    @InjectModel(Praise.name)
-    private praiseModel: Model<Praise>,
+  private periodModel: PaginateModel<Period>;
+  private praiseModel: Model<Praise>;
 
+  constructor(
+    private dbService: DbService,
     private settingsService: SettingsService,
-  ) {}
+  ) {
+    this.periodModel = this.dbService.getPaginateModel<Period>(
+      Period.name,
+      PeriodSchema,
+    );
+    this.praiseModel = this.dbService.getModel<Praise>(
+      Praise.name,
+      PraiseSchema,
+    );
+  }
 
   /**
    * Convenience method to get the Period Model

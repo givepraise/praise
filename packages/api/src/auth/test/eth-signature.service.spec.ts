@@ -33,8 +33,10 @@ describe('EthSignatureService', () => {
       ],
     }).compile();
 
-    ethSignatureService = module.get<EthSignatureService>(EthSignatureService);
-    jwtService = module.get<JwtService>(JwtService);
+    ethSignatureService = await module.resolve<EthSignatureService>(
+      EthSignatureService,
+    );
+    jwtService = await module.resolve<JwtService>(JwtService);
   });
 
   describe('generateUserNonce', () => {

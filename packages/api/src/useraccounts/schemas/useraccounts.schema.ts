@@ -2,11 +2,10 @@ import { Exclude, Type } from 'class-transformer';
 import { Types, SchemaTypes } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty, ApiResponseProperty, OmitType } from '@nestjs/swagger';
-import { User } from '../../users/schemas/users.schema';
+import { User, UserNoUserAccountsDto } from '../../users/schemas/users.schema';
 import { ExposeId } from '../../shared/decorators/expose-id.decorator';
 import { IsOptional, IsString } from 'class-validator';
 import { has } from 'lodash';
-import { UserNoUserAccountsDto } from '../../users/dto/user-no-user-accounts.dto';
 
 export type UserAccountDocument = UserAccount & Document;
 
@@ -26,8 +25,8 @@ export class UserAccount {
   @ExposeId()
   _id: Types.ObjectId;
 
-  @ApiProperty({ type: UserNoUserAccountsDto, required: false })
-  @Type(() => User)
+  @ApiProperty({ type: () => UserNoUserAccountsDto, required: false })
+  @Type(() => UserNoUserAccountsDto)
   @IsOptional()
   @Prop({
     type: SchemaTypes.ObjectId,

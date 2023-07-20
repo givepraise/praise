@@ -70,5 +70,5 @@ export class PeriodSetting {
   updatedAt: Date;
 }
 
-export const PeriodSettingsSchema = SchemaFactory.createForClass(PeriodSetting);
-PeriodSettingsSchema.index({ period: 1, setting: 1 }, { unique: true });
+export const PeriodSettingSchema = SchemaFactory.createForClass(PeriodSetting);
+PeriodSettingSchema.index({ period: 1, setting: 1 }, { unique: true });

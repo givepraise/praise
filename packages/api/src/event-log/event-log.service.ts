@@ -1,35 +1,48 @@
-import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
+import { Injectable, Scope } from '@nestjs/common';
 import { Model } from 'mongoose';
 import {
   EventLogType,
-  EventLogTypeDocument,
+  EventLogTypeSchema,
 } from './schemas/event-log-type.schema';
-import { EventLog } from './schemas/event-log.schema';
+import { EventLog, EventLogSchema } from './schemas/event-log.schema';
 import mongoose from 'mongoose';
 import { EventLogFindPaginatedQueryDto } from './dto/event-log-find-paginated-query.dto';
 import { ApiException } from '../shared/exceptions/api-exception';
 import { CreateEventLogInputDto } from './dto/create-event-log-input.dto';
-import { User } from '../users/schemas/users.schema';
+import { User, UserSchema } from '../users/schemas/users.schema';
 import { EventLogPaginatedResponseDto } from './dto/event-log-pagination-model.dto';
 import { errorMessages } from '../shared/exceptions/error-messages';
 import { PaginateModel } from '../shared/interfaces/paginate-model.interface';
-import { UserAccount } from '../useraccounts/schemas/useraccounts.schema';
+import {
+  UserAccount,
+  UserAccountSchema,
+} from '../useraccounts/schemas/useraccounts.schema';
 import { CreateEventLogWithAuthContextInputDto } from './dto/create-event-log-with-auth-context-input.dto';
 import { logger } from '../shared/logger';
+import { DbService } from '../database/services/db.service';
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class EventLogService {
-  constructor(
-    @InjectModel(EventLog.name)
-    private eventLogModel: PaginateModel<EventLog>,
-    @InjectModel(EventLogType.name)
-    private eventLogTypeModel: Model<EventLogTypeDocument>,
-    @InjectModel(UserAccount.name)
-    private userAccountModel: Model<EventLogTypeDocument>,
-    @InjectModel(User.name)
-    private userModel: Model<EventLogTypeDocument>,
-  ) {}
+  private eventLogModel: PaginateModel<EventLog>;
+  private eventLogTypeModel: Model<EventLogType>;
+  private userAccountModel: Model<UserAccount>;
+  private userModel: Model<User>;
+
+  constructor(private dbService: DbService) {
+    this.eventLogModel = this.dbService.getPaginateModel<EventLog>(
+      EventLog.name,
+      EventLogSchema,
+    );
+    this.eventLogTypeModel = this.dbService.getModel<EventLogType>(
+      EventLogType.name,
+      EventLogTypeSchema,
+    );
+    this.userAccountModel = this.dbService.getModel<UserAccount>(
+      UserAccount.name,
+      UserAccountSchema,
+    );
+    this.userModel = this.dbService.getModel<User>(User.name, UserSchema);
+  }
 
   /**
    * Convenience method to get the EventLog Model
@@ -43,7 +56,7 @@ export class EventLogService {
    * Convenience method to get the EventLogType Model
    * @returns
    */
-  getTypeModel(): Model<EventLogTypeDocument> {
+  getTypeModel(): Model<EventLogType> {
     return this.eventLogTypeModel;
   }
 

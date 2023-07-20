@@ -16,8 +16,9 @@ export const loginUser = async (
     })
     .expect(201);
   const { nonce } = nonceResponse.body;
-  const ethSignatureService =
-    module.get<EthSignatureService>(EthSignatureService);
+  const ethSignatureService = await module.resolve<EthSignatureService>(
+    EthSignatureService,
+  );
   const message = ethSignatureService.generateLoginMessage(
     wallet.address,
     nonce,

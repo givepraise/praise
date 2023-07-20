@@ -49,18 +49,18 @@ export class MigrationsManager {
         }),
         logger,
         context: {
-          praiseService: app.get(PraiseService),
-          usersService: app.get(UsersService),
-          periodsService: app.get(PeriodsService),
-          settingsService: app.get(SettingsService),
-          quantificationsService: app.get(QuantificationsService),
+          praiseService: await app.resolve(PraiseService),
+          usersService: await app.resolve(UsersService),
+          periodsService: await app.resolve(PeriodsService),
+          settingsService: await app.resolve(SettingsService),
+          quantificationsService: await app.resolve(QuantificationsService),
         },
       });
 
       // Run the migrations
       await migrator.up();
 
-      const usersService = app.get(UsersService);
+      const usersService = await app.resolve(UsersService);
       for (const owner of community.owners) {
         try {
           const user = await usersService.findOneByEth(owner);

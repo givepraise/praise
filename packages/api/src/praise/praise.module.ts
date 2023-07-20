@@ -17,6 +17,7 @@ import {
   Quantification,
   QuantificationsSchema,
 } from '../quantifications/schemas/quantifications.schema';
+import { DbService } from '../database/services/db.service';
 
 @Module({
   imports: [
@@ -31,7 +32,7 @@ import {
     EventLogModule,
   ],
   controllers: [PraiseController],
-  providers: [PraiseService, PraiseExportService, ConstantsProvider],
+  providers: [PraiseService, PraiseExportService, ConstantsProvider, DbService],
   exports: [PraiseService],
 })
 export class PraiseModule {}

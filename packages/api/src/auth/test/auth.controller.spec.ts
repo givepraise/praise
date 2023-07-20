@@ -25,8 +25,12 @@ describe('AuthController', () => {
       ],
     }).compile();
 
-    authController = module.get<EthSignatureController>(EthSignatureController);
-    ethSignatureService = module.get<EthSignatureService>(EthSignatureService);
+    authController = await module.resolve<EthSignatureController>(
+      EthSignatureController,
+    );
+    ethSignatureService = await module.resolve<EthSignatureService>(
+      EthSignatureService,
+    );
     jest.clearAllMocks();
   });
 

@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { Setting } from './schemas/settings.schema';
+import { Setting, SettingSchema } from './schemas/settings.schema';
 import { SetSettingDto } from './dto/set-setting.dto';
 import { FileUtilsProvider } from '../settings/providers/file-utils.provider';
 import { ApiException } from '../shared/exceptions/api-exception';
@@ -9,24 +8,37 @@ import { SettingGroup } from './enums/setting-group.enum';
 import { validateSetting } from './utils/validate-setting';
 import { SettingsFilterDto } from './dto/settings-filter.dto';
 import { errorMessages } from '../shared/exceptions/error-messages';
-import { PeriodSetting } from './schemas/periodsettings.schema';
+import {
+  PeriodSetting,
+  PeriodSettingSchema,
+} from './schemas/periodsettings.schema';
 import { SetPeriodSettingDto } from './dto/set-periodsetting.dto';
-import { Period } from '../periods/schemas/periods.schema';
+import { Period, PeriodSchema } from '../periods/schemas/periods.schema';
 import { PeriodStatusType } from '../periods/enums/status-type.enum';
 import { logger } from '../shared/logger';
 import { deleteFromIpfs, uploadToIpfs } from './utils/pinata-ipfs';
+import { DbService } from '../database/services/db.service';
 
 @Injectable()
 export class SettingsService {
-  constructor(
-    @InjectModel(Setting.name)
-    private settingsModel: Model<Setting>,
-    @InjectModel(PeriodSetting.name)
-    private periodSettingsModel: Model<PeriodSetting>,
-    @InjectModel(Period.name)
-    private periodModel: Model<Period>,
-    private utils: FileUtilsProvider,
-  ) {}
+  private settingsModel: Model<Setting>;
+  private periodSettingsModel: Model<PeriodSetting>;
+  private periodModel: Model<Period>;
+
+  constructor(private utils: FileUtilsProvider, private dbService: DbService) {
+    this.settingsModel = this.dbService.getModel<Setting>(
+      Setting.name,
+      SettingSchema,
+    );
+    this.periodSettingsModel = this.dbService.getModel<PeriodSetting>(
+      PeriodSetting.name,
+      PeriodSettingSchema,
+    );
+    this.periodModel = this.dbService.getModel<Period>(
+      Period.name,
+      PeriodSchema,
+    );
+  }
 
   /**
    * Convenience method to get the Settings Model

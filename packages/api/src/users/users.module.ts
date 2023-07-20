@@ -8,6 +8,7 @@ import { PeriodsModule } from '../periods/periods.module';
 import { PraiseModule } from '../praise/praise.module';
 import { ConstantsProvider } from '../constants/constants.provider';
 import { Praise, PraiseSchema } from '../praise/schemas/praise.schema';
+import { DbService } from '../database/services/db.service';
 
 @Module({
   imports: [
@@ -20,7 +21,7 @@ import { Praise, PraiseSchema } from '../praise/schemas/praise.schema';
     PraiseModule,
   ],
   controllers: [UsersController],
-  providers: [UsersService, ConstantsProvider],
+  providers: [UsersService, ConstantsProvider, DbService],
   exports: [UsersService],
 })
 export class UsersModule {}

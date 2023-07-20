@@ -14,19 +14,20 @@ import { ActivateModule } from './activate/activate.module';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { CommunityModule } from './community/community.module';
-import { MultiTenantConnectionService } from './database/services/multi-tenant-connection-service';
 import { RequestLoggerMiddleware } from './shared/middlewares/request-logger.middleware';
 import { AuthGuardModule } from './auth/auth-guard.module';
 import { PingMiddleware } from './shared/middlewares/ping.middleware';
 import { DomainCheckMiddleware } from './shared/middlewares/domainCheck.middleware';
 import { ReportsModule } from './reports/reports.module';
 import { CacheModule } from '@nestjs/cache-manager';
-import { ConnectionCacheService } from './database/services/connection-cache.service';
 
 @Module({
   imports: [
-    MongooseModule.forRootAsync({
-      useClass: MultiTenantConnectionService,
+    MongooseModule.forRoot(process.env.MONGO_ADMIN_URI || '', {
+      maxPoolSize: 100,
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      bufferCommands: false,
     }),
     ThrottlerModule.forRoot({
       ttl: 60,
@@ -51,7 +52,6 @@ import { ConnectionCacheService } from './database/services/connection-cache.ser
     ReportsModule,
   ],
   providers: [
-    ConnectionCacheService,
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
