@@ -34,7 +34,7 @@ export const isResponseOk = <T>(
   return axiosResponse.status === 200 || axiosResponse.status === 201;
 };
 
-export const isApiResponseAxiosError = (
+export const isResponseAxiosError = (
   axiosResponse: AxiosResponse | AxiosError | null | unknown
 ): axiosResponse is AxiosError<ApiErrorResponseData> => {
   return (
@@ -47,7 +47,7 @@ export const isApiResponseValidationError = (
   axiosResponse: AxiosResponse | AxiosError | null | unknown
 ): axiosResponse is AxiosError<ApiErrorResponseData> => {
   if (
-    isApiResponseAxiosError(axiosResponse) &&
+    isResponseAxiosError(axiosResponse) &&
     axiosResponse.response?.status === 400 &&
     axiosResponse.response.data.errors
   )

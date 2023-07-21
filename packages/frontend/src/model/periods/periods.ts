@@ -16,7 +16,7 @@ import {
   periodReceiverPraiseListKey,
 } from '@/utils/periods';
 import { useApiAuthClient } from '@/utils/api';
-import { ApiGet, isApiResponseAxiosError, isResponseOk } from '../api';
+import { ApiGet, isResponseAxiosError, isResponseOk } from '../api';
 import { ActiveUserId } from '../auth/auth';
 import { AllPraiseList, PraiseIdList, SinglePraise } from '../praise/praise';
 import { Praise } from '../praise/praise.dto';
@@ -405,7 +405,7 @@ export const useAssignQuantifiers = (
       setPeriod(updatedPeriod);
       return response as AxiosResponse<PeriodDetailsDto>;
     }
-    if (isApiResponseAxiosError(response)) {
+    if (isResponseAxiosError(response)) {
       throw response;
     }
     return response as AxiosResponse | AxiosError;
