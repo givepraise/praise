@@ -53,10 +53,11 @@ export class ReportsService {
         .filter((item: { type: string }) => item.type === 'dir')
         .map(async (dir: { name: any }) => {
           try {
+            const manifestPath = `${this.basePath}/${dir.name}/manifest.json`;
             const manifest = await this.octokit.repos.getContent({
               owner: this.owner,
               repo: this.repo,
-              path: `${this.basePath}/${dir.name}/manifest.json`,
+              path: manifestPath,
             });
 
             const content = Buffer.from(
@@ -64,7 +65,9 @@ export class ReportsService {
               'base64',
             ).toString();
 
-            return JSON.parse(content);
+            const manifestDto = JSON.parse(content) as ReportManifestDto;
+            manifestDto.manifestUrl = `https://raw.githubusercontent.com/${this.owner}/${this.repo}/main/${manifestPath}`;
+            return manifestDto;
           } catch (error) {
             throw new ApiException(
               errorMessages.REPORTS_LIST_ERROR,

@@ -4,6 +4,14 @@ import { SettingDto } from './setting.dto';
 @ApiExtraModels(SettingDto)
 export class ReportManifestDto {
   @ApiProperty({
+    example:
+      'https://raw.githubusercontent.com/givepraise/reports/main/reports/disperse-dist-straight-curve-with-ceiling/manifest.json',
+    type: String,
+    required: false,
+  })
+  manifestUrl: string;
+
+  @ApiProperty({
     example: 'simple-report',
     type: String,
     required: true,
