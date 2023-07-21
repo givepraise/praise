@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Frontend**: New feature: Run custom reports from the reports page. #1050
+
 ### Fixed
 
 - **Frontend:** Fix styling bug that caused the login button to be hidden on short screens. #1107
