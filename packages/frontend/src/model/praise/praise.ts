@@ -10,7 +10,7 @@ import {
   useRecoilValue,
   useSetRecoilState,
 } from 'recoil';
-import { ApiGet, isApiResponseAxiosError, isResponseOk } from '../api';
+import { ApiGet, isResponseAxiosError, isResponseOk } from '../api';
 import { PaginatedResponseBody } from 'shared/interfaces/paginated-response-body.interface';
 
 /**
@@ -200,10 +200,7 @@ export const useAllPraise = (
   );
 
   React.useEffect(() => {
-    if (
-      !allPraiseQueryResponse ||
-      isApiResponseAxiosError(allPraiseQueryResponse)
-    )
+    if (!allPraiseQueryResponse || isResponseAxiosError(allPraiseQueryResponse))
       return;
 
     const paginatedResponse = allPraiseQueryResponse.data;

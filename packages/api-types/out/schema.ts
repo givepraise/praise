@@ -1096,6 +1096,8 @@ export interface components {
       };
     };
     ReportManifestDto: {
+      /** @example https://raw.githubusercontent.com/givepraise/reports/main/reports/disperse-dist-straight-curve-with-ceiling/manifest.json */
+      manifestUrl?: string;
       /** @example simple-report */
       name: string;
       /** @example Simple Report */

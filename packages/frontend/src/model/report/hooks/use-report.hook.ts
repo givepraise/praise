@@ -15,31 +15,26 @@ import { ReportManifestDto } from '../dto/report-manifest.dto';
 
 //lockdown();
 
-export function useReport(input: useReportInput): UseReportReturn {
-  const { url: reportUrl, periodId, startDate, endDate } = input;
+export function useReport(reportInput: useReportInput): UseReportReturn {
+  const { manifestUrl, periodId, startDate, endDate } = reportInput;
   const duckDb = useDuckDbFiltered({ periodId, startDate, endDate });
   const periods = useRecoilValue(AllPeriods);
   const { create: createCompartment } = useCompartment();
 
   const manifest = async (): Promise<ReportManifestDto | undefined> => {
-    if (!reportUrl) return;
+    if (!manifestUrl) return;
     // Create secure compartment to run report in
     const compartment = createCompartment();
 
-    // Import report from url
-    const manifestUrl = `${reportUrl.substring(
-      0,
-      reportUrl.lastIndexOf('/')
-    )}/manifest.json`;
     const { namespace } = await compartment.import(manifestUrl);
     return namespace.default as ReportManifestDto;
   };
 
   const run = async (
-    input: useReportRunInput
+    runInput: useReportRunInput
   ): Promise<useReportRunReturn | undefined> => {
-    if (!reportUrl) return;
-    const { format, config: configInput } = input;
+    if (!manifestUrl) return;
+    const { format, config: configInput } = runInput;
     if (!duckDb || !duckDb.db) {
       throw new Error('DuckDb has not be loaded');
     }
@@ -69,6 +64,7 @@ export function useReport(input: useReportInput): UseReportReturn {
     const compartment = createCompartment();
 
     // Import report from url
+    const reportUrl = manifestUrl.replace('manifest.json', 'report.js');
     const { namespace } = await compartment.import(reportUrl);
 
     // Create report instance, supplying config and db query object

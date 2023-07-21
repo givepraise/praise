@@ -107,8 +107,10 @@ export const DatePeriodRange: React.FC = () => {
           options={periodOptions}
           className="text-sm min-w-[200px]"
         />
-        <div className="flex flex-row pt-3 sm:pt-0">
-          <div className="flex items-center hidden sm:visible">or dates:</div>
+        <div className="items-center hidden sm:flex sm:visible whitespace-nowrap">
+          or dates:
+        </div>
+        <div className="flex w-full max-w-xl mt-5 space-x-5 sm:mt-0">
           <input
             type="date"
             value={startDate ? startDate.toISOString().substr(0, 10) : ''}
@@ -127,6 +129,7 @@ export const DatePeriodRange: React.FC = () => {
             disabled={allPeriods.length === 0}
           />
         </div>
+        <div className="flex-grow" />
       </div>
     </div>
   );
