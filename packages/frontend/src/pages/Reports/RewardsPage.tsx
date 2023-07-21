@@ -10,7 +10,6 @@ import {
 } from '../../components/report/DatePeriodRange';
 import { BreadCrumb } from '../../components/ui/BreadCrumb';
 import { Page } from '../../components/ui/Page';
-import { SingleReport } from '../../model/report/reports';
 import { ReportConfigDialog } from './components/ReportConfigDialog';
 import { ReportsTable } from './components/ReportsTable';
 import { AllPeriods } from '../../model/periods/periods';
@@ -98,7 +97,6 @@ const RewardsPage = (): JSX.Element | null => {
       >
         <div>
           <ReportConfigDialog
-            title="Report configuration"
             manifest={reportManifest}
             onClose={(): void => {
               setReportManifest(undefined);

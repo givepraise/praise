@@ -120,7 +120,6 @@ const ReportsPage = (): JSX.Element | null => {
       >
         <div>
           <ReportConfigDialog
-            title="Report configuration"
             manifest={reportManifest}
             onClose={(): void => {
               setReportManifest(undefined);

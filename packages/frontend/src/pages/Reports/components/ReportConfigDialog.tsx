@@ -14,14 +14,12 @@ import toast from 'react-hot-toast';
 import { ReportManifestDto } from '../../../model/report/dto/report-manifest.dto';
 
 interface ReportConfigDialogProps {
-  title: string;
   manifest?: ReportManifestDto;
   onClose(): void;
   onRun(config: Record<string, string>): void;
 }
 
 export const ReportConfigDialog = ({
-  title,
   manifest,
   onClose,
   onRun,
