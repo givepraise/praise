@@ -16,6 +16,7 @@ import { ReportsTable } from './components/ReportsTable';
 import { AllPeriods } from '../../model/periods/periods';
 import * as check from 'wasm-check';
 import toast from 'react-hot-toast';
+import { ReportManifestDto } from '../../model/report/dto/report-manifest.dto';
 
 const NoPeriodsMessage = (): JSX.Element | null => {
   const allPeriods = useRecoilValue(AllPeriods);
@@ -30,31 +31,33 @@ const NoPeriodsMessage = (): JSX.Element | null => {
 
 const RewardsPage = (): JSX.Element | null => {
   const [isConfigDialogOpen, setIsConfigDialogOpen] = React.useState(false);
-  const [selectedReportName, setSelectedReportName] = React.useState<string>();
   const allPeriods = useRecoilValue(AllPeriods);
-
   const startDate = useRecoilValue(DatePeriodRangeStartDate);
   const endDate = useRecoilValue(DatePeriodRangeEndDate);
-  const report = useRecoilValue(SingleReport(selectedReportName));
+  const [reportManifest, setReportManifest] = React.useState<
+    ReportManifestDto | undefined
+  >(undefined);
+  const [manifestUrl, setManifestUrl] = React.useState<string>('');
 
   const history = useHistory();
 
-  const handleReportClick = (name: string) => (): void => {
-    if (allPeriods.length === 0) return;
+  const handleReportClick = (manifest: ReportManifestDto) => (): void => {
+    if (allPeriods.length === 0 || !manifest || !manifest.manifestUrl) return;
     if (!check.support()) {
       toast.error(
         'Your browser does not support WebAssembly which is required to run reports. Please try a different browser.'
       );
       return;
     }
-    setSelectedReportName(name);
+    setReportManifest(manifest);
+    setManifestUrl(manifest.manifestUrl);
   };
 
   const runReport = React.useCallback(
-    (name: string, config: Record<string, string>) => {
+    (manifestUrl: string, config: Record<string, string>) => {
       if (!startDate || !endDate) return;
       const qs = new URLSearchParams({
-        report: name,
+        manifestUrl,
         ...config,
         startDate: startDate.toISOString(),
         endDate: endDate.toISOString(),
@@ -65,13 +68,16 @@ const RewardsPage = (): JSX.Element | null => {
   );
 
   React.useEffect(() => {
-    if (!selectedReportName || !report) return;
-    if (report.configuration && Object.keys(report.configuration).length > 0) {
+    if (!reportManifest || !manifestUrl) return;
+    if (
+      reportManifest.configuration &&
+      Object.keys(reportManifest.configuration).length > 0
+    ) {
       setIsConfigDialogOpen(true);
       return;
     }
-    runReport(selectedReportName, {});
-  }, [endDate, history, selectedReportName, startDate, report, runReport]);
+    runReport(manifestUrl, {});
+  }, [endDate, history, startDate, reportManifest, manifestUrl, runReport]);
 
   return (
     <Page variant="full">
@@ -93,13 +99,14 @@ const RewardsPage = (): JSX.Element | null => {
         <div>
           <ReportConfigDialog
             title="Report configuration"
-            reportName={report?.name}
+            manifest={reportManifest}
             onClose={(): void => {
-              setSelectedReportName(undefined);
+              setReportManifest(undefined);
+              setManifestUrl('');
               setIsConfigDialogOpen(false);
             }}
             onRun={(config): void => {
-              runReport(selectedReportName || '', config);
+              runReport(manifestUrl, config);
             }}
           />
         </div>

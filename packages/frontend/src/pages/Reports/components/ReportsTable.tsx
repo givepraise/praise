@@ -9,7 +9,7 @@ import { ReportManifestDto } from '../../../model/report/dto/report-manifest.dto
 import { AllPeriods } from '../../../model/periods/periods';
 
 type ReportsTableProps = {
-  onClick: (id: string) => EventHandler<React.MouseEvent>;
+  onClick: (manifest: ReportManifestDto) => EventHandler<React.MouseEvent>;
   include?: string[];
   exclude?: string[];
 };
@@ -142,7 +142,7 @@ export const ReportsTable = ({
                     ? 'px-5 cursor-pointer hover:bg-warm-gray-100 dark:hover:bg-slate-500'
                     : 'px-5 text-warm-gray-400'
                 )}
-                onClick={handleClick((row.original as ReportManifestDto).name)}
+                onClick={handleClick(row.original as ReportManifestDto)}
                 key={key}
                 {...restRowProps}
               >

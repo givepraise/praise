@@ -27,9 +27,7 @@ const ReportsRunPage = (): JSX.Element | null => {
   const report = useReport({
     startDate: qs.get('startDate') || undefined,
     endDate: qs.get('endDate') || undefined,
-    url: `https://raw.githubusercontent.com/givepraise/reports/main/reports/${qs.get(
-      'report'
-    )}/report.js`,
+    manifestUrl: `${qs.get('manifestUrl')}`,
   });
 
   // Run report when report is loaded

@@ -1,5 +1,5 @@
 export type useReportInput = {
-  url?: string;
+  manifestUrl?: string;
   periodId?: string;
   startDate?: string;
   endDate?: string;
