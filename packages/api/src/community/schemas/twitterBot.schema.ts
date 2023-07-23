@@ -26,6 +26,11 @@ export class TwitterBot {
   @Prop({ required: true })
   twitterBotUsername: string;
 
+  @ApiProperty({ example: 'e.g. Giveth Praise Bot', required: true })
+  @IsString()
+  @Prop({ required: true })
+  twitterBotName: string;
+
   @ApiProperty({ example: 'AAAAAAAAAAAAAAAAAAAAAMsTng...', required: true })
   @IsString()
   @Prop({ required: true })

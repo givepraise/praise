@@ -945,10 +945,12 @@ export interface components {
     TwitterBot: {
       /** @example 621f802b813dbdba9eeaf7b4 */
       _id: string;
-      /** @example e.g. 1655693432172494852 */
-      twitterBotId: number;
+      /** @example e.g. "1655693432172494852" */
+      twitterBotId: string;
       /** @example e.g. givethpraise */
       twitterBotUsername: string;
+      /** @example e.g. Giveth Praise Bot */
+      twitterBotName: string;
       /** @example AAAAAAAAAAAAAAAAAAAAAMsTng... */
       bearerToken: string;
       /** @example 9NPsm8UF6q... */

@@ -159,6 +159,7 @@ export class Community {
       '    "tokenSecret":"jv2kTUl2NBYbj...",\n' +
       '    "twitterBotId":e.g. 1655693432172494852,\n' +
       '    "twitterBotUsername":"e.g. givethpraise"\n' +
+      '    "twitterBotName":"e.g. Giveth Praise Bot"\n' +
       '  }',
   })
   @IsOptional()
