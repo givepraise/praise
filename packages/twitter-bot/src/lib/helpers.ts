@@ -1,13 +1,11 @@
 import { close, openSync, readFileSync, writeSync } from 'fs';
-import path from 'path';
 import { config } from 'dotenv';
 import Keyv from 'keyv';
 import { ITweetResponse, ITweetWithAuthor } from '../types/tweet';
-import { IPraise } from '../types/praise';
 import { getBotMentions, postPraiseTweet } from './twitterAPI';
 import ErrorTag from './ErrorTag';
-import isDocker from './isDocker';
 import { Community } from '../types/praiseApiSchema';
+import { postPraise, PraiseCreateInputDto } from './praiseAPI';
 
 config();
 
@@ -15,10 +13,6 @@ const tweetsCache = new Keyv<ITweetWithAuthor[]>('sqlite://tweetsCache.sqlite');
 tweetsCache.on('error', console.log);
 
 const { TWITTER_USERNAME } = process.env;
-
-export const rootEnvPath = isDocker()
-	? '/usr/praise/.env'
-	: path.resolve(__dirname, '../../../../.env');
 
 export const createLog = (str: any, tag?: string) => {
 	if (typeof str !== 'string' && str.hasTag) {
@@ -45,18 +39,28 @@ export const addAuthorToTweets = (rawResponse: ITweetResponse): ITweetWithAuthor
 	});
 };
 
-export const extractPraiseParams = (tweet: ITweetWithAuthor): IPraise => {
+export const createPraiseObj = (
+	tweet: ITweetWithAuthor,
+	community: Community,
+): PraiseCreateInputDto => {
 	const mentions = tweet.entities?.mentions.map(mention => mention.username);
-	const receivers = mentions?.filter(mention => mention !== TWITTER_USERNAME);
-	const giver = tweet.author.username;
+	const receiverIds = mentions?.filter(mention => mention !== TWITTER_USERNAME);
+	const giver = {
+		accountId: tweet.author.id,
+		name: tweet.author.username,
+		platform: 'TWITTER',
+	};
 	const lastMention = tweet.entities?.mentions.sort((a, b) => b.end - a.end)[0];
 	const reason = tweet.text.substring(lastMention.end).trim();
-	return { reason, receivers, giver };
+	const reasonRaw = tweet.text.substring(lastMention.end).trim();
+	const sourceId = `TWITTER:${community.twitterBot.twitterBotUsername}:${community.twitterBot.twitterBotId}`;
+	const sourceName = `TWITTER:${community.twitterBot.twitterBotName}`;
+	return { reason, receiverIds, giver, reasonRaw, sourceId, sourceName };
 };
 
-export const preparePraiseTweet = (params: IPraise): string => {
-	const { receivers, giver, reason } = params;
-	const receiversString = receivers.join(' and @');
+export const preparePraiseTweet = (params: PraiseCreateInputDto): string => {
+	const { receiverIds, giver, reason } = params;
+	const receiversString = receiverIds.join(' and @');
 	return `@${giver} has praised @${receiversString} ${reason}`;
 };
 
@@ -98,7 +102,7 @@ export const sendBatchTweets = async (
 	try {
 		const tweetsPromises = [];
 		tweets.forEach(tweet => {
-			const praiseParams = extractPraiseParams(tweet);
+			const praiseParams = createPraiseObj(tweet, community);
 			const praiseTweet = preparePraiseTweet(praiseParams);
 			const tweetPromise = postPraiseTweet(community.twitterBot, {
 				text: praiseTweet,
@@ -115,9 +119,12 @@ export const sendBatchTweets = async (
 	}
 };
 
-const checkPraiseValidity = (praise: IPraise) => {
+const checkPraiseValidity = (praise: PraiseCreateInputDto) => {
 	return (
-		praise.giver && praise.receivers && praise.receivers.length > 0 && praise.reason
+		praise.giver &&
+		praise.receiverIds &&
+		praise.receiverIds.length > 0 &&
+		praise.reason
 	);
 };
 
@@ -125,9 +132,19 @@ const sendPraisesToAPI = async (
 	community: Community,
 	praiseTweets: ITweetWithAuthor[],
 ) => {
-	const praiseParams = praiseTweets.map(extractPraiseParams);
-	const validPraises = praiseParams.filter(checkPraiseValidity);
-	console.log(validPraises);
+	try {
+		const praiseParams = praiseTweets.map(tweet => createPraiseObj(tweet, community));
+		const validPraises = praiseParams.filter(checkPraiseValidity);
+		// console.log(validPraises);
+		// const praisePromises = validPraises.map(praise =>
+		// 	postPraise(praise, community.hostname),
+		// );
+		// await Promise.all(praisePromises);
+		await postPraise(validPraises[0], community.hostname);
+	} catch (error) {
+		createLog(error, 'sendPraisesToAPI');
+		throw new ErrorTag(error);
+	}
 };
 
 export const mainJob = async (community: Community) => {

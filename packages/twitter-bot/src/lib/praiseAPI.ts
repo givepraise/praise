@@ -1,15 +1,17 @@
+import path from 'path';
 // eslint-disable-next-line import/named
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { config } from 'dotenv';
 import isDocker from './isDocker';
-import { createLog, rootEnvPath } from './helpers';
+import { createLog } from './helpers';
 import ErrorTag from './ErrorTag';
-import { CommunityPaginatedResponseDto } from '../types/praiseApiSchema';
-import { IPraise } from '../types/praise';
+import { CommunityPaginatedResponseDto, Praise } from '../types/praiseApiSchema';
 
-config({ path: rootEnvPath });
+config({
+	path: isDocker() ? '/usr/praise/.env' : path.resolve(__dirname, '../../../../.env'),
+});
 
-interface PraiseCreateInputDto {
+export interface PraiseCreateInputDto {
 	reason: string;
 	reasonRaw: string;
 	giver: {
@@ -23,11 +25,19 @@ interface PraiseCreateInputDto {
 	sourceName: string;
 }
 
-export const postPraise = async (praise: IPraise): Promise<any> => {
-	const res = await apiPost<Praise[], PraiseCreateInputDto>('/praise', praiseData, {
-		headers: { host },
-	});
-	console.log(res);
+export const postPraise = async (
+	praise: PraiseCreateInputDto,
+	host: string,
+): Promise<any> => {
+	try {
+		const res = await apiPost<Praise[], PraiseCreateInputDto>('/praise', praise, {
+			headers: { host },
+		});
+		console.log(res);
+	} catch (error) {
+		createLog(error, 'postPraise');
+		throw new ErrorTag(error);
+	}
 };
 
 export const fetchCommunities = async (): Promise<any[]> => {
@@ -89,7 +99,7 @@ export async function apiGet<T>(
 	try {
 		return await apiClient.get<T>(endpoint, config);
 	} catch (error) {
-		createLog(error, 'postPraiseTweet');
+		createLog(error, 'apiGet');
 		throw new ErrorTag(error);
 	}
 }
@@ -102,7 +112,7 @@ export async function apiPost<T, U>(
 	try {
 		return await apiClient.post<T>(endpoint, data, config);
 	} catch (error) {
-		createLog(error, 'postPraiseTweet');
+		createLog(error, 'apiPost');
 		throw new ErrorTag(error);
 	}
 }
