@@ -989,6 +989,7 @@ export interface components {
        *     "tokenSecret":"jv2kTUl2NBYbj...",
        *     "twitterBotId":e.g. 1655693432172494852,
        *     "twitterBotUsername":"e.g. givethpraise"
+       *     "twitterBotName":"e.g. Giveth Praise Bot"
        *   }
        */
       twitterBot?: components['schemas']['TwitterBot'];
@@ -1028,6 +1029,7 @@ export interface components {
        *     "tokenSecret":"jv2kTUl2NBYbj...",
        *     "twitterBotId":e.g. 1655693432172494852,
        *     "twitterBotUsername":"e.g. givethpraise"
+       *     "twitterBotName":"e.g. Giveth Praise Bot"
        *   }
        */
       twitterBot?: components['schemas']['TwitterBot'];
