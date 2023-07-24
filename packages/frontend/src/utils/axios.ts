@@ -32,20 +32,23 @@ export const handleErrors = async (
 
   if (
     refreshToken &&
+    recoilPersist &&
     err?.response?.status === 401 &&
-
     // 1092, 1107 are the error codes for invalid jwt token that defined in backend
     (err?.response?.data?.code === 1092 || err?.response?.data?.code === 1107)
   ) {
     // delete the old token from localStorage to prevent infinite loop
-    delete recoilPersist!['ActiveTokenSet'];
+    delete recoilPersist['ActiveTokenSet'];
     localStorage.setItem(JSON.stringify(recoilPersist), 'recoil-persist');
     try {
       await requestApiRefreshToken({ refreshToken });
       toast('Please try again');
       return err;
-    } catch (error: any) {
-      console.log('refresh accessToken error', error?.response?.data);
+    } catch (error) {
+      console.log(
+        'refresh accessToken error',
+        (error as AxiosError)?.response?.data
+      );
     }
   }
 
