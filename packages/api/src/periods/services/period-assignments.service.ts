@@ -99,16 +99,12 @@ export class PeriodAssignmentsService {
     let response;
 
     if (PRAISE_QUANTIFIERS_ASSIGN_EVENLY) {
-      // When quantifiers are assigned evenly, the quantifier pool size needed
-      // is the number of quantifiers per praise receiver plus one.
-      const quantifierPoolSizeNeeded =
-        PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER + 1;
       response = {
         quantifierPoolSize,
-        quantifierPoolSizeNeeded,
+        quantifierPoolSizeNeeded: PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER,
         quantifierPoolDeficitSize:
-          quantifierPoolSizeNeeded > quantifierPoolSize
-            ? quantifierPoolSizeNeeded - quantifierPoolSize
+          PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER > quantifierPoolSize
+            ? PRAISE_QUANTIFIERS_PER_PRAISE_RECEIVER - quantifierPoolSize
             : 0,
       };
     } else {
