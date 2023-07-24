@@ -1,5 +1,6 @@
 import axios, { AxiosError, AxiosInstance } from 'axios';
 import { toast } from 'react-hot-toast';
+import { requestApiRefreshToken } from '@/utils/auth';
 
 const isJsonBlob = (data): data is Blob =>
   data instanceof Blob && data.type === 'application/json';
@@ -9,10 +10,45 @@ const isJsonBlob = (data): data is Blob =>
  *
  * @param err
  */
-export const handleErrors = (
-  err: AxiosError,
+export const handleErrors = async (
+  err: AxiosError<{
+    code: number;
+    message: string;
+    statusCode: number;
+  }>,
   handleErrorsAutomatically = true
-): AxiosError => {
+): Promise<
+  AxiosError<{
+    code: number;
+    message: string;
+    statusCode: number;
+  }>
+> => {
+  let refreshToken;
+  const recoilPersist = localStorage.getItem('recoil-persist');
+  if (recoilPersist) {
+    refreshToken = JSON.parse(recoilPersist)?.ActiveTokenSet?.refreshToken;
+  }
+
+  if (
+    refreshToken &&
+    err?.response?.status === 401 &&
+
+    // 1092, 1107 are the error codes for invalid jwt token that defined in backend
+    (err?.response?.data?.code === 1092 || err?.response?.data?.code === 1107)
+  ) {
+    // delete the old token from localStorage to prevent infinite loop
+    delete recoilPersist!['ActiveTokenSet'];
+    localStorage.setItem(JSON.stringify(recoilPersist), 'recoil-persist');
+    try {
+      await requestApiRefreshToken({ refreshToken });
+      toast('Please try again');
+      return err;
+    } catch (error: any) {
+      console.log('refresh accessToken error', error?.response?.data);
+    }
+  }
+
   // Handling errors automatically means the error will be displayed to the user with a toast.
   // If not handled automatically, the error will just be logged to the console and returned.
   if (!handleErrorsAutomatically) {
@@ -27,8 +63,8 @@ export const handleErrors = (
         const json = JSON.parse(text);
         toast.error(json.message);
       });
-    } else if ((err.response.data as Error).message) {
-      toast.error((err.response.data as Error).message);
+    } else if (err.response.data.message) {
+      toast.error(err.response.data.message);
     } else {
       toast.error('Something went wrong');
     }
