@@ -21915,7 +21915,6 @@ __metadata:
     eslint-plugin-import: ^2.27.5
     eslint-plugin-prettier: ^4.2.1
     eslint-plugin-unused-imports: ^2.0.0
-    keyv: ^4.5.2
     mongoose: ^7.2.0
     oauth-1.0a: ^2.2.6
     prettier: ^2.8.8

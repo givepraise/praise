@@ -1,18 +1,14 @@
 import { close, openSync, readFileSync, writeSync } from 'fs';
-import { config } from 'dotenv';
-import Keyv from 'keyv';
 import { ITweetResponse, ITweetWithAuthor } from '../types/tweet';
 import { getBotMentions, postPraiseTweet } from './twitterAPI';
 import ErrorTag from './ErrorTag';
 import { Community } from '../types/praiseApiSchema';
-import { postPraise, PraiseCreateInputDto } from './praiseAPI';
+import { apiGet, postPraise, PraiseCreateInputDto } from './praiseAPI';
+import Tweets from '../models/tweetModel';
 
-config();
-
-const tweetsCache = new Keyv<ITweetWithAuthor[]>('sqlite://tweetsCache.sqlite');
-tweetsCache.on('error', console.log);
-
-const { TWITTER_USERNAME } = process.env;
+const hostnameToCollection = (hostname: string) => {
+	return hostname.replace('.', '-');
+};
 
 export const createLog = (str: any, tag?: string) => {
 	if (typeof str !== 'string' && str.hasTag) {
@@ -44,7 +40,9 @@ export const createPraiseObj = (
 	community: Community,
 ): PraiseCreateInputDto => {
 	const mentions = tweet.entities?.mentions.map(mention => mention.username);
-	const receiverIds = mentions?.filter(mention => mention !== TWITTER_USERNAME);
+	const receiverIds = mentions?.filter(
+		mention => mention !== community.twitterBot.twitterBotUsername,
+	);
 	const giver = {
 		accountId: tweet.author.id,
 		name: tweet.author.username,
@@ -67,11 +65,13 @@ export const preparePraiseTweet = (params: PraiseCreateInputDto): string => {
 export const getAndSaveMentions = async (
 	community: Community,
 ): Promise<ITweetWithAuthor[] | undefined> => {
+	const collection = hostnameToCollection(community.hostname);
 	try {
-		const communityTweets = await tweetsCache.get(community.name);
+		const communityTweets = await Tweets(collection).find().sort({ id: -1 });
+		const lastMentionId = communityTweets[0]?.id;
 		const mentionsResponse = await getBotMentions(
 			community.twitterBot,
-			communityTweets[0]?.id,
+			lastMentionId,
 		);
 		if (mentionsResponse?.meta?.result_count === 0) {
 			createLog(`${community.name}: Mentions are up to date`, 'no new mentions');
@@ -83,7 +83,7 @@ export const getAndSaveMentions = async (
 			'new mentions fetched',
 		);
 		const tweetsWithAuthors = addAuthorToTweets(mentionsResponse);
-		await tweetsCache.set(community.name, tweetsWithAuthors);
+		await Tweets(collection).insertMany(tweetsWithAuthors, { ordered: false });
 		createLog(
 			`${community.name}: Added mentions: ${mentionsIds.join()}`,
 			'new mentions added to local DB',
@@ -149,11 +149,16 @@ const sendPraisesToAPI = async (
 
 export const mainJob = async (community: Community) => {
 	try {
-		// const newMentions = await getAndSaveMentions(community);
+		const newMentions = await getAndSaveMentions(community);
+		console.log(newMentions);
+		const users = await apiGet('/useraccounts', {
+			headers: { host: community.hostname },
+		}).then(res => res.data);
+		console.log(users);
 		// if (newMentions) {
-		const newMentions = await tweetsCache.get(community.name);
+		// const newMentions = await tweetsCache.get(community.name);
 
-		await sendPraisesToAPI(community, newMentions);
+		// await sendPraisesToAPI(community, newMentions);
 		// 	await sendBatchTweets(community, newMentions);
 		// }
 		console.log('Job done');

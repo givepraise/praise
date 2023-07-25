@@ -106,6 +106,6 @@ const tweetsModelV2 = new Schema({
 	text: { type: String, required: false },
 });
 
-const Mentions = model('tweetsModelV2', tweetsModelV2, 'mentions');
+const Tweets = (collection: string) => model('tweetsModelV2', tweetsModelV2, collection);
 
-export default Mentions;
+export default Tweets;
