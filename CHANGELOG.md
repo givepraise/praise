@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Frontend**: Upgraded to the latest version of RainbowKit. This should fix some issues with the WalletConnect login flow.
 - **API**: Backup restore script now supports specifying which database to import from and restore to
 - **API**: Refactors the API to use request scoped services and simplifies the database connection logic. We no longer attempt to cache db connections ourselves but instead rely on the MongoDb node.js package #1103
 - **Discord bot**: Improved user onboarding - Activation flow when praising first-time #1070
