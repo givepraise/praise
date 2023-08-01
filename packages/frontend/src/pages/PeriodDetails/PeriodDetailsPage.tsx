@@ -33,6 +33,7 @@ import { QuantifierMessage } from './components/QuantifierMessage';
 import { Box } from '@/components/ui/Box';
 import { LoadPlaceholder } from '@/components/LoadPlaceholder';
 import { PeriodStatusType } from '@/model/periods/enums/period-status-type.enum';
+import Attestations from './components/Attestations';
 
 const QuantifierTable = React.lazy(
   () => import('./components/QuantifierTable')
@@ -117,6 +118,13 @@ export const PeriodDetailsPage = (): JSX.Element | null => {
                 replace
                 rounded
               />
+              <NavItem
+                to={`${url}/attestations`}
+                description="Attestations"
+                icon={faChartBar}
+                replace
+                rounded
+              />
             </ul>
           </SubPageNav>
         </div>
@@ -124,6 +132,11 @@ export const PeriodDetailsPage = (): JSX.Element | null => {
         <Box className="px-0">
           <Suspense fallback={null}>
             <Switch>
+              <Route path={`${path}/attestations`}>
+                <Suspense fallback={null}>
+                  <Attestations />
+                </Suspense>
+              </Route>
               <Route path={`${path}/analytics`}>
                 <Suspense fallback={null}>
                   <Analytics />
