@@ -70,11 +70,17 @@ const TopPraiseGivers = ({
       {
         Header: 'Username',
         accessor: 'username',
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        Cell: (data: any) => (
+          <div className="overflow-hidden overflow-ellipsis whitespace-nowrap">
+            {data.value ? data.value : data.row.original.useraccountname}
+          </div>
+        ),
       },
       {
         Header: 'Score',
         accessor: 'score',
-        className: 'text-right',
+        className: 'text-right w-12',
         Cell: ({ value }: { value: number }) => (
           <span className="opacity-70">
             {new Intl.NumberFormat().format(Math.round(value))}
@@ -94,7 +100,7 @@ const TopPraiseGivers = ({
   return (
     <Graph.Frame>
       <Graph.Header>Top praise givers</Graph.Header>
-      <table {...getTableProps()} className="w-full">
+      <table {...getTableProps()} className="w-full overflow-auto table-fixed">
         <tbody {...getTableBodyProps()}>
           {rows.map((row) => {
             prepareRow(row);
