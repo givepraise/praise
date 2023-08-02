@@ -37,7 +37,7 @@ const Graphs = (): JSX.Element | null => {
 
   return (
     <DuckDb startDate={date1Str} endDate={date3Str}>
-      <div className="h-full gap-5 columns-1 md:columns-2 xl:columns-3">
+      <div className="gap-5 columns-1 md:columns-2 xl:columns-3">
         <TopPraise date1={date1Str} date2={date2Str} date3={date3Str} />
         <PraiseOverTime date1={date1Str} date2={date2Str} date3={date3Str} />
         <TopPraiseGivers date1={date1Str} date2={date2Str} date3={date3Str} />
