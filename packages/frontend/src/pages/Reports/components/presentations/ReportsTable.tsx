@@ -14,7 +14,7 @@ export const ReportsTable = ({ data }: ReportsTableProps): JSX.Element => {
       Object.keys(data[0]).map((key) => ({
         Header: key,
         accessor: key,
-        className: 'pl-5 text-left',
+        className: 'px-5 text-left',
       })),
     [data]
   );
@@ -41,7 +41,7 @@ export const ReportsTable = ({ data }: ReportsTableProps): JSX.Element => {
             const { key, ...restHeaderGroupProps } =
               headerGroup.getHeaderGroupProps();
             return (
-              <tr className="px-5" key={key} {...restHeaderGroupProps}>
+              <tr key={key} {...restHeaderGroupProps}>
                 {headerGroup.headers.map((column) => {
                   const { key, ...restColumn } = column.getHeaderProps();
                   // eslint-disable-next-line @typescript-eslint/no-explicit-any
