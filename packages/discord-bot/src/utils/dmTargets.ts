@@ -16,9 +16,9 @@ const sendDMs = async (
   host?: string
 ): Promise<void> => {
   logger.debug(
-    `Sending DMs to users: ${users
-      ?.map((u) => `${u._id} - ${u.username}`)
-      .join(', ')} with message: ${JSON.stringify(message.toJSON())}`
+    `Sending DMs to users: ${
+      users?.map((u) => `${u._id} - ${u.username}`).join(', ') || 'undefined'
+    } with message: ${JSON.stringify(message.toJSON())}`
   );
 
   const successful = [];
