@@ -125,7 +125,7 @@ const TopPraise = ({
     <Graph.Frame className="px-0">
       <Graph.Header className="px-5">Highest scored praise</Graph.Header>
       <div className="@container">
-        <ul className="px-5 text-xs  md:px-0">
+        <ul className="px-5 text-xs md:px-0">
           {data.map((praise) => (
             <PraiseRow praise={praise} key={praise._id}>
               <Praise praise={praise} key={praise._id} bigGiverAvatar={false} />
@@ -136,7 +136,7 @@ const TopPraise = ({
       <div className="px-5">
         See{' '}
         <Link
-          to={`/reports/run?report=top-praise&startDate=${date2}&endDate=${date3}`}
+          to={`/reports/run?manifestUrl=https%3A%2F%2Fraw.githubusercontent.com%2Fgivepraise%2Freports%2Fmain%2Freports%2Ftop-praise%2Fmanifest.json&startDate=${date2}&endDate=${date3}`}
         >
           full report
         </Link>
