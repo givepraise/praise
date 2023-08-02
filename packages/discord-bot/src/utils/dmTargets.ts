@@ -1,4 +1,4 @@
-import { PeriodDetailsDto, User } from '../utils/api-schema';
+import { PeriodDetailsDto, User, UserAccount } from '../utils/api-schema';
 import { CommandInteraction, DiscordAPIError, EmbedBuilder } from 'discord.js';
 import { Buffer } from 'node:buffer';
 import { FailedToDmUsersList } from '../interfaces/FailedToDmUsersList';
@@ -11,12 +11,13 @@ import { logger } from './logger';
  */
 const sendDMs = async (
   interaction: CommandInteraction,
-  users: User[],
-  message: EmbedBuilder
+  message: EmbedBuilder,
+  users: User[] | undefined,
+  host?: string
 ): Promise<void> => {
   logger.debug(
     `Sending DMs to users: ${users
-      .map((u) => `${u._id} - ${u.username}`)
+      ?.map((u) => `${u._id} - ${u.username}`)
       .join(', ')} with message: ${JSON.stringify(message.toJSON())}`
   );
 
@@ -27,18 +28,30 @@ const sendDMs = async (
     closedDmUsers: <string[]>[],
     unknownErrorUsers: <string[]>[],
   };
-  if (!users || users.length === 0) {
-    await interaction.editReply(
-      'Message not sent. No recipients matched filter.'
+
+  let userTargets: { accountId: string; name: string }[] | undefined;
+  if (!users) {
+    userTargets = await apiGet<UserAccount[]>('/useraccounts', {
+      headers: { host },
+    })
+      .then((res) => res.data.filter((u) => !u.user))
+      .catch(() => undefined);
+  } else {
+    userTargets = users.map(
+      (u) => u.accounts.filter((acc) => acc.platform === 'DISCORD')[0]
     );
   }
 
-  for (const user of users) {
-    const userAccount = user.accounts.filter(
-      (acc) => acc.platform === 'DISCORD'
-    )[0];
-    const userId: string = userAccount?.accountId || 'Unknown user';
-    const userName: string = userAccount?.name || userId;
+  if (!userTargets || userTargets.length === 0) {
+    await interaction.editReply(
+      'Message not sent. No recipients matched filter.'
+    );
+    return;
+  }
+
+  for (const userAccount of userTargets) {
+    const userId: string = userAccount.accountId || 'Unknown user';
+    const userName: string = userAccount.name || userId;
     try {
       const discordUser = await interaction.guild?.members.fetch(userId);
       if (!discordUser) {
@@ -165,14 +178,18 @@ export const selectTargets = async (
   if (!users) return;
 
   switch (type) {
-    case 'USERS':
+    case 'UNACTIVATED-USERS': {
+      await sendDMs(interaction, message, undefined, host);
+      break;
+    }
+    case 'ACTIVATED-USERS':
     case 'QUANTIFIERS': {
       await sendDMs(
         interaction,
+        message,
         type === 'QUANTIFIERS'
           ? users.filter((user) => user.roles.includes('QUANTIFIER'))
-          : users,
-        message
+          : users
       );
       return;
     }
@@ -195,8 +212,8 @@ export const selectTargets = async (
           const receivers = selectedPeriod.receivers?.map((r) => r._id);
           await sendDMs(
             interaction,
-            users.filter((user) => receivers?.includes(user._id)),
-            message
+            message,
+            users.filter((user) => receivers?.includes(user._id))
           );
           return;
         }
@@ -218,16 +235,16 @@ export const selectTargets = async (
             .map((q) => q._id);
           await sendDMs(
             interaction,
-            users.filter((user) => q.includes(user._id)),
-            message
+            message,
+            users.filter((user) => q.includes(user._id))
           );
           return;
         }
         const q = quantifiers.map((q) => q._id);
         await sendDMs(
           interaction,
-          users.filter((user) => q.includes(user._id)),
-          message
+          message,
+          users.filter((user) => q.includes(user._id))
         );
         return;
       } catch (err) {
