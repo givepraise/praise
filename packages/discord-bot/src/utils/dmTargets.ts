@@ -102,51 +102,38 @@ const sendDMs = async (
   }
 
   let summary = 'User\t\t\tStatus\t\tReason\n';
-  successful.forEach((username: string) => {
+
+  const formatSummary = (
+    username: string,
+    reason: string,
+    delivered = false
+  ) => {
     summary += `${
       username.length <= 24
         ? username + String(' ').repeat(24 - username.length)
         : username.slice(0, 21) + '   '
-    }Delivered\t-\n${
+    }${delivered ? '' : 'Not '}Delivered\t${reason}\n${
       username.length > 24 ? username.slice(21, username.length) + '\n' : ''
     }`;
-  });
-  failed.invalidUsers.forEach((username: string) => {
-    summary += `${
-      username.length <= 24
-        ? username + String(' ').repeat(24 - username.length)
-        : username.slice(0, 21) + '   '
-    }Not Delivered\tInvalid User\n${
-      username.length > 24 ? username.slice(21, username.length) + '\n' : ''
-    }`;
-  });
-  failed.notFoundUsers.forEach((username: string) => {
-    summary += `${
-      username.length <= 24
-        ? username + String(' ').repeat(24 - username.length)
-        : username.slice(0, 21) + '   '
-    }Not Delivered\tUser Not Found In Discord\n${
-      username.length > 24 ? username.slice(21, username.length) + '\n' : ''
-    }`;
-  });
-  failed.closedDmUsers.forEach((username: string) => {
-    summary += `${
-      username.length <= 24
-        ? username + String(' ').repeat(24 - username.length)
-        : username.slice(0, 21) + '   '
-    }Not Delivered\tDMs closed\n${
-      username.length > 24 ? username.slice(21, username.length) + '\n' : ''
-    }`;
-  });
-  failed.unknownErrorUsers.forEach((username: string) => {
-    summary += `${
-      username.length <= 24
-        ? username + String(' ').repeat(24 - username.length)
-        : username.slice(0, 21) + '   '
-    }Not Delivered\tUnknown Error\n${
-      username.length > 24 ? username.slice(21, username.length) + '\n' : ''
-    }`;
-  });
+  };
+
+  successful.forEach((username: string) => formatSummary(username, '-', true));
+
+  failed.invalidUsers.forEach((username: string) =>
+    formatSummary(username, 'Invalid User')
+  );
+
+  failed.notFoundUsers.forEach((username: string) =>
+    formatSummary(username, 'User Not Found In Discord')
+  );
+
+  failed.closedDmUsers.forEach((username: string) =>
+    formatSummary(username, 'DMs Closed')
+  );
+
+  failed.unknownErrorUsers.forEach((username: string) =>
+    formatSummary(username, 'Unknown Error')
+  );
 
   await interaction.editReply({
     content: content,
