@@ -1,118 +1,29 @@
-import { faTimes, faUsers } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Dialog } from '@headlessui/react';
-import React, { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/Button';
-import { useReport } from '../../../model/report/hooks/use-report.hook';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { AllPeriods, PeriodPageParams } from '../../../model/periods/periods';
 import { useRecoilValue } from 'recoil';
+import { Dialog } from '@headlessui/react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faPrayingHands,
+  faReceipt,
+  faTimes,
+} from '@fortawesome/free-solid-svg-icons';
+import { Button } from '@/components/ui/Button';
+import { useSafe } from '../../../model/safe/hooks/useSafe';
+import { useAttestations } from '../../../model/eas/hooks/useAttestations';
 import {
   getPeriodDatesConfig,
   PeriodDates,
 } from '../../../model/report/util/get-period-dates-config';
-import { ReportManifestDto } from '../../../model/report/dto/report-manifest.dto';
+import { AllPeriods, PeriodPageParams } from '../../../model/periods/periods';
+import { CommunityByHostname } from '../../../model/communitites/communities';
 import { useReportRunReturn } from '../../../model/report/types/use-report-run-return.type';
-import { set } from 'lodash';
-import { AllReports } from '../../../model/report/reports';
+import { ATTESTATION_REPORT_MANIFEST_URL } from '../../../model/eas/eas.constants';
+import { GenerateAttestationsData } from './GenerateAttestationsData';
 
-type GenerateAttestationsDataProps = {
-  periodId: string;
-  periodDates: PeriodDates;
-  manifestUrl: string;
-  done: (result: useReportRunReturn | undefined) => void;
-};
-
-// type AttestationsData = {
-//   manifest: ReportManifestDto;
-//   result: useReportRunReturn | undefined;
-// };
-
-// function GenerateAttestationsData({
-//   periodId,
-//   periodDates,
-// }: GenerateAttestationsDataProps): JSX.Element {
-//   const [data, setData] = useState<Map<string, useReportRunReturn | undefined>>(
-//     new Map<string, useReportRunReturn | undefined>()
-//   );
-//   const [running, setRunning] = useState<boolean>(false);
-
-//   const report = useReport({
-//     manifestUrl:
-//       'https://raw.githubusercontent.com/givepraise/reports/main/reports/top-givers/manifest.json',
-//     periodId,
-//     startDate: periodDates.startDate,
-//     endDate: periodDates.endDate,
-//   });
-
-//   useEffect(() => {
-//     if (!report.ready || running) return;
-
-//     setRunning(true);
-
-//     console.log('running report', report);
-//     data.set(report.manifest.name, undefined);
-//     setData(data);
-
-//     const runReport = async (): Promise<void> => {
-//       const result = await report.run({ format: 'json' });
-//       data.set(report.manifest.name, result);
-//       setData(data);
-//       console.log(result);
-//     };
-//     void runReport();
-//   }, [report, data, running]);
-
-//   return (
-//     <div className="flex flex-col items-center justify-center">
-//       Genweerating...
-//       <pre>
-//         {data
-//           ? Array.from(
-//               data,
-//               ([key, value]) => `${key}: ${value?.rows.length}`
-//             ).join(', ')
-//           : '...'}
-//       </pre>
-//     </div>
-//   );
-// }
-
-function GenerateAttestationsData({
-  periodId,
-  periodDates,
-  manifestUrl,
-  done,
-}: GenerateAttestationsDataProps): JSX.Element {
-  const report = useReport({
-    manifestUrl,
-    periodId,
-    startDate: periodDates.startDate,
-    endDate: periodDates.endDate,
-  });
-  const [data, setData] = useState<useReportRunReturn | undefined>(undefined);
-
-  useEffect(() => {
-    if (!report.ready || data) return;
-    console.log('running report', report);
-    const runReport = async (): Promise<void> => {
-      const result = await report.run({ format: 'json' });
-      setData(result);
-      done(result);
-    };
-    void runReport();
-  }, [report, data, done]);
-
-  if (!report.ready) return <div>loading...</div>;
-
-  if (!data) return <div>running...</div>;
-
-  return <div>{data.rows.length}</div>;
-}
-
-interface CreateAttestationsDialogProps {
+type CreateAttestationsDialogProps = {
   onClose(): void;
-}
+};
 
 export function CreateAttestationsDialog({
   onClose,
@@ -122,19 +33,44 @@ export function CreateAttestationsDialog({
   const [periodDates, setPeriodDates] = useState<PeriodDates | undefined>(
     undefined
   );
-  const reports = useRecoilValue(AllReports);
+  const community = useRecoilValue(
+    CommunityByHostname(window.location.hostname)
+  );
+  const { safe } = useSafe(community?.creator);
+  const [owners, setOwners] = useState<string[] | undefined[]>([]);
+  const [treshold, setTreshold] = useState<number>(0);
+  const [attestationData, setAttestationData] = useState<
+    useReportRunReturn | undefined
+  >(undefined);
+  const { createAttestations, creating } = useAttestations({
+    hostname: window.location.hostname,
+  });
 
-  useEffect(() => {
+  function loadPeriodDates(): void {
     if (!periods) return;
     setPeriodDates(getPeriodDatesConfig(periods, periodId));
-  }, [periods, periodId]);
+  }
+
+  function loadSignersAndThreshold(): void {
+    if (!safe) return;
+    const loadSigners = async (): Promise<void> => {
+      const owners = await safe.getOwners();
+      const treshold = await safe.getThreshold();
+      setOwners(owners);
+      setTreshold(treshold);
+    };
+    void loadSigners();
+  }
+
+  useEffect(loadPeriodDates, [periods, periodId]);
+  useEffect(loadSignersAndThreshold, [safe]);
 
   if (!periodDates) return null;
 
   return (
     <div className="flex items-center justify-center min-h-screen">
       <Dialog.Overlay className="fixed inset-0 bg-black/30" />
-      <div className="relative max-w-xl pb-16 mx-auto bg-white rounded dark:bg-slate-600 dark:text-white">
+      <div className="relative w-[550px] pb-16 mx-auto bg-white rounded dark:bg-slate-600 dark:text-white">
         <div className="flex justify-end p-6">
           <Button variant={'round'} onClick={onClose}>
             <FontAwesomeIcon icon={faTimes} size="1x" />
@@ -142,28 +78,65 @@ export function CreateAttestationsDialog({
         </div>
         <div className="px-20">
           <div className="flex justify-center mb-7">
-            <FontAwesomeIcon icon={faUsers} size="2x" />
+            <FontAwesomeIcon icon={faReceipt} size="2x" />
           </div>
+
           <Dialog.Title className="text-center mb-7">
             Create Attestations
-            <div className="flex flex-col items-center justify-center">
-              Generating...
-              <pre>
-                {reports?.map((report) => (
-                  <GenerateAttestationsData
-                    key={report.name}
-                    periodId={periodId}
-                    periodDates={periodDates}
-                    manifestUrl={report.manifestUrl || ''}
-                    done={(result): void => {
-                      console.log('done', result);
-                    }}
-                  />
-                ))}
-              </pre>
-            </div>
           </Dialog.Title>
-          <React.Suspense fallback={null}>content</React.Suspense>
+
+          <div className="flex flex-col gap-5">
+            <div className="flex flex-col justify-center gap-5 p-10 text-center border border-black">
+              <GenerateAttestationsData
+                periodId={periodId}
+                periodDates={periodDates}
+                manifestUrl={ATTESTATION_REPORT_MANIFEST_URL}
+                done={(result): void => {
+                  if (!result) return;
+                  setAttestationData(result);
+                }}
+              />
+            </div>
+
+            {attestationData && (
+              <>
+                <div className="text-center">
+                  This transaction requires the signature of:
+                  <br />
+                  <strong>{treshold}</strong> out of{' '}
+                  <strong>{owners.length} owners</strong>.
+                </div>
+                <div className="p-10 text-center bg-opacity-20 bg-themecolor-alt-2">
+                  Submit to create and sign this transaction.
+                </div>
+              </>
+            )}
+            <div className="flex justify-center gap-5 mt-5">
+              <Button onClick={onClose} disabled={creating}>
+                Cancel
+              </Button>
+              <Button
+                onClick={(): void => {
+                  if (!attestationData) return;
+                  void createAttestations(attestationData, periodId);
+                }}
+                disabled={!attestationData || creating}
+              >
+                {creating ? (
+                  <>
+                    <FontAwesomeIcon
+                      icon={faPrayingHands}
+                      className="w-4 mr-2"
+                      spin
+                    />
+                    Creating...
+                  </>
+                ) : (
+                  'Submit'
+                )}
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
