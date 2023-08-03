@@ -3,6 +3,7 @@ import axios from 'axios';
 import { createLog } from './helpers';
 import { IBasicTweet, ITweetResponse } from '../types/tweet';
 import ErrorTag from './ErrorTag';
+import { Community } from '../types/praiseApiSchema';
 // eslint-disable-next-line @typescript-eslint/no-var-requires,import/no-commonjs
 const OAuth = require('oauth-1.0a');
 
@@ -12,11 +13,12 @@ interface ITweetParams {
 }
 
 export const postPraiseTweet = async (
-	twitterBot: any,
+	community: Community,
 	tweetParams: ITweetParams,
 ): Promise<IBasicTweet> => {
 	const { text, inReplyToID } = tweetParams;
-	const { consumerKey, consumerSecret, accessToken, tokenSecret } = twitterBot;
+	const { consumerKey, consumerSecret, accessToken, tokenSecret } =
+		community.twitterBot;
 	const url = `https://api.twitter.com/2/tweets`;
 	const oauth = OAuth({
 		consumer: {
