@@ -1,14 +1,21 @@
 import { ethers } from 'ethers';
 
-import { useSigner } from '../../../hooks/useSigner';
+import { useSigner } from '../../../model/ethers/hooks/useSigner';
 import Safe, { EthersAdapter } from '@safe-global/protocol-kit';
 import SafeApiKit from '@safe-global/api-kit';
 import {
   OperationType,
   SafeTransactionDataPartial,
 } from '@safe-global/safe-core-sdk-types';
-import { useNetwork } from 'wagmi';
 import { EAS } from '@ethereum-attestation-service/eas-sdk';
+import { useRecoilValue } from 'recoil';
+import { useParams } from 'react-router-dom';
+import { PeriodPageParams, SinglePeriod } from '../../../model/periods/periods';
+import { CreateAttestationsButton } from './CreateAttestationsButton';
+import { CreateAttestationsDialog } from './CreateAttestationsDialog';
+import { useRef, useState } from 'react';
+import { Dialog } from '@headlessui/react';
+import { AllReports } from '../../../model/report/reports';
 
 const SAFE_ADDRESS = '0xf6937E015d5337F648fE01a03A74c9FAA4f90d54';
 type UseAttestationsReturn = {
@@ -126,20 +133,56 @@ function useAttestations(): UseAttestationsReturn {
 }
 
 const Attestations = (): JSX.Element => {
-  const { createAttestation } = useAttestations();
-  const { chain, chains } = useNetwork();
+  const { periodId } = useParams<PeriodPageParams>();
+  const period = useRecoilValue(SinglePeriod(periodId));
+  const dialogRef = useRef(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  if (period?.status !== 'CLOSED') {
+    return (
+      <div className="flex items-center justify-center w-full h-full">
+        <div className="flex flex-col items-center justify-center gap-5">
+          <img
+            src="/eas-logo.png"
+            alt="Ethereum Attestation Service"
+            className="block w-16"
+          />
+          Attestations can be generated once praise has been quantified and the
+          period has been closed.
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="flex flex-col gap-2 px-5">
-      <h2>Attestations</h2>
-      {chain && <div>Connected to {chain.name}</div>}
-      {chains && (
-        <div>Available chains: {chains.map((chain) => chain.name)}</div>
-      )}
-      <button onClick={(): void => void createAttestation()}>
-        Create Attestation
-      </button>
-    </div>
+    <>
+      <div className="flex flex-col gap-5 px-5">
+        <div className="flex justify-between">
+          <h2>Attestations</h2>
+          <img
+            src="/eas-logo.png"
+            alt="Ethereum Attestation Service"
+            className="object-contain w-16"
+          />
+        </div>
+        {period?.attestationsTxHash && (
+          <div>No attestations have yet been created for this period.</div>
+        )}
+        <CreateAttestationsButton onClick={(): void => setDialogOpen(true)} />
+      </div>
+      <Dialog
+        open={dialogOpen}
+        onClose={(): void => setDialogOpen(false)}
+        className="fixed inset-0 z-10 overflow-y-auto"
+        initialFocus={dialogRef}
+      >
+        <div ref={dialogRef}>
+          <CreateAttestationsDialog
+            onClose={(): void => setDialogOpen(false)}
+          />
+        </div>
+      </Dialog>
+    </>
   );
 };
 
