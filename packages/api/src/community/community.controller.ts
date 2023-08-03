@@ -16,7 +16,6 @@ import { Community } from './schemas/community.schema';
 import { MongooseClassSerializerInterceptor } from '../shared/interceptors/mongoose-class-serializer.interceptor';
 import { ObjectIdPipe } from '../shared/pipes/object-id.pipe';
 import { CommunityPaginatedResponseDto } from './dto/community-pagination-model.dto';
-import { PaginatedQueryDto } from '../shared/dto/pagination-query.dto';
 import { ObjectId, Types } from 'mongoose';
 import { Permissions } from '../auth/decorators/permissions.decorator';
 import { CreateCommunityInputDto } from './dto/create-community-input.dto';
@@ -29,6 +28,7 @@ import { IsNameAvailableResponseDto } from './dto/is-name-available-response-dto
 import { IsNameAvailableRequestDto } from './dto/is-name-available-request-dto';
 import { EventLogService } from '../event-log/event-log.service';
 import { EventLogTypeKey } from '../event-log/enums/event-log-type-key';
+import { FindAllCommunitiesInputDto } from './dto/find-all-communities-input.dto';
 
 @Controller('communities')
 @ApiTags('Communities')
@@ -82,7 +82,7 @@ export class CommunityController {
   })
   @UseInterceptors(MongooseClassSerializerInterceptor(Community))
   async findAll(
-    @Query() options: PaginatedQueryDto,
+    @Query() options: FindAllCommunitiesInputDto,
   ): Promise<CommunityPaginatedResponseDto> {
     return this.communityService.findAllPaginated(options);
   }
