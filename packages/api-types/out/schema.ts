@@ -353,6 +353,8 @@ export interface components {
       status: "OPEN" | "QUANTIFY" | "CLOSED";
       /** Format: date-time */
       endDate: string;
+      /** @example 0x46164b8581258eec4b4f44d626925953d0d7581514d9fd1335e3bd660d48e07c */
+      attestationsTxHash: string;
       /** Format: date-time */
       createdAt: string;
       /** Format: date-time */
@@ -454,6 +456,8 @@ export interface components {
       status: "OPEN" | "QUANTIFY" | "CLOSED";
       /** Format: date-time */
       endDate: string;
+      /** @example 0x46164b8581258eec4b4f44d626925953d0d7581514d9fd1335e3bd660d48e07c */
+      attestationsTxHash: string;
       /** Format: date-time */
       createdAt: string;
       /** Format: date-time */

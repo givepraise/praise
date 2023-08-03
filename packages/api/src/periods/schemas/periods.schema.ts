@@ -41,6 +41,15 @@ export class Period {
   })
   endDate: Date;
 
+  @ApiProperty({
+    example:
+      '0x46164b8581258eec4b4f44d626925953d0d7581514d9fd1335e3bd660d48e07c',
+    type: 'string',
+  })
+  @IsString()
+  @Prop({ required: false })
+  attestationsTxHash?: string;
+
   @Prop({ type: Date })
   @ApiResponseProperty()
   createdAt: Date;
