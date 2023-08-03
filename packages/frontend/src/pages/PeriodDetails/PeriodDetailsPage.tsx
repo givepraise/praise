@@ -17,6 +17,7 @@ import {
   faBalanceScaleLeft,
   faCog,
   faChartBar,
+  faReceipt,
 } from '@fortawesome/free-solid-svg-icons';
 import React, { Suspense } from 'react';
 import {
@@ -121,7 +122,7 @@ export const PeriodDetailsPage = (): JSX.Element | null => {
               <NavItem
                 to={`${url}/attestations`}
                 description="Attestations"
-                icon={faChartBar}
+                icon={faReceipt}
                 replace
                 rounded
               />
