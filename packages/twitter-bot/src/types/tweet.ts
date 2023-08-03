@@ -1,5 +1,6 @@
 import { IMedia } from './tweetMedia';
 import { IUserSimple } from './twitterUser';
+import { PraiseCreateInputDto } from '../lib/praiseAPI';
 
 export interface ITweetAnnotation {
 	start: number;
@@ -101,6 +102,11 @@ export interface ITweet extends IBasicTweet {
 
 export interface ITweetWithAuthor extends ITweet {
 	author: IUserSimple;
+}
+
+export interface ITweetWithPraise extends ITweetWithAuthor {
+	isValid?: boolean;
+	praise: PraiseCreateInputDto;
 }
 
 export interface ITweetResponse {
