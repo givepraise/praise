@@ -87,6 +87,22 @@ const authorModel = new Schema({
 	name: { type: String, required: true },
 });
 
+const giverModel = new Schema({
+	accountId: { type: String, required: false },
+	name: { type: String, required: false },
+	avatarId: { type: String, required: false },
+	platform: { type: String, required: false },
+});
+
+const praiseModel = new Schema({
+	reason: { type: String, required: false },
+	reasonRaw: { type: String, required: false },
+	giver: { type: giverModel, required: false },
+	receiverIds: { type: [String], required: false },
+	sourceId: { type: String, required: false },
+	sourceName: { type: String, required: false },
+});
+
 const tweetsModelV2 = new Schema({
 	attachments: { type: attachmentsModel, required: false },
 	author: { type: authorModel, required: false },
@@ -104,6 +120,8 @@ const tweetsModelV2 = new Schema({
 	reply_settings: { type: String, required: false },
 	source: { type: String, required: false },
 	text: { type: String, required: false },
+	isValid: { type: Boolean, required: true },
+	praise: { type: praiseModel, required: true },
 });
 
 const Tweets = (collection: string) => model('tweetsModelV2', tweetsModelV2, collection);
