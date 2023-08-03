@@ -125,7 +125,7 @@ export async function apiPatch<T, U>(
 	try {
 		return await apiClient.patch<T>(endpoint, data, config);
 	} catch (error) {
-		createLog(error, 'postPraiseTweet');
+		createLog(error, 'apiPatch');
 		throw new ErrorTag(error);
 	}
 }
