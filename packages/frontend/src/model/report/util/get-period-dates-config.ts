@@ -1,10 +1,10 @@
 import { PeriodDetailsDto } from '@/model/periods/dto/period-details.dto';
 import { getPreviousPeriod } from '@/utils/periods';
 
-interface PeriodDates {
+export type PeriodDates = {
   startDate: string;
   endDate: string;
-}
+};
 
 /**
  * getPeriodDatesConfig function.
