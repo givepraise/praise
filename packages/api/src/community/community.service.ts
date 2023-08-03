@@ -19,7 +19,7 @@ import { databaseExists } from '../database/utils/database-exists';
 import { hostNameToDbName } from '../database/utils/host-name-to-db-name';
 import { PaginateModel } from '../shared/interfaces/paginate-model.interface';
 import { IsNameAvailableResponseDto } from './dto/is-name-available-response-dto';
-import { FindAllCommunitiesInputDto } from './dto/find-all-communities-input.dto';
+import { FindAllCommunitiesQueryDto } from './dto/find-all-communities-query.dto';
 
 @Injectable()
 export class CommunityService {
@@ -56,7 +56,7 @@ export class CommunityService {
    * @returns
    */
   async findAllPaginated(
-    options: FindAllCommunitiesInputDto,
+    options: FindAllCommunitiesQueryDto,
   ): Promise<CommunityPaginatedResponseDto> {
     const { sortColumn, sortType } = options;
     const query = {} as any;

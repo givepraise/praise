@@ -28,7 +28,7 @@ import { IsNameAvailableResponseDto } from './dto/is-name-available-response-dto
 import { IsNameAvailableRequestDto } from './dto/is-name-available-request-dto';
 import { EventLogService } from '../event-log/event-log.service';
 import { EventLogTypeKey } from '../event-log/enums/event-log-type-key';
-import { FindAllCommunitiesInputDto } from './dto/find-all-communities-input.dto';
+import { FindAllCommunitiesQueryDto } from './dto/find-all-communities-query.dto';
 
 @Controller('communities')
 @ApiTags('Communities')
@@ -82,7 +82,7 @@ export class CommunityController {
   })
   @UseInterceptors(MongooseClassSerializerInterceptor(Community))
   async findAll(
-    @Query() options: FindAllCommunitiesInputDto,
+    @Query() options: FindAllCommunitiesQueryDto,
   ): Promise<CommunityPaginatedResponseDto> {
     return this.communityService.findAllPaginated(options);
   }
