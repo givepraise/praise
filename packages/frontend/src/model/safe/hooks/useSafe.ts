@@ -1,13 +1,10 @@
-import { useSigner } from '../../ethers/hooks/useSigner';
+import { useSigner } from '../../eth/hooks/useSigner';
 import Safe, { EthersAdapter } from '@safe-global/protocol-kit';
 import { useEffect, useState } from 'react';
 import { ethers } from 'ethers';
 import SafeApiKit from '@safe-global/api-kit';
-
-// These constants might later be replaced with community settings, allowing
-// each community to select which chain etc. to use.
-const CHAIN_ID = 10; // Optimism
-const SAFE_TX_SERVICE_URL = 'https://safe-transaction-optimism.safe.global';
+import { ETH_CHAIN_ID } from '../../eth/eth.constants';
+import { SAFE_TX_SERVICE_URL } from '../safe.constants';
 
 type useSafeReturn = {
   ethersAdapter: EthersAdapter | undefined;
@@ -16,7 +13,7 @@ type useSafeReturn = {
 };
 
 export function useSafe(safeAddress: string | undefined): useSafeReturn {
-  const signer = useSigner(CHAIN_ID);
+  const signer = useSigner(ETH_CHAIN_ID);
   const [ethersAdapter, setEthersAdapter] = useState<EthersAdapter | undefined>(
     undefined
   );
