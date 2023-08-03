@@ -29,6 +29,7 @@ import { IsNameAvailableRequestDto } from './dto/is-name-available-request-dto';
 import { EventLogService } from '../event-log/event-log.service';
 import { EventLogTypeKey } from '../event-log/enums/event-log-type-key';
 import { FindAllCommunitiesQueryDto } from './dto/find-all-communities-query.dto';
+import { Public } from '../shared/decorators/public.decorator';
 
 @Controller('communities')
 @ApiTags('Communities')
@@ -74,7 +75,7 @@ export class CommunityController {
   }
 
   @Get()
-  @Permissions(Permission.CommunitiesView)
+  @Public() // Public access, no auth required
   @ApiResponse({
     status: 200,
     description: 'All communities',
@@ -100,7 +101,7 @@ export class CommunityController {
   }
 
   @Get(':id')
-  @Permissions(Permission.CommunitiesView)
+  @Public() // Public access, no auth required
   @ApiResponse({
     status: 200,
     description: 'A single Community',
