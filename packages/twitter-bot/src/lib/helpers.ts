@@ -1,9 +1,9 @@
 import { close, openSync, readFileSync, writeSync } from 'fs';
-import { ITweetResponse, ITweetWithAuthor } from '../types/tweet';
+import { ITweetResponse, ITweetWithAuthor, ITweetWithPraise } from '../types/tweet';
 import { getBotMentions, postPraiseTweet } from './twitterAPI';
 import ErrorTag from './ErrorTag';
 import { Community } from '../types/praiseApiSchema';
-import { apiGet, postPraise, PraiseCreateInputDto } from './praiseAPI';
+import { postPraise, PraiseCreateInputDto } from './praiseAPI';
 import Tweets from '../models/tweetModel';
 
 const hostnameToCollection = (hostname: string) => {
@@ -56,15 +56,35 @@ export const createPraiseObj = (
 	return { reason, receiverIds, giver, reasonRaw, sourceId, sourceName };
 };
 
+export const addPraiseToTweets = (
+	tweets: ITweetWithAuthor[],
+	community: Community,
+): ITweetWithPraise[] => {
+	return tweets.map(tweet => {
+		const praise = createPraiseObj(tweet, community);
+		const isValid = checkPraiseValidity(praise);
+		return { ...tweet, isValid, praise };
+	});
+};
+
 export const preparePraiseTweet = (params: PraiseCreateInputDto): string => {
 	const { receiverIds, giver, reason } = params;
 	const receiversString = receiverIds.join(' and @');
 	return `@${giver} has praised @${receiversString} ${reason}`;
 };
 
+const checkPraiseValidity = (praise: PraiseCreateInputDto) => {
+	return !!(
+		praise.giver &&
+		praise.receiverIds &&
+		praise.receiverIds.length > 0 &&
+		praise.reason
+	);
+};
+
 export const getAndSaveMentions = async (
 	community: Community,
-): Promise<ITweetWithAuthor[] | undefined> => {
+): Promise<ITweetWithPraise[] | undefined> => {
 	const collection = hostnameToCollection(community.hostname);
 	try {
 		const communityTweets = await Tweets(collection).find().sort({ id: -1 });
@@ -83,49 +103,60 @@ export const getAndSaveMentions = async (
 			'new mentions fetched',
 		);
 		const tweetsWithAuthors = addAuthorToTweets(mentionsResponse);
-		await Tweets(collection).insertMany(tweetsWithAuthors, { ordered: false });
+		const tweetsWithPraises = addPraiseToTweets(tweetsWithAuthors, community);
+		await Tweets(collection).insertMany(tweetsWithPraises, { ordered: false });
 		createLog(
 			`${community.name}: Added mentions: ${mentionsIds.join()}`,
 			'new mentions added to local DB',
 		);
-		return tweetsWithAuthors;
+		return tweetsWithPraises;
 	} catch (error) {
 		createLog(error, 'getAndSaveMentions');
 		throw new ErrorTag(error);
 	}
 };
 
-export const sendBatchTweets = async (
+enum EReplyTweet {
+	INVALID_TWEET = 'Praise tweets must have at least one receiver and a reason.',
+	PRAISE_GIVEN = '✅ Praise given',
+}
+
+export const sendBatchReplies = async (
 	community: Community,
-	tweets: ITweetWithAuthor[],
+	tweets: ITweetWithPraise[],
+	text: string,
 ) => {
 	try {
 		const tweetsPromises = [];
 		tweets.forEach(tweet => {
-			const praiseParams = createPraiseObj(tweet, community);
-			const praiseTweet = preparePraiseTweet(praiseParams);
-			const tweetPromise = postPraiseTweet(community.twitterBot, {
-				text: praiseTweet,
+			const tweetPromise = postPraiseTweet(community, {
+				// TODO: add praise link
+				text,
 				inReplyToID: tweet.id,
 			});
 			tweetsPromises.push(tweetPromise);
 		});
 		const results = await Promise.all(tweetsPromises);
 		const tweetIDs = results.map(result => result.id);
-		createLog(`Sent tweet IDs: ${tweetIDs.join()}`, 'Batch Tweets sent');
+		createLog(`Sent replies IDs: ${tweetIDs.join()}`, 'Batch replies sent');
 	} catch (error) {
-		createLog(error, 'sendBatchTweets');
+		createLog(error, 'sendBatchReplies');
 		throw new ErrorTag(error);
 	}
 };
 
-const checkPraiseValidity = (praise: PraiseCreateInputDto) => {
-	return (
-		praise.giver &&
-		praise.receiverIds &&
-		praise.receiverIds.length > 0 &&
-		praise.reason
-	);
+const sendRepliesToInvalidTweets = async (community: Community) => {
+	try {
+		const collection = hostnameToCollection(community.hostname);
+		const invalidTweets = await Tweets(collection).find({ isValid: false });
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
+		await sendBatchReplies(community, invalidTweets, EReplyTweet.INVALID_TWEET);
+		console.log(invalidTweets);
+	} catch (error) {
+		createLog(error, 'sendRepliesToInvalidTweets');
+		throw new ErrorTag(error);
+	}
 };
 
 const sendPraisesToAPI = async (
@@ -149,12 +180,13 @@ const sendPraisesToAPI = async (
 
 export const mainJob = async (community: Community) => {
 	try {
-		const newMentions = await getAndSaveMentions(community);
-		console.log(newMentions);
-		const users = await apiGet('/useraccounts', {
-			headers: { host: community.hostname },
-		}).then(res => res.data);
-		console.log(users);
+		await getAndSaveMentions(community);
+		await sendRepliesToInvalidTweets(community);
+		// console.log(newMentions);
+		// const users = await apiGet('/useraccounts', {
+		// 	headers: { host: community.hostname },
+		// }).then(res => res.data);
+		// console.log(users);
 		// if (newMentions) {
 		// const newMentions = await tweetsCache.get(community.name);
 
