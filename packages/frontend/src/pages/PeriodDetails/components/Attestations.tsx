@@ -5,12 +5,15 @@ import { CreateAttestationsButton } from './CreateAttestationsButton';
 import { CreateAttestationsDialog } from './CreateAttestationsDialog';
 import { useRef, useState } from 'react';
 import { Dialog } from '@headlessui/react';
+import { useNetwork } from 'wagmi';
+import { ETH_CHAIN_ID } from '../../../model/eth/eth.constants';
 
 const Attestations = (): JSX.Element => {
   const { periodId } = useParams<PeriodPageParams>();
   const period = useRecoilValue(SinglePeriod(periodId));
   const dialogRef = useRef(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const { chain } = useNetwork();
 
   if (period?.status !== 'CLOSED') {
     return (
@@ -39,10 +42,14 @@ const Attestations = (): JSX.Element => {
             className="object-contain w-16"
           />
         </div>
+
         {!period?.attestationsTxHash && (
           <div>No attestations have yet been created for this period.</div>
         )}
-        <CreateAttestationsButton onClick={(): void => setDialogOpen(true)} />
+
+        {chain?.id === ETH_CHAIN_ID && (
+          <CreateAttestationsButton onClick={(): void => setDialogOpen(true)} />
+        )}
       </div>
       <Dialog
         open={dialogOpen}
