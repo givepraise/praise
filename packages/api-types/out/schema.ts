@@ -476,7 +476,9 @@ export interface components {
     UpdatePeriodInputDto: {
       /** @example June 2021 */
       name?: string;
-      endDate?: string;
+      /** @example 0x46164b8581258eec4b4f44d626925953d0d7581514d9fd1335e3bd660d48e07c */
+      attestationsTxHash?: string;
+      endDate: string;
     };
     UserAccountWithUserRefDto: {
       /** @example 63b428f7d9ca4f6ff5370d05 */
