@@ -168,9 +168,9 @@ export class PeriodsService {
     const period = await this.periodModel.findById(_id);
     if (!period) throw new ApiException(errorMessages.PERIOD_NOT_FOUND);
 
-    const { name, endDate } = data;
+    const { name, endDate, attestationsTxHash } = data;
 
-    if (!name && !endDate)
+    if (!name && !endDate && !attestationsTxHash)
       throw new ApiException(
         errorMessages.UPDATE_PERIOD_NAME_OR_END_DATE_MUST_BE_SPECIFIED,
       );
@@ -204,6 +204,14 @@ export class PeriodsService {
       );
 
       period.endDate = newEndDate;
+    }
+
+    if (attestationsTxHash) {
+      eventLogMessages.push(
+        `Updated the transaction hash of period "${period.name}" to "${attestationsTxHash}"`,
+      );
+
+      period.attestationsTxHash = attestationsTxHash;
     }
 
     await period.save();
