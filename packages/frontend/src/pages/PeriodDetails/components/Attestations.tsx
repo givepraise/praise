@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { PeriodPageParams, SinglePeriod } from '../../../model/periods/periods';
 import { CreateAttestationsButton } from './CreateAttestationsButton';
 import { CreateAttestationsDialog } from './CreateAttestationsDialog';
+import { AttestationsDetailBox } from './AttestationsDetailBox';
 import { useRef, useState } from 'react';
 import { Dialog } from '@headlessui/react';
 import { useNetwork } from 'wagmi';
@@ -49,6 +50,14 @@ const Attestations = (): JSX.Element => {
 
         {chain?.id === ETH_CHAIN_ID && (
           <CreateAttestationsButton onClick={(): void => setDialogOpen(true)} />
+        )}
+
+        {period?.attestationsTxHash && chain?.id === ETH_CHAIN_ID && (
+          <AttestationsDetailBox />
+        )}
+
+        {period?.attestationsTxHash && chain?.id !== ETH_CHAIN_ID && (
+          <div>Connect to Optimism to view attestation information.</div>
         )}
       </div>
       <Dialog
