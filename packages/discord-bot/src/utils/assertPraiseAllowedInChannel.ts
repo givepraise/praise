@@ -22,15 +22,16 @@ export const assertPraiseAllowedInChannel = async (
     getSetting('PRAISE_ALLOWED_CHANNEL_IDS', host) as Promise<string[]>,
   ]);
 
-  if (allowedInAllChannels) return true;
-
-  if (!channel) {
+  if (!channel || channel.type === ChannelType.PrivateThread) {
     await interaction.editReply({
       content:
         '**❌ Missing Permissions**\nPraise bot can not work in private threads yet.',
     });
     return false;
   }
+
+  if (allowedInAllChannels) return true;
+
   if (!Array.isArray(allowedChannelsList) || allowedChannelsList.length === 0) {
     await interaction.editReply({
       content: '**❌ Praise Restricted**\nPraise not allowed in any channel.',
@@ -39,7 +40,10 @@ export const assertPraiseAllowedInChannel = async (
     return false;
   }
 
-  if (!allowedChannelsList.includes(getChannelId(channel))) {
+  if (
+    !allowedChannelsList.includes(getChannelId(channel)) &&
+    !allowedChannelsList.includes(channel.id)
+  ) {
     await interaction.editReply({
       content: `**❌ Praise Restricted**\nPraise not allowed in this channel.\nTo praise, use the following channels - ${allowedChannelsList
         .filter((el) => el !== '0')

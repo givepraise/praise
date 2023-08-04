@@ -24,7 +24,8 @@ const REACT_APP_ALCHEMY_KEY =
 
 const REACT_APP_WALLETCONNECT_PROJECT_ID =
   process.env.REACT_APP_WALLETCONNECT_PROJECT_ID ||
-  win.REACT_APP_WALLETCONNECT_PROJECT_ID;
+  win.REACT_APP_WALLETCONNECT_PROJECT_ID ||
+  '';
 
 const { chains, publicClient } = configureChains(
   [mainnet],

@@ -48,9 +48,13 @@ const ReportsRunPage = (): JSX.Element | null => {
 
   if (!response?.rows) return <LoadScreen />;
 
-  const json = JSON.stringify(response.rows);
-  const parser = new Parser();
-  const csv = parser.parse(response.rows);
+  let json = '';
+  let csv = '';
+  if (response.rows.length > 0) {
+    json = JSON.stringify(response.rows);
+    const parser = new Parser();
+    csv = parser.parse(response.rows);
+  }
 
   return (
     <Page variant="full">

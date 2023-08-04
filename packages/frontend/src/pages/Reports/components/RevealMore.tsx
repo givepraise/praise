@@ -20,14 +20,7 @@ const RevealMore: React.FC<RevealMoreProps> = ({ content }) => {
       <div
         className={`${isExpanded ? 'h-auto' : 'max-h-[200px]'} overflow-hidden`}
       >
-        <code>
-          {rows.map((row) => (
-            <>
-              {row}
-              <br />
-            </>
-          ))}
-        </code>
+        <pre>{rows.map((row) => `${row}\n`)}</pre>
       </div>
       {rows.length > 10 && (
         <Button onClick={toggleExpand} className="mt-5">

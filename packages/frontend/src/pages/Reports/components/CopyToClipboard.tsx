@@ -12,7 +12,7 @@ const CopyToClipboard: React.FC<CopyToClipboardProps> = ({ text }) => {
   const handleCopy = (): void => {
     const copy = async (): Promise<void> => {
       try {
-        await navigator.clipboard.writeText(JSON.stringify(text));
+        await navigator.clipboard.writeText(text);
         toast.success('Copied to clipboard');
       } catch (err) {
         console.error('Failed to copy text: ', err);
