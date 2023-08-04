@@ -3,6 +3,7 @@ import {
   MetaTransactionData,
   SafeTransactionDataPartial,
   OperationType,
+  SafeSignature,
 } from '@safe-global/safe-core-sdk-types';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
@@ -28,6 +29,8 @@ type UseAttestationsInput = {
 
 type UseAttestationsReturn = {
   creating: boolean | undefined;
+  txHash: string | undefined;
+  signature: SafeSignature | undefined;
   createAttestations: (
     data: useReportRunReturn,
     period: string
@@ -60,6 +63,10 @@ export function useAttestations({
   };
 
   const [creating, setCreating] = useState<boolean | undefined>(undefined);
+  const [txHash, setTxHash] = useState<string | undefined>(undefined);
+  const [signature, setSignature] = useState<SafeSignature | undefined>(
+    undefined
+  );
 
   const createAttestations = async (
     data: useReportRunReturn,
@@ -158,23 +165,26 @@ export function useAttestations({
         },
       });
 
-      const senderAddress = await signer.getAddress();
-      const safeTxHash = await safe.getTransactionHash(safeTransaction);
-      const signature = await safe.signTransactionHash(safeTxHash);
+      const signerAddress = await signer.getAddress();
+      const txHash = await safe.getTransactionHash(safeTransaction);
+      const signature = await safe.signTransactionHash(txHash);
 
       // Propose transaction to the service
       await safeApiKit.proposeTransaction({
         safeAddress: SAFE_ADDRESS,
         safeTransactionData: safeTransaction.data,
-        safeTxHash,
-        senderAddress,
+        safeTxHash: txHash,
+        senderAddress: signerAddress,
         senderSignature: signature.data,
       });
 
       console.log('Proposed a transaction with Safe:', SAFE_ADDRESS);
-      console.log('- safeTxHash:', safeTxHash);
-      console.log('- Sender:', senderAddress);
-      console.log('- Sender signature:', signature.data);
+      console.log('- Transaction hash:', txHash);
+      console.log('- Signer address:', signerAddress);
+      console.log('- Signature:', signature.data);
+
+      setTxHash(txHash);
+      setSignature(signature);
     } catch (e) {
       console.error('Error creating attestations', e);
       toast.error((e as Error).message);
@@ -182,5 +192,11 @@ export function useAttestations({
       setCreating(false);
     }
   };
-  return { creating, createAttestations, isOwnerValidSafeAddress };
+  return {
+    creating,
+    txHash,
+    signature,
+    createAttestations,
+    isOwnerValidSafeAddress,
+  };
 }
