@@ -15,7 +15,11 @@ import {
   getPeriodDatesConfig,
   PeriodDates,
 } from '../../../model/report/util/get-period-dates-config';
-import { AllPeriods, PeriodPageParams } from '../../../model/periods/periods';
+import {
+  AllPeriods,
+  PeriodPageParams,
+  useUpdatePeriod,
+} from '../../../model/periods/periods';
 import { CommunityByHostname } from '../../../model/communitites/communities';
 import { useReportRunReturn } from '../../../model/report/types/use-report-run-return.type';
 import { ATTESTATION_REPORT_MANIFEST_URL } from '../../../model/eas/eas.constants';
@@ -42,7 +46,7 @@ export function CreateAttestationsDialog({
   const [attestationData, setAttestationData] = useState<
     useReportRunReturn | undefined
   >(undefined);
-  const { createAttestations, creating } = useAttestations({
+  const { createAttestations, creating, txHash } = useAttestations({
     hostname: window.location.hostname,
   });
 
@@ -62,8 +66,16 @@ export function CreateAttestationsDialog({
     void loadSigners();
   }
 
+  const { updatePeriod } = useUpdatePeriod();
+  function saveTransactionHash(): void {
+    if (!txHash) return;
+    void updatePeriod(periodId, { attestationsTxHash: txHash });
+    onClose();
+  }
+
   useEffect(loadPeriodDates, [periods, periodId]);
   useEffect(loadSignersAndThreshold, [safe]);
+  useEffect(saveTransactionHash, [txHash, periodId, updatePeriod, onClose]);
 
   if (!periodDates) return null;
 
