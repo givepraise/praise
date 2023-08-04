@@ -5,7 +5,7 @@ import { IsDateString } from 'class-validator';
 export class UpdatePeriodInputDto extends PartialType(
   PickType(Period, ['name', 'attestationsTxHash'] as const),
 ) {
-  @ApiProperty({ type: 'string' })
+  @ApiProperty({ type: 'string', required: false })
   @IsDateString()
-  endDate: string;
+  endDate?: string;
 }
