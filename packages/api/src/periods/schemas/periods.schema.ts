@@ -35,6 +35,9 @@ export class Period {
   status: PeriodStatusType;
 
   @ApiResponseProperty()
+  startDate?: Date;
+
+  @ApiResponseProperty()
   @Prop({
     required: true,
     type: Date,
