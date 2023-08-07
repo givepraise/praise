@@ -4,9 +4,17 @@ import { SafeMultisigTransactionResponse } from '@safe-global/safe-core-sdk-type
 
 // Internal imports
 import { useAccount } from 'wagmi';
-import { atom, useRecoilState } from 'recoil';
+import { atom, atomFamily, useRecoilState } from 'recoil';
 import { SignSafeTransactionStateType } from '../types/sign-safe-transaction-state.type';
 import { useSafe } from './useSafe';
+import { toast } from 'react-hot-toast';
+import { errorHasReason } from '../../eth/util/errorHasReason';
+import { errorHasMessage } from '../../eth/util/errorHasMessage';
+
+const SafeTransaction = atomFamily<SafeMultisigTransactionResponse, string>({
+  key: 'SafeTransaction',
+  default: undefined,
+});
 
 const SignSafeTransactionState = atom<SignSafeTransactionStateType>({
   key: 'SignSafeTransactionState',
@@ -37,18 +45,19 @@ export function useSafeTransaction({
   const { safe, safeApiKit } = useSafe();
 
   // Local state
-  const [transaction, setTransaction] =
-    useState<SafeMultisigTransactionResponse>();
   const [mySignatureAwaited, setMySignatureAwaited] = useState<boolean>();
 
   // Global state
+  const [transaction, setTransaction] = useRecoilState(
+    SafeTransaction(safeTxHash ?? '')
+  );
   const [signState, setSignState] = useRecoilState(SignSafeTransactionState);
 
   /**
    * Load the Safe transaction details.
    */
   function loadTransaction(): void {
-    if (!safeApiKit || !safeTxHash) return;
+    if (transaction || !safeApiKit || !safeTxHash) return;
     void (async (): Promise<void> => {
       const tx = await safeApiKit.getTransaction(safeTxHash);
       setTransaction(tx);
@@ -66,7 +75,12 @@ export function useSafeTransaction({
     })();
   }
 
-  useEffect(loadTransaction, [safeApiKit, safeTxHash]);
+  useEffect(loadTransaction, [
+    safeApiKit,
+    safeTxHash,
+    transaction,
+    setTransaction,
+  ]);
   useEffect(checkIfMySignatureAwaited, [userAddress, safe, transaction]);
 
   const moreConfirmationsRequired =
@@ -75,15 +89,22 @@ export function useSafeTransaction({
     transaction.confirmations.length < transaction.confirmationsRequired;
 
   function signTransaction(): void {
-    if (!safe || !safeTxHash) {
+    if (!safe || !safeTxHash || !safeApiKit) {
       return;
     }
     void (async (): Promise<void> => {
       setSignState({ state: 'signing' });
       try {
         await safe.signTransactionHash(safeTxHash);
+        const tx = await safeApiKit.getTransaction(safeTxHash);
+        setTransaction(tx);
         setSignState({ state: 'signed' });
       } catch (e) {
+        if (errorHasReason(e) && e.reason) {
+          toast.error(e.reason);
+        } else if (errorHasMessage(e) && e.message) {
+          toast.error(e.message);
+        }
         setSignState({ state: 'error', error: e as Error });
       }
     })();
