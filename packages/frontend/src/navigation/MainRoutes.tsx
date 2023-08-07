@@ -8,6 +8,9 @@ const SettingsPage = React.lazy(() => import('@/pages/Settings/SettingsPage'));
 const UserDetailsPage = React.lazy(
   () => import('@/pages/UserDetails/UserDetailsPage')
 );
+const UserDetailsPageRedirect = React.lazy(
+  () => import('@/pages/UserDetails/UserDetailsPageRedirect')
+);
 const UsersPage = React.lazy(() => import('@/pages/Users/UsersPage'));
 
 const AnalyticsPage = React.lazy(
@@ -117,6 +120,10 @@ export const MainRoutes = ({ userRoles }: Props): JSX.Element | null => {
 
       <Route exact path={'/users'}>
         <UsersPage />
+      </Route>
+
+      <Route path={'/users/:userId'}>
+        <UserDetailsPageRedirect />
       </Route>
 
       <Route exact path={'/periods'}>

@@ -73,7 +73,7 @@ export const Praise = ({
 
       if (userAccount && userAccount.user) {
         if (typeof userAccount.user === 'object') {
-          history.push(`/users/${userAccount.user._id}`);
+          history.push(`/${userAccount.user.username}`);
         } else {
           history.push(`/users/${userAccount.user}`);
         }
