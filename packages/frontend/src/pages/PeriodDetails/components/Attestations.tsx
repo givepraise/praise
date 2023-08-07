@@ -9,14 +9,21 @@ import { Dialog } from '@headlessui/react';
 import { useNetwork } from 'wagmi';
 import { ETH_CHAIN_ID } from '../../../model/eth/eth.constants';
 
-const Attestations = (): JSX.Element => {
+const Attestations = (): JSX.Element | null => {
+  // Hooks
   const { periodId } = useParams<PeriodPageParams>();
   const period = useRecoilValue(SinglePeriod(periodId));
   const dialogRef = useRef(null);
-  const [dialogOpen, setDialogOpen] = useState(false);
   const { chain } = useNetwork();
 
-  if (period?.status !== 'CLOSED') {
+  // Local state
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  if (!period || !chain) {
+    return null;
+  }
+
+  if (period.status !== 'CLOSED') {
     return (
       <div className="flex items-center justify-center w-full h-full">
         <div className="flex flex-col items-center justify-center gap-5">

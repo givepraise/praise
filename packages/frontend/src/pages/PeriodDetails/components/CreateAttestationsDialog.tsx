@@ -20,7 +20,6 @@ import {
   PeriodPageParams,
   useUpdatePeriod,
 } from '../../../model/periods/periods';
-import { CommunityByHostname } from '../../../model/communitites/communities';
 import { useReportRunReturn } from '../../../model/report/types/use-report-run-return.type';
 import { ATTESTATION_REPORT_MANIFEST_URL } from '../../../model/eas/eas.constants';
 import { GenerateAttestationsData } from './GenerateAttestationsData';
@@ -32,41 +31,27 @@ type CreateAttestationsDialogProps = {
 export function CreateAttestationsDialog({
   onClose,
 }: CreateAttestationsDialogProps): JSX.Element | null {
+  // Hooks
   const { periodId } = useParams<PeriodPageParams>();
   const periods = useRecoilValue(AllPeriods);
-  const [periodDates, setPeriodDates] = useState<PeriodDates | undefined>(
-    undefined
-  );
-  const community = useRecoilValue(
-    CommunityByHostname(window.location.hostname)
-  );
-  const { safe } = useSafe(community?.creator);
-  const [owners, setOwners] = useState<string[] | undefined[]>([]);
-  const [treshold, setTreshold] = useState<number>(0);
-  const [attestationData, setAttestationData] = useState<
-    useReportRunReturn | undefined
-  >(undefined);
-  const { createAttestations, creating, txHash } = useAttestations({
-    hostname: window.location.hostname,
-  });
+  const { owners, threshold } = useSafe();
+  const {
+    createAttestationsTransaction: createAttestations,
+    creating,
+    txHash,
+  } = useAttestations();
+  const { updatePeriod } = useUpdatePeriod();
 
+  // Local state
+  const [periodDates, setPeriodDates] = useState<PeriodDates>();
+  const [attestationData, setAttestationData] = useState<useReportRunReturn>();
+
+  // Effects
   function loadPeriodDates(): void {
     if (!periods) return;
     setPeriodDates(getPeriodDatesConfig(periods, periodId));
   }
 
-  function loadSignersAndThreshold(): void {
-    if (!safe) return;
-    const loadSigners = async (): Promise<void> => {
-      const owners = await safe.getOwners();
-      const treshold = await safe.getThreshold();
-      setOwners(owners);
-      setTreshold(treshold);
-    };
-    void loadSigners();
-  }
-
-  const { updatePeriod } = useUpdatePeriod();
   function saveTransactionHash(): void {
     if (!txHash) return;
     void updatePeriod(periodId, { attestationsTxHash: txHash });
@@ -74,7 +59,6 @@ export function CreateAttestationsDialog({
   }
 
   useEffect(loadPeriodDates, [periods, periodId]);
-  useEffect(loadSignersAndThreshold, [safe]);
   useEffect(saveTransactionHash, [txHash, periodId, updatePeriod, onClose]);
 
   if (!periodDates) return null;
@@ -115,7 +99,7 @@ export function CreateAttestationsDialog({
                 <div className="text-center">
                   This transaction requires the signature of:
                   <br />
-                  <strong>{treshold}</strong> out of{' '}
+                  <strong>{threshold}</strong> out of{' '}
                   <strong>{owners.length} owners</strong>.
                 </div>
                 <div className="p-10 text-center bg-opacity-20 bg-themecolor-alt-2">

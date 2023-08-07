@@ -7,8 +7,6 @@ import {
 } from '@safe-global/safe-core-sdk-types';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
-import { useRecoilValue } from 'recoil';
-import { CommunityByHostname } from '../../communitites/communities';
 import { ETH_CHAIN_ID } from '../../eth/eth.constants';
 import { useSigner } from '../../eth/hooks/useSigner';
 import { useReportRunReturn } from '../../report/types/use-report-run-return.type';
@@ -23,57 +21,38 @@ import { Attestation } from '../types/attestation.type';
 const eas = new EAS(EAS_ADDRESS);
 const schemaEncoder = new SchemaEncoder(ATTESTATION_SCHEMA);
 
-type UseAttestationsInput = {
-  hostname: string;
-};
-
 type UseAttestationsReturn = {
   creating: boolean | undefined;
   txHash: string | undefined;
   signature: SafeSignature | undefined;
-  createAttestations: (
+  createAttestationsTransaction: (
     data: useReportRunReturn,
     period: string
   ) => Promise<void>;
-  isOwnerValidSafeAddress: () => Promise<boolean>;
 };
 
-export function useAttestations({
-  hostname,
-}: UseAttestationsInput): UseAttestationsReturn {
-  // Convert wagmi/viem `WalletClient` to ethers `Signer`, required by Safe
-  const signer = useSigner(ETH_CHAIN_ID);
+export function useAttestations(): UseAttestationsReturn {
+  // Hooks
+  const rpcSigner = useSigner(ETH_CHAIN_ID);
+  const { safe, safeApiKit, ethersAdapter, SAFE_ADDRESS } = useSafe();
 
-  // Load community details
-  const community = useRecoilValue(CommunityByHostname(hostname));
+  // Local state
+  const [creating, setCreating] = useState<boolean>();
+  const [txHash, setTxHash] = useState<string>();
+  const [signature, setSignature] = useState<SafeSignature>();
 
-  // Current requirement is that the community creator is the community Safe address
-  const SAFE_ADDRESS = community?.creator || '';
-
-  // Initialize Safe SDK
-  const { safe, safeApiKit, ethersAdapter } = useSafe(SAFE_ADDRESS);
-
-  const isOwnerValidSafeAddress = async (): Promise<boolean> => {
-    if (!safeApiKit) {
-      throw new Error('Missing safeApiKit');
-    }
-    const info = await safeApiKit.getSafeInfo(SAFE_ADDRESS);
-    console.log('info', info);
-    return true;
-  };
-
-  const [creating, setCreating] = useState<boolean | undefined>(undefined);
-  const [txHash, setTxHash] = useState<string | undefined>(undefined);
-  const [signature, setSignature] = useState<SafeSignature | undefined>(
-    undefined
-  );
-
-  const createAttestations = async (
+  const createAttestationsTransaction = async (
     data: useReportRunReturn,
     period: string
   ): Promise<void> => {
     try {
-      if (!signer || !safe || !safeApiKit || !ethersAdapter) {
+      if (
+        !rpcSigner ||
+        !safe ||
+        !safeApiKit ||
+        !ethersAdapter ||
+        !SAFE_ADDRESS
+      ) {
         throw new Error('Missing signer, safe, safeApiKit or ethersAdapter');
       }
 
@@ -165,7 +144,7 @@ export function useAttestations({
         },
       });
 
-      const signerAddress = await signer.getAddress();
+      const signerAddress = await rpcSigner.getAddress();
       const txHash = await safe.getTransactionHash(safeTransaction);
       const signature = await safe.signTransactionHash(txHash);
 
@@ -196,7 +175,6 @@ export function useAttestations({
     creating,
     txHash,
     signature,
-    createAttestations,
-    isOwnerValidSafeAddress,
+    createAttestationsTransaction,
   };
 }

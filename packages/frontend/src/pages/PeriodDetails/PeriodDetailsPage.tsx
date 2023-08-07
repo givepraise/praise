@@ -53,17 +53,23 @@ const PeriodDetailsHeadFallback = (): JSX.Element => {
 };
 
 export const PeriodDetailsPage = (): JSX.Element | null => {
+  // Hooks
   const { periodId } = useParams<PeriodPageParams>();
   const detailsResponse = useLoadSinglePeriodDetails(periodId); // Load additional period details
+  const { path, url } = useRouteMatch();
+
+  // Global state
   const period = useRecoilValue(SinglePeriod(periodId));
   const activeUserId = useRecoilValue(ActiveUserId);
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
-  const { path, url } = useRouteMatch();
 
-  usePeriodQuantifierPraise(periodId, activeUserId || '');
+  const periodQuantifierPraise = usePeriodQuantifierPraise(
+    periodId,
+    activeUserId || ''
+  );
 
-  // if (!detailsResponse || !period || !periodQuantifierPraise) return null;
-  if (!detailsResponse || !period) return null;
+  if (!detailsResponse || !period || !activeUserId || !periodQuantifierPraise)
+    return null;
 
   return (
     <Page variant={'wide'}>
@@ -134,39 +140,25 @@ export const PeriodDetailsPage = (): JSX.Element | null => {
           <Suspense fallback={null}>
             <Switch>
               <Route path={`${path}/attestations`}>
-                <Suspense fallback={null}>
-                  <Attestations />
-                </Suspense>
+                <Attestations />
               </Route>
               <Route path={`${path}/analytics`}>
-                <Suspense fallback={null}>
-                  <Analytics />
-                </Suspense>
+                <Analytics />
               </Route>
               <Route path={`${path}/receivers`}>
-                <Suspense fallback={null}>
-                  <GiverReceiverTable type="receiver" />
-                </Suspense>
+                <GiverReceiverTable type="receiver" />
               </Route>
               <Route path={`${path}/givers`}>
-                <Suspense fallback={null}>
-                  <GiverReceiverTable type="giver" />
-                </Suspense>
+                <GiverReceiverTable type="giver" />
               </Route>
               <Route path={`${path}/quantifiers`}>
-                <Suspense fallback={null}>
-                  <QuantifierTable />
-                </Suspense>
+                <QuantifierTable />
               </Route>
               <Route path={`${path}/settings`}>
-                <Suspense fallback={null}>
-                  <PeriodSettingsForm
-                    periodId={periodId}
-                    disabled={
-                      period.status !== PeriodStatusType.OPEN || !isAdmin
-                    }
-                  />
-                </Suspense>
+                <PeriodSettingsForm
+                  periodId={periodId}
+                  disabled={period.status !== PeriodStatusType.OPEN || !isAdmin}
+                />
               </Route>
               <Route path={`${path}`}>
                 <Redirect to={`${url}/receivers`} />

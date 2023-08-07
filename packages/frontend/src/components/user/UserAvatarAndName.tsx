@@ -5,8 +5,11 @@ import { UserName } from './UserName';
 import { UserPopover } from './UserPopover';
 import { User } from '@/model/user/dto/user.dto';
 import { UserAccount } from '@/model/useraccount/dto/user-account.dto';
+import { SingleUserByIdentityEthAddress } from '../../model/user/users';
+import { useRecoilValue } from 'recoil';
 
 interface UserNameProps {
+  identityEthAddress?: string;
   user?: User;
   userId?: string | undefined;
   userAccount?: UserAccount;
@@ -17,6 +20,7 @@ interface UserNameProps {
 }
 
 const WrappedUserAvatarAndName = ({
+  identityEthAddress,
   user,
   userId,
   userAccount,
@@ -25,20 +29,29 @@ const WrappedUserAvatarAndName = ({
   avatarClassName,
   nameClassName,
 }: UserNameProps): JSX.Element | null => {
-  if ((!user && !userId && !userAccount) || (usePseudonym && !periodId))
+  const userByEth = useRecoilValue(
+    SingleUserByIdentityEthAddress(identityEthAddress)
+  );
+
+  const effectiveUser = user || userByEth;
+
+  if (
+    (!effectiveUser && !userId && !userAccount) ||
+    (usePseudonym && !periodId)
+  )
     return null;
 
   return (
     <UserPopover
       usePseudonym={usePseudonym}
       userAccount={userAccount}
-      user={user}
+      user={effectiveUser}
       userId={userId}
     >
       <div className="flex whitespace-nowrap">
         <div className={classNames('flex items-center pr-2', avatarClassName)}>
           <UserAvatar
-            user={user}
+            user={effectiveUser}
             userId={userId}
             userAccount={userAccount}
             usePseudonym={usePseudonym}
@@ -46,7 +59,7 @@ const WrappedUserAvatarAndName = ({
         </div>
         <div className={classNames('flex items-center', nameClassName)}>
           <UserName
-            user={user}
+            user={effectiveUser}
             userId={userId}
             userAccount={userAccount}
             usePseudonym={usePseudonym}

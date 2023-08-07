@@ -3,7 +3,6 @@ import { useAccount } from 'wagmi';
 import { Button } from '../../../components/ui/Button';
 import { PeriodPageParams, SinglePeriod } from '../../../model/periods/periods';
 import { useParams } from 'react-router-dom';
-import { CommunityByHostname } from '../../../model/communitites/communities';
 import { useSafe } from '../../../model/safe/hooks/useSafe';
 import { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -17,15 +16,17 @@ type CreateAttestationsButtonProps = {
 export function CreateAttestationsButton({
   onClick,
 }: CreateAttestationsButtonProps): JSX.Element | null {
+  // Hooks
   const { periodId } = useParams<PeriodPageParams>();
-  const period = useRecoilValue(SinglePeriod(periodId));
-  const community = useRecoilValue(
-    CommunityByHostname(window.location.hostname)
-  );
   const { address } = useAccount();
+  const { safe } = useSafe();
+
+  // Global state
+  const period = useRecoilValue(SinglePeriod(periodId));
   const userId = useRecoilValue(ActiveUserId);
-  const { safe } = useSafe(community?.creator);
-  const [isOwner, setIsOwner] = useState<boolean | undefined>(undefined);
+
+  // Local state
+  const [isOwner, setIsOwner] = useState<boolean>();
 
   useEffect(() => {
     if (!safe || !address) return;
