@@ -119,10 +119,6 @@ export const MainRoutes = ({ userRoles }: Props): JSX.Element | null => {
         <UsersPage />
       </Route>
 
-      <Route path={'/users/:userId'}>
-        <UserDetailsPage />
-      </Route>
-
       <Route exact path={'/periods'}>
         <PeriodsPage />
       </Route>
@@ -189,6 +185,10 @@ export const MainRoutes = ({ userRoles }: Props): JSX.Element | null => {
 
       <Route exact path="/">
         <StartPage />
+      </Route>
+
+      <Route path={'/:userName'}>
+        <UserDetailsPage />
       </Route>
 
       <Route path="/*">

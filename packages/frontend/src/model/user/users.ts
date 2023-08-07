@@ -122,6 +122,11 @@ export const PseudonymForUser = selectorFamily({
 export type SingleUserParams = {
   userId: string;
 };
+
+export type SingleUserByUsernameParams = {
+  userName: string;
+};
+
 /**
  * Selector that returns one individual User by id.
  */
