@@ -289,8 +289,9 @@ export const useUserProfile = (): useUserProfileReturn => {
 const DetailedSingleUserQuery = selectorFamily({
   key: 'DetailedSingleUserQuery',
   get:
-    (userId: string) =>
-    ({ get }): AxiosResponse<User> | AxiosError => {
+    (userId: string | undefined) =>
+    ({ get }): AxiosResponse<User> | AxiosError | undefined => {
+      if (!userId) return undefined;
       return get(
         ApiGet({
           url: `/users/${userId}`,
@@ -304,8 +305,10 @@ const DetailedSingleUserQuery = selectorFamily({
  * Update user cached in global state.
  */
 export const useLoadSingleUserDetails = (
-  userId: string
-): AxiosResponse<User> | AxiosError => {
+  username: string
+): AxiosResponse<User> | AxiosError | undefined => {
+  const userId = useRecoilValue(SingleUser(username))?._id;
+
   const response = useRecoilValue(DetailedSingleUserQuery(userId));
   const user = useRecoilValue(SingleUser(userId));
   const setUser = useSetRecoilState(SingleUser(userId));

@@ -29,13 +29,9 @@ const UserDetailsPage = (): JSX.Element | null => {
   const dialogRef = React.useRef(null);
   const { userName } = useParams<SingleUserByUsernameParams>();
 
+  useLoadSingleUserDetails(userName);
   const user = useRecoilValue(SingleUserByUsername(userName));
 
-  if (!user) return null;
-  
-  useLoadSingleUserDetails(user?._id);
-
-  
   const [isDialogOpen, setIsDialogOpen] = React.useState<boolean>(false);
 
   const pageViews = {
@@ -44,6 +40,8 @@ const UserDetailsPage = (): JSX.Element | null => {
   };
 
   const [view, setView] = useState<number>(pageViews.receivedPraiseView);
+
+  if (!user) return null;
 
   return (
     <Page>
