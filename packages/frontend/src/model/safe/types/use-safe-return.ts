@@ -8,5 +8,6 @@ export type UseSafeReturn = {
   isValidSafeAddress?: boolean;
   owners: string[] | undefined[];
   threshold: number;
+  isCurrentUserOwner: boolean;
   SAFE_ADDRESS?: string;
 };

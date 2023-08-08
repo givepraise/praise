@@ -10,6 +10,7 @@ import { ETH_CHAIN_ID } from '../../eth/eth.constants';
 import { SAFE_TX_SERVICE_URL } from '../safe.constants';
 import { useCommunity } from '../../communitites/hooks/useCommunity';
 import { UseSafeReturn } from '../types/use-safe-return';
+import { useAccount } from 'wagmi';
 
 /**
  * Custom hook to interface with the Safe protocol and associated utilities.
@@ -19,6 +20,7 @@ export function useSafeInit(): UseSafeReturn {
   // Hooks
   const { community } = useCommunity();
   const rpcSigner = useSigner(ETH_CHAIN_ID);
+  const { address: userAddress } = useAccount();
 
   // Local state
   const [ethersAdapter, setEthersAdapter] = useState<EthersAdapter>();
@@ -27,6 +29,7 @@ export function useSafeInit(): UseSafeReturn {
   const [isValidSafeAddress, setIsValidSafeAddress] = useState<boolean>();
   const [owners, setOwners] = useState<string[]>([]);
   const [threshold, setThreshold] = useState<number>(0);
+  const [isCurrentUserOwner, setIsCurrentUserOwner] = useState<boolean>(false);
   const SAFE_ADDRESS = community?.creator;
 
   /**
@@ -80,10 +83,13 @@ export function useSafeInit(): UseSafeReturn {
    * Load the owners and threshold values.
    */
   function loadOwnersAndThreshold(): void {
-    if (!safe) return;
+    if (!safe || !userAddress) return;
     void (async (): Promise<void> => {
       const safeOwners = await safe.getOwners();
       const safeThreshold = await safe.getThreshold();
+      if (safeOwners.includes(userAddress)) {
+        setIsCurrentUserOwner(true);
+      }
       setOwners(safeOwners);
       setThreshold(safeThreshold);
     })();
@@ -92,12 +98,13 @@ export function useSafeInit(): UseSafeReturn {
   useEffect(initializeEthersAdapter, [rpcSigner]);
   useEffect(initializeSafeInstance, [ethersAdapter, SAFE_ADDRESS]);
   useEffect(initializeSafeApiKit, [ethersAdapter, SAFE_ADDRESS]);
-  useEffect(loadOwnersAndThreshold, [safe]);
+  useEffect(loadOwnersAndThreshold, [safe, userAddress]);
 
   return {
     isValidSafeAddress,
     owners,
     threshold,
+    isCurrentUserOwner,
     ethersAdapter,
     safe,
     safeApiKit,
