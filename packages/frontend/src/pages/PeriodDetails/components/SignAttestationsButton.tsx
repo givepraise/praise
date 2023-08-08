@@ -22,7 +22,7 @@ export function SignAttestationsButton({
   return (
     <Button
       type="button"
-      className="py-0 my-2 ml-2"
+      className="py-0 ml-2"
       onClick={onClick}
       disabled={signButtonDisabled}
     >

@@ -28,7 +28,7 @@ export function LineListItem({
 
   return (
     <li
-      className={`relative flex items-center justify-start pl-10 ${liClassName} `}
+      className={`relative flex items-center justify-start pl-10 ${liClassName}`}
     >
       <div
         className="absolute w-[2px] h-full bg-black left-4"

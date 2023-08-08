@@ -6,7 +6,7 @@ import { useParams } from 'react-router-dom';
 import { useSafe } from '../../../model/safe/hooks/useSafe';
 import { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPrayingHands } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faPrayingHands } from '@fortawesome/free-solid-svg-icons';
 import { ActiveUserId } from '../../../model/auth/auth';
 
 type CreateAttestationsButtonProps = {
@@ -54,7 +54,10 @@ export function CreateAttestationsButton({
   if (isOwner) {
     return (
       <div>
-        <Button onClick={onClick}>Create Attestations</Button>
+        <Button onClick={onClick}>
+          <FontAwesomeIcon icon={faPlus} className="w-4 mr-2" />
+          Create Attestations
+        </Button>
       </div>
     );
   }

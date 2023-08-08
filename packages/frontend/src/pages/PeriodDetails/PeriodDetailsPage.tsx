@@ -63,13 +63,9 @@ export const PeriodDetailsPage = (): JSX.Element | null => {
   const activeUserId = useRecoilValue(ActiveUserId);
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
 
-  const periodQuantifierPraise = usePeriodQuantifierPraise(
-    periodId,
-    activeUserId || ''
-  );
+  usePeriodQuantifierPraise(periodId, activeUserId || '');
 
-  if (!detailsResponse || !period || !activeUserId || !periodQuantifierPraise)
-    return null;
+  if (!detailsResponse || !period) return null;
 
   return (
     <Page variant={'wide'}>

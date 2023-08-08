@@ -14,11 +14,10 @@ type SignAttestationsButtonContentProps = {
 export function SignAttestationsButtonContent({
   signState,
 }: SignAttestationsButtonContentProps): JSX.Element {
-  // Global state
   const userId = useRecoilValue(ActiveUserId);
 
   if (userId) {
-    if (typeof signState === 'undefined') {
+    if (typeof signState === 'undefined' || signState?.state === 'error') {
       return <>Sign transaction</>;
     }
 
