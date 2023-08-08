@@ -33,6 +33,15 @@ export function ExecuteAttestationsButtonContent({
       );
     }
 
+    if (executeState?.state === 'indexing') {
+      return (
+        <>
+          <FontAwesomeIcon icon={faPrayingHands} spin className="w-4 mr-2" />
+          Indexing
+        </>
+      );
+    }
+
     if (executeState?.state === 'executed') {
       return (
         <>

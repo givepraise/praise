@@ -18,6 +18,7 @@ export function ExecuteAttestationsButton({
   const signButtonDisabled =
     !userId ||
     executeState?.state === 'executing' ||
+    executeState?.state === 'indexing' ||
     executeState?.state === 'executed';
 
   return (

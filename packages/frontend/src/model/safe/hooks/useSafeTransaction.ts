@@ -11,6 +11,7 @@ import { toast } from 'react-hot-toast';
 import { errorHasReason } from '../../eth/util/errorHasReason';
 import { errorHasMessage } from '../../eth/util/errorHasMessage';
 import { ExecuteSafeTransactionStateType } from '../types/execute-safe-transaction-state.type';
+import { SAFE_TX_SERVICE_URL } from '../safe.constants';
 
 const SafeTransaction = atomFamily<SafeMultisigTransactionResponse, string>({
   key: 'SafeTransaction',
@@ -125,6 +126,28 @@ export function useSafeTransaction({
     })();
   }
 
+  /**
+   * Fetch the indexing status of the transaction every 10 seconds until it is indexed.
+   */
+  function awaitTransactionIndexing(): void {
+    void (async (): Promise<void> => {
+      const response = await fetch(
+        `${SAFE_TX_SERVICE_URL}/api/v1/multisig-transactions/${transaction.safeTxHash}`
+      );
+      if (response.ok) {
+        const tx = (await response.json()) as SafeMultisigTransactionResponse;
+        if (tx.isExecuted) {
+          setExecuteState({ state: 'executed' });
+          setTimeout(() => {
+            setTransaction(tx);
+          }, 2000);
+          return;
+        }
+        setTimeout(awaitTransactionIndexing, 10000);
+      }
+    })();
+  }
+
   function executeTransaction(): void {
     if (!safe || !safeTxHash || !safeApiKit) {
       return;
@@ -132,11 +155,12 @@ export function useSafeTransaction({
     void (async (): Promise<void> => {
       setExecuteState({ state: 'executing' });
       try {
-        await safe.executeTransaction(transaction, {
-          gasLimit: 1000000,
-        });
-        setExecuteState({ state: 'executed' });
+        const txResponse = await safe.executeTransaction(transaction);
+        await txResponse.transactionResponse?.wait();
+        setExecuteState({ state: 'indexing' });
+        setTimeout(awaitTransactionIndexing, 10000); // Check every 10 seconds if the transaction has been indexed
       } catch (e) {
+        console.error('Unable to execute transaction', e);
         if (errorHasReason(e) && e.reason) {
           toast.error(e.reason);
         } else if (errorHasMessage(e) && e.message) {

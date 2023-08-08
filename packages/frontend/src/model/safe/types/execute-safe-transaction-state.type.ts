@@ -1,4 +1,4 @@
 export type ExecuteSafeTransactionStateType = {
-  state: 'executing' | 'executed' | 'error';
+  state: 'executing' | 'indexing' | 'executed' | 'error';
   error?: Error;
 };
