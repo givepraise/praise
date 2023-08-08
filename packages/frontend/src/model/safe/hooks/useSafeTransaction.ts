@@ -10,6 +10,7 @@ import { useSafe } from './useSafe';
 import { toast } from 'react-hot-toast';
 import { errorHasReason } from '../../eth/util/errorHasReason';
 import { errorHasMessage } from '../../eth/util/errorHasMessage';
+import { ExecuteSafeTransactionStateType } from '../types/execute-safe-transaction-state.type';
 
 const SafeTransaction = atomFamily<SafeMultisigTransactionResponse, string>({
   key: 'SafeTransaction',
@@ -18,6 +19,11 @@ const SafeTransaction = atomFamily<SafeMultisigTransactionResponse, string>({
 
 const SignSafeTransactionState = atom<SignSafeTransactionStateType>({
   key: 'SignSafeTransactionState',
+  default: undefined,
+});
+
+const ExecuteSafeTransactionState = atom<ExecuteSafeTransactionStateType>({
+  key: 'ExecuteSafeTransactionState',
   default: undefined,
 });
 
@@ -31,6 +37,8 @@ type UseSafeTransactionReturn = {
   mySignatureAwaited?: boolean;
   signState?: SignSafeTransactionStateType;
   signTransaction?: () => void;
+  executeState?: ExecuteSafeTransactionStateType;
+  executeTransaction?: () => void;
 };
 
 /**
@@ -52,6 +60,9 @@ export function useSafeTransaction({
     SafeTransaction(safeTxHash ?? '')
   );
   const [signState, setSignState] = useRecoilState(SignSafeTransactionState);
+  const [executeState, setExecuteState] = useRecoilState(
+    ExecuteSafeTransactionState
+  );
 
   /**
    * Load the Safe transaction details.
@@ -64,13 +75,16 @@ export function useSafeTransaction({
     })();
   }
 
+  /**
+   *  Check if the user's signature is required for the transaction.
+   */
   function checkIfMySignatureAwaited(): void {
-    if (!userAddress || !safe) return;
+    if (!userAddress || !safe || !transaction) return;
     void (async (): Promise<void> => {
       const isOwner = await safe.isOwner(userAddress);
       setMySignatureAwaited(
         isOwner &&
-          !transaction?.confirmations?.find((c) => c.owner === userAddress)
+          !transaction.confirmations?.find((c) => c.owner === userAddress)
       );
     })();
   }
@@ -95,7 +109,8 @@ export function useSafeTransaction({
     void (async (): Promise<void> => {
       setSignState({ state: 'signing' });
       try {
-        await safe.signTransactionHash(safeTxHash);
+        const signature = await safe.signTransactionHash(safeTxHash);
+        await safeApiKit.confirmTransaction(safeTxHash, signature.data);
         const tx = await safeApiKit.getTransaction(safeTxHash);
         setTransaction(tx);
         setSignState({ state: 'signed' });
@@ -110,11 +125,35 @@ export function useSafeTransaction({
     })();
   }
 
+  function executeTransaction(): void {
+    if (!safe || !safeTxHash || !safeApiKit) {
+      return;
+    }
+    void (async (): Promise<void> => {
+      setExecuteState({ state: 'executing' });
+      try {
+        await safe.executeTransaction(transaction, {
+          gasLimit: 1000000,
+        });
+        setExecuteState({ state: 'executed' });
+      } catch (e) {
+        if (errorHasReason(e) && e.reason) {
+          toast.error(e.reason);
+        } else if (errorHasMessage(e) && e.message) {
+          toast.error(e.message);
+        }
+        setExecuteState({ state: 'error', error: e as Error });
+      }
+    })();
+  }
+
   return {
     transaction,
     moreConfirmationsRequired,
     mySignatureAwaited,
     signState,
     signTransaction,
+    executeState,
+    executeTransaction,
   };
 }
