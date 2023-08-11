@@ -27,6 +27,16 @@ export const AccessToken = selector<string | undefined>({
   },
 });
 
+export const RefreshToken = selector<string | undefined>({
+  key: 'RefreshToken',
+  get: ({ get }) => {
+    const activeTokenSet = get(ActiveTokenSet);
+    if (!activeTokenSet) return;
+
+    return activeTokenSet.refreshToken;
+  },
+});
+
 export const DecodedAccessToken = selector<JwtTokenData | undefined>({
   key: 'DecodedAccessToken',
   get: ({ get }) => {

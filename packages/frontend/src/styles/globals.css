@@ -6,6 +6,28 @@
 @import 'tailwindcss/utilities';
 @import './custom-utilities.css';
 
+/* This will style the scrollbar thumb */
+::-webkit-scrollbar-thumb {
+  background-color: #888; /* Color of the draggable scrolling handle */
+  border-radius: 0.25rem; /* Roundness of the draggable scrolling handle */
+}
+
+/* This will style the scrollbar track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Color of the background (track) of the scrollbar */
+}
+
+/* This styles the scrollbar itself */
+::-webkit-scrollbar {
+  width: 0.5rem; /* Width of the scrollbar */
+  height: 0.5rem; /* Height of horizontal scrollbars, if any */
+}
+
+/* On hover, the scrollbar thumb changes color */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
 @layer base {
   * {
     @apply dark:border-slate-700;

@@ -6,7 +6,7 @@ import { ActiveTokenSet, DecodedAccessToken } from '@/model/auth/auth';
 import { MainLayout } from '../layouts/MainLayout';
 
 const ActivatePage = React.lazy(() => import('@/pages/Activate/ActivatePage'));
-const ErrorPage = React.lazy(() => import('@/pages/ErrorPage'));
+const NotFoundPage = React.lazy(() => import('@/pages/NotFoundPage'));
 
 export const Routes = (): JSX.Element => {
   const [tokenSet, setTokenSet] = useRecoilState(ActiveTokenSet);
@@ -26,7 +26,7 @@ export const Routes = (): JSX.Element => {
         <ActivatePage />
       </Route>
       <Route exact path="/404">
-        <ErrorPage error={{ message: 'Not found' }} />
+        <NotFoundPage />
       </Route>
 
       <MainLayout />

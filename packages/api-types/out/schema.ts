@@ -1050,7 +1050,15 @@ export interface components {
        */
       praiseIds: string[];
     };
-    SettingDto: {
+    ConfigurationValueItemsDto: {
+      /**
+       * @description Allowed array types
+       * @example string
+       * @enum {string}
+       */
+      type: 'string' | 'number';
+    };
+    ConfigurationValueDto: {
       /**
        * @description Type of the setting
        * @example string
@@ -1059,9 +1067,9 @@ export interface components {
       type: 'string' | 'number' | 'boolean' | 'array';
       /**
        * @description Default value for the setting
-       * @example Some string
+       * @example 666
        */
-      default: Record<string, never>;
+      default: number | string | boolean | number[] | string[];
       /**
        * @description Description of the setting
        * @example Description of the string setting
@@ -1071,7 +1079,7 @@ export interface components {
        * @description Markdown description of the setting
        * @example Description of the string setting
        */
-      markdownDescription: string;
+      markdownDescription?: string;
       /**
        * @description Edit presentation style
        * @example multiline
@@ -1082,7 +1090,7 @@ export interface components {
        * @description Order of the setting
        * @example 1
        */
-      order: number;
+      order?: number;
       /**
        * @description Enum values for string type settings
        * @example [
@@ -1091,9 +1099,8 @@ export interface components {
        * ]
        */
       enum?: string[];
-      items: {
-        type?: Record<string, never>;
-      };
+      /** @description Defines the type of items for array settings */
+      items?: components['schemas']['ConfigurationValueItemsDto'];
     };
     ReportManifestDto: {
       /** @example https://raw.githubusercontent.com/givepraise/reports/main/reports/disperse-dist-straight-curve-with-ceiling/manifest.json */
@@ -1131,7 +1138,9 @@ export interface components {
       keywords: string[];
       /** @description Configuration settings for the report */
       configuration: {
-        [key: string]: components['schemas']['SettingDto'] | undefined;
+        [key: string]:
+          | components['schemas']['ConfigurationValueDto']
+          | undefined;
       };
     };
   };

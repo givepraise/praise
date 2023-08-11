@@ -63,6 +63,10 @@ export class AuthGuard implements CanActivate {
     return false;
   }
 
+  isTokenExpiredError(error: any): boolean {
+    return error.name === 'TokenExpiredError';
+  }
+
   /**
    * Checks for a valid JWT.
    */
@@ -94,6 +98,9 @@ export class AuthGuard implements CanActivate {
         roles: payload.roles,
       } as AuthContext;
     } catch (e) {
+      if (this.isTokenExpiredError(e)) {
+        throw new ApiException(errorMessages.JWT_TOKEN_EXPIRED);
+      }
       return false;
     }
     return true;

@@ -86,7 +86,7 @@ const AuthRoute = ({
         ) : (
           <Redirect
             to={{
-              pathname: '/404',
+              pathname: '/',
             }}
           />
         )
