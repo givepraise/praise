@@ -21,7 +21,7 @@ export const CustomReportUrl = atom<string>({
   effects: [persistAtom],
 });
 
-interface ReportConfigDialogProps {
+interface CustomReportDialogProps {
   onClose(): void;
   onRun(url: string, manifest: ReportManifestDto): void;
 }
@@ -29,7 +29,7 @@ interface ReportConfigDialogProps {
 export const CustomReportDialog = ({
   onClose,
   onRun,
-}: ReportConfigDialogProps): JSX.Element => {
+}: CustomReportDialogProps): JSX.Element => {
   // Local state
   const [error, setError] = React.useState('');
 
