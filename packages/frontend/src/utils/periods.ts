@@ -20,10 +20,14 @@ export function getPreviousPeriod(
   period: PeriodDetailsDto
 ): PeriodDetailsDto | undefined {
   const endDate = new Date(period.endDate);
-  return allPeriods.find(
-    (existingPeriod) =>
-      compareDesc(endDate, new Date(existingPeriod.endDate)) < 0
-  );
+  return [...allPeriods]
+    .sort((a, b) => {
+      return compareDesc(new Date(a.endDate), new Date(b.endDate));
+    })
+    .find(
+      (existingPeriod) =>
+        compareDesc(endDate, new Date(existingPeriod.endDate)) < 0
+    );
 }
 
 /**
