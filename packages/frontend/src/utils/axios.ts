@@ -1,6 +1,8 @@
 import axios, { AxiosError, AxiosInstance } from 'axios';
 import { toast } from 'react-hot-toast';
 import { requestApiRefreshToken } from '@/utils/auth';
+import { getRecoil, setRecoil } from 'recoil-nexus';
+import { ActiveTokenSet } from '../model/auth/auth';
 
 const isJsonBlob = (data): data is Blob =>
   data instanceof Blob && data.type === 'application/json';
@@ -24,39 +26,28 @@ export const handleErrors = async (
     statusCode: number;
   }>
 > => {
-  let refreshToken;
-  const recoilPersist = localStorage.getItem('recoil-persist');
-  if (recoilPersist) {
-    refreshToken = JSON.parse(recoilPersist)?.ActiveTokenSet?.refreshToken;
-  }
-
-  if (
-    refreshToken &&
-    recoilPersist &&
-    err?.response?.status === 401 &&
-    // 1092, 1107 are the error codes for invalid jwt token that defined in backend
-    (err?.response?.data?.code === 1092 || err?.response?.data?.code === 1107)
-  ) {
-    // delete the old token from localStorage to prevent infinite loop
-    delete recoilPersist['ActiveTokenSet'];
-    localStorage.setItem(JSON.stringify(recoilPersist), 'recoil-persist');
-    try {
-      await requestApiRefreshToken({ refreshToken });
-      toast('Please try again');
-      return err;
-    } catch (error) {
-      console.log(
-        'refresh accessToken error',
-        (error as AxiosError)?.response?.data
-      );
-    }
-  }
-
   // Handling errors automatically means the error will be displayed to the user with a toast.
   // If not handled automatically, the error will just be logged to the console and returned.
   if (!handleErrorsAutomatically) {
     console.error(err);
-    return err;
+    throw err;
+  }
+
+  // If the error is a 401 and expired jwt token, try to refresh the token
+  if (err?.response?.status === 401 && err?.response?.data?.code === 1107) {
+    // 1107 are the error code for expired jwt token that defined in backend
+    const tokenSet = getRecoil(ActiveTokenSet);
+    if (!tokenSet) {
+      // Unlikely scenario: API returns 401 but no token set is available
+      return err;
+    }
+    try {
+      await requestApiRefreshToken({ refreshToken: tokenSet.refreshToken });
+      return err;
+    } catch (error) {
+      console.error('Refresh JWT token failed', error);
+      setRecoil(ActiveTokenSet, undefined);
+    }
   }
 
   if (err?.response) {
