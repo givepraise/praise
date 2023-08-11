@@ -1,6 +1,18 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export type SettingTypeDto = 'string' | 'number' | 'boolean' | 'array';
+export type SettingTypeVariant = 'string' | 'number' | 'boolean' | 'array';
+
+export type SettingItemTypeVariant = 'string' | 'number' | 'boolean';
+
+export class SettingItemsDto {
+  @ApiProperty({
+    description: 'Allowed array types',
+    enum: ['string', 'number', 'boolean'],
+    required: true,
+    example: 'string',
+  })
+  type: SettingItemTypeVariant;
+}
 
 export class SettingDto {
   @ApiProperty({
@@ -9,14 +21,24 @@ export class SettingDto {
     required: true,
     example: 'string',
   })
-  type: SettingTypeDto;
+  type: SettingTypeVariant;
 
   @ApiProperty({
     description: 'Default value for the setting',
     required: true,
-    example: 'Some string',
+    example: 666,
+    oneOf: [
+      { type: 'number' },
+      {
+        type: 'string',
+      },
+      { type: 'boolean' },
+      { type: 'array', items: { type: 'number' } },
+      { type: 'array', items: { type: 'string' } },
+      { type: 'array', items: { type: 'boolean' } },
+    ],
   })
-  default: any;
+  default: number | string | boolean | number[] | string[] | boolean[];
 
   @ApiProperty({
     description: 'Description of the setting',
@@ -27,10 +49,10 @@ export class SettingDto {
 
   @ApiProperty({
     description: 'Markdown description of the setting',
-    required: true,
+    required: false,
     example: 'Description of the string setting',
   })
-  markdownDescription: string;
+  markdownDescription?: string;
 
   @ApiProperty({
     description: 'Edit presentation style',
@@ -42,10 +64,10 @@ export class SettingDto {
 
   @ApiProperty({
     description: 'Order of the setting',
-    required: true,
+    required: false,
     example: 1,
   })
-  order: number;
+  order?: number;
 
   @ApiProperty({
     description: 'Enum values for string type settings',
@@ -55,13 +77,8 @@ export class SettingDto {
   enum?: string[];
 
   @ApiProperty({
-    description: 'Type of items for array settings',
+    description: 'Defines the type of items for array settings',
     required: false,
-    example: {
-      type: 'string',
-    },
   })
-  items?: {
-    type: SettingTypeDto;
-  };
+  items?: SettingItemsDto;
 }
