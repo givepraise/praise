@@ -78,8 +78,6 @@ module.exports = {
         '@typescript-eslint/no-warning-comments': 'off',
         '@typescript-eslint/no-empty-function': 'off',
         '@typescript-eslint/no-var-requires': 'error',
-        '@typescript-eslint/explicit-function-return-type': 'warn',
-        '@typescript-eslint/explicit-module-boundary-types': 'warn',
         '@typescript-eslint/ban-types': 'off',
         '@typescript-eslint/camelcase': 'off',
         '@typescript-eslint/no-unsafe-member-access': 'off',

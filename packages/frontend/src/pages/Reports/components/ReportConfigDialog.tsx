@@ -10,51 +10,115 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/Button';
 import { SingleSetting } from '@/model/settings/settings';
-import toast from 'react-hot-toast';
 import { ReportManifestDto } from '../../../model/report/dto/report-manifest.dto';
+import { ReportConfigFormFields } from './ReportConfigFormFields';
+import { ConfigurationValueDto } from '../../../model/report/dto/configuration-value.dto';
+import { Form } from 'react-final-form';
+import toast from 'react-hot-toast';
 
-interface ReportConfigDialogProps {
+function configToInitialValues(
+  config?: Record<string, ConfigurationValueDto | undefined>
+) {
+  if (!config) return {};
+  const initialValues = {};
+  Object.keys(config).forEach((key) => {
+    let value = config[key]?.default;
+    if (Array.isArray(value)) {
+      value = value.join(', ');
+    }
+    initialValues[key] = value;
+  });
+  return initialValues;
+}
+
+// Function to parse input string to string[]
+function parseToStringArray(input: string): string[] {
+  const regex = /"([^"]+)"|([^,]+)/g;
+  let match;
+  const result: string[] = [];
+
+  while ((match = regex.exec(input)) !== null) {
+    if (match[1]) {
+      // Matched a string enclosed in quotes
+      result.push(match[1]);
+    } else if (match[2]) {
+      // Matched a string without quotes
+      result.push(match[2].trim());
+    }
+  }
+
+  return result;
+}
+
+// Function to parse input string to number[]
+function parseToNumberArray(input: string): number[] {
+  const regex = /(\d+(\.\d+)?)/g; // Regex pattern to match only numbers (with optional decimals)
+  let match;
+  const result: number[] = [];
+
+  while ((match = regex.exec(input)) !== null) {
+    const potentialNumber = parseFloat(match[1]);
+    if (!isNaN(potentialNumber)) {
+      result.push(potentialNumber);
+    }
+  }
+
+  return result;
+}
+
+type FormValue = string | number | boolean | string[] | number[] | undefined;
+type FormValues = Record<string, FormValue>;
+
+type ReportConfigDialogProps = {
   manifest?: ReportManifestDto;
   onClose(): void;
   onRun(config: Record<string, string>): void;
-}
+};
 
 export const ReportConfigDialog = ({
   manifest,
   onClose,
   onRun,
-}: ReportConfigDialogProps): JSX.Element => {
-  // Store local changes to the config
-  const [config, setConfig] = React.useState<string>();
-
-  // Update local state when changes are made to the textarea
-  const handleConfigChange = (event): void => {
-    setConfig(event.target.value);
-  };
-
-  // Set local state when default export context has been loaded
-  React.useEffect(() => {
-    if (!manifest) return;
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const reportDefaults = {} as any;
-    Object.keys(manifest.configuration).forEach((key) => {
-      reportDefaults[key] = manifest.configuration[key]?.default;
-    });
-
-    setConfig(JSON.stringify(reportDefaults, null, 2));
-  }, [manifest]);
-
+}: ReportConfigDialogProps) => {
   // How much of the distribution should go to the development team
   const csSupportPercentage = useRecoilValue(
     SingleSetting('CS_SUPPORT_PERCENTAGE')
   );
 
-  const onButtonClick = (): void => {
-    if (!config) return;
+  const onSubmit = (values: FormValues) => {
+    const config = {};
+
+    // Make sure that the values are in the correct format for the report engine
+    Object.keys(values).forEach((key) => {
+      const value = values[key];
+      const c = manifest?.configuration[key];
+      if (!c) return;
+
+      if (c.type === 'string' || c.type === 'number' || c.type === 'boolean') {
+        config[key] = value;
+      }
+
+      if (
+        c.type === 'array' &&
+        c.items?.type === 'string' &&
+        typeof value === 'string'
+      ) {
+        const arr = parseToStringArray(value);
+        config[key] = arr;
+      }
+
+      if (
+        c.type === 'array' &&
+        c.items?.type === 'number' &&
+        typeof value === 'string'
+      ) {
+        const arr = parseToNumberArray(value);
+        config[key] = arr;
+      }
+    });
+
     try {
-      const c = JSON.parse(config);
-      onRun(c);
+      onRun(config);
       onClose();
     } catch (error) {
       toast.error((error as Error).message);
@@ -62,12 +126,12 @@ export const ReportConfigDialog = ({
     }
   };
 
-  if (!config || !csSupportPercentage) return <></>;
+  if (!csSupportPercentage) return null;
 
   return (
     <div className="flex items-center justify-center min-h-screen">
       <Dialog.Overlay className="fixed inset-0 bg-black/30" />
-      <div className="relative max-w-xl pb-16 mx-auto bg-white w-[600px] rounded dark:bg-slate-600 dark:text-white">
+      <div className="relative max-w-xl pb-16 mx-auto bg-white w-[600px] rounded dark:bg-slate-600 dark:text-white ">
         <div className="flex justify-end p-6">
           <Button variant="round" onClick={onClose}>
             <FontAwesomeIcon icon={faTimes} size="1x" />
@@ -81,50 +145,58 @@ export const ReportConfigDialog = ({
             {manifest?.displayName}
           </Dialog.Title>
           {manifest?.description && (
-            <div className="mb-7">{manifest.description}</div>
+            <div className="mb-3">{manifest.description}</div>
           )}
-          <div className="mb-7">
-            <label htmlFor="reportConfig">Configuration parameters</label>
-            <textarea
-              id="reportConfig"
-              name="reportConfig"
-              autoComplete="off"
-              className="block w-full h-32 mt-2 resize-y"
-              rows={4}
-              value={config}
-              onChange={handleConfigChange}
-            />
-          </div>
-          {manifest?.categories.find((c) => c === 'rewards') && (
-            <>
-              {csSupportPercentage?.valueRealized &&
-              (csSupportPercentage.valueRealized as number) > 0 ? (
-                <p className="mb-7">
-                  Thank you for supporting the continued development of Praise!{' '}
-                  <b>{csSupportPercentage?.valueRealized}%</b> will be added to
-                  the token distribution.{' '}
-                  <Link to={'/settings/rewards'}>Change settings</Link>
-                </p>
-              ) : (
-                <p className="mb-7">
-                  Support the development of Praise, consider donating a
-                  percentage of the distribution to the development team.{' '}
-                  <Link to={'/settings/rewards'}>Change settings</Link>
-                </p>
-              )}
-            </>
-          )}
-
-          <div className="flex justify-center">
-            <Button onClick={onButtonClick}>
-              <FontAwesomeIcon
-                className="mr-2"
-                icon={faFileDownload}
-                size="1x"
-              />
-              Run report
-            </Button>
-          </div>
+          <Form
+            onSubmit={onSubmit}
+            initialValues={configToInitialValues(manifest?.configuration)}
+            render={({ handleSubmit, submitting }) => (
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  if (handleSubmit) {
+                    void handleSubmit();
+                  }
+                }}
+              >
+                <div className="flex flex-col gap-5">
+                  <div className="flex flex-col gap-5 p-5 overflow-auto border rounded-lg max-h-[500px] max-w-2xl dark:border-slate-400 bg-warm-gray-50 dark:bg-slate-600">
+                    <ReportConfigFormFields manifest={manifest} />
+                  </div>
+                  {manifest?.categories.find((c) => c === 'rewards') && (
+                    <>
+                      {csSupportPercentage?.valueRealized &&
+                      (csSupportPercentage.valueRealized as number) > 0 ? (
+                        <p>
+                          Thank you for supporting the continued development of
+                          Praise! <b>{csSupportPercentage?.valueRealized}%</b>{' '}
+                          will be added to the token distribution.{' '}
+                          <Link to={'/settings/rewards'}>Change settings</Link>
+                        </p>
+                      ) : (
+                        <p>
+                          Support the development of Praise, consider donating a
+                          percentage of the distribution to the development
+                          team.{' '}
+                          <Link to={'/settings/rewards'}>Change settings</Link>
+                        </p>
+                      )}
+                    </>
+                  )}
+                  <div className="flex justify-center">
+                    <Button type="submit" disabled={submitting}>
+                      <FontAwesomeIcon
+                        className="mr-2"
+                        icon={faFileDownload}
+                        size="1x"
+                      />
+                      Run report
+                    </Button>
+                  </div>
+                </div>
+              </form>
+            )}
+          />
         </div>
       </div>
     </div>
