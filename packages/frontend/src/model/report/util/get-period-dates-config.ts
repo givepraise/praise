@@ -43,16 +43,8 @@ export function getPeriodDatesConfig(
       throw new Error('Period not found');
     }
 
-    const previousPeriod = getPreviousPeriod(periods, period);
-    if (!previousPeriod) {
-      return {
-        startDate: new Date('2000-01-01').toISOString(), // Ensure there is always a startDate.
-        endDate: period.endDate,
-      };
-    }
-
     return {
-      startDate: previousPeriod.endDate,
+      startDate: period.startDate,
       endDate: period.endDate,
     };
   }
