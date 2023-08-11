@@ -13,8 +13,8 @@ import { Page } from '@/components/ui/Page';
 import { Box } from '@/components/ui/Box';
 import { Button } from '@/components/ui/Button';
 import {
-  SingleUser,
-  SingleUserParams,
+  SingleUserByUsername,
+  SingleUserByUsernameParams,
   useLoadSingleUserDetails,
 } from '@/model/user/users';
 import { BackLink } from '@/navigation/BackLink';
@@ -27,10 +27,10 @@ import { EditProfileDialog } from './components/EditProfileDialog';
 
 const UserDetailsPage = (): JSX.Element | null => {
   const dialogRef = React.useRef(null);
-  const { userId } = useParams<SingleUserParams>();
+  const { userName } = useParams<SingleUserByUsernameParams>();
 
-  useLoadSingleUserDetails(userId);
-  const user = useRecoilValue(SingleUser(userId));
+  useLoadSingleUserDetails(userName);
+  const user = useRecoilValue(SingleUserByUsername(userName));
 
   const [isDialogOpen, setIsDialogOpen] = React.useState<boolean>(false);
 

@@ -58,7 +58,7 @@ const WrappedUserPopover = ({
     event.stopPropagation();
 
     if (user) {
-      history.push(`/users/${user._id}`);
+      history.push(`/${user.username}`);
       return;
     }
   };

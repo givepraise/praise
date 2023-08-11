@@ -14,7 +14,7 @@ export const UsersTableRow = ({ data }: IUsersTableRow): JSX.Element | null => {
   return (
     <div
       className="flex items-center w-full px-5 py-3 cursor-pointer hover:bg-warm-gray-100 dark:hover:bg-slate-500"
-      onClickCapture={(): void => history.push(`users/${data._id}`)}
+      onClickCapture={(): void => history.push(`${data.username}`)}
     >
       <div className="flex items-center w-full ">
         <div className="flex items-center w-1/2 pr-3">
