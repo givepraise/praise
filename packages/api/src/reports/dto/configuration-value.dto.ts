@@ -1,27 +1,31 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export type SettingTypeVariant = 'string' | 'number' | 'boolean' | 'array';
+export type ConfigurationValueVariant =
+  | 'string'
+  | 'number'
+  | 'boolean'
+  | 'array';
 
-export type SettingItemTypeVariant = 'string' | 'number' | 'boolean';
+export type ConfigurationValueItemsTypeVariant = 'string' | 'number';
 
-export class SettingItemsDto {
+export class ConfigurationValueItemsDto {
   @ApiProperty({
     description: 'Allowed array types',
-    enum: ['string', 'number', 'boolean'],
+    enum: ['string', 'number'],
     required: true,
     example: 'string',
   })
-  type: SettingItemTypeVariant;
+  type: ConfigurationValueItemsTypeVariant;
 }
 
-export class SettingDto {
+export class ConfigurationValueDto {
   @ApiProperty({
     description: 'Type of the setting',
     enum: ['string', 'number', 'boolean', 'array'],
     required: true,
     example: 'string',
   })
-  type: SettingTypeVariant;
+  type: ConfigurationValueVariant;
 
   @ApiProperty({
     description: 'Default value for the setting',
@@ -35,10 +39,9 @@ export class SettingDto {
       { type: 'boolean' },
       { type: 'array', items: { type: 'number' } },
       { type: 'array', items: { type: 'string' } },
-      { type: 'array', items: { type: 'boolean' } },
     ],
   })
-  default: number | string | boolean | number[] | string[] | boolean[];
+  default: number | string | boolean | number[] | string[];
 
   @ApiProperty({
     description: 'Description of the setting',
@@ -80,5 +83,5 @@ export class SettingDto {
     description: 'Defines the type of items for array settings',
     required: false,
   })
-  items?: SettingItemsDto;
+  items?: ConfigurationValueItemsDto;
 }

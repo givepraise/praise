@@ -1,7 +1,7 @@
 import { ApiExtraModels, ApiProperty } from '@nestjs/swagger';
-import { SettingDto } from './setting.dto';
+import { ConfigurationValueDto } from './configuration-value.dto';
 
-@ApiExtraModels(SettingDto)
+@ApiExtraModels(ConfigurationValueDto)
 export class ReportManifestDto {
   @ApiProperty({
     example:
@@ -93,8 +93,8 @@ export class ReportManifestDto {
     required: true,
     type: 'object',
     additionalProperties: {
-      oneOf: [{ $ref: '#/components/schemas/SettingDto' }],
+      oneOf: [{ $ref: '#/components/schemas/ConfigurationValueDto' }],
     },
   })
-  configuration?: Record<string, SettingDto>;
+  configuration?: Record<string, ConfigurationValueDto>;
 }

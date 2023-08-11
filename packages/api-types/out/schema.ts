@@ -967,15 +967,15 @@ export interface components {
        */
       praiseIds: (string)[];
     };
-    SettingItemsDto: {
+    ConfigurationValueItemsDto: {
       /**
        * @description Allowed array types 
        * @example string 
        * @enum {string}
        */
-      type: "string" | "number" | "boolean";
+      type: "string" | "number";
     };
-    SettingDto: {
+    ConfigurationValueDto: {
       /**
        * @description Type of the setting 
        * @example string 
@@ -986,7 +986,7 @@ export interface components {
        * @description Default value for the setting 
        * @example 666
        */
-      default: number | string | boolean | (number)[] | (string)[] | (boolean)[];
+      default: number | string | boolean | (number)[] | (string)[];
       /**
        * @description Description of the setting 
        * @example Description of the string setting
@@ -1017,7 +1017,7 @@ export interface components {
        */
       enum?: (string)[];
       /** @description Defines the type of items for array settings */
-      items?: components["schemas"]["SettingItemsDto"];
+      items?: components["schemas"]["ConfigurationValueItemsDto"];
     };
     ReportManifestDto: {
       /** @example https://raw.githubusercontent.com/givepraise/reports/main/reports/disperse-dist-straight-curve-with-ceiling/manifest.json */
@@ -1055,7 +1055,7 @@ export interface components {
       keywords: (string)[];
       /** @description Configuration settings for the report */
       configuration: {
-        [key: string]: components["schemas"]["SettingDto"] | undefined;
+        [key: string]: components["schemas"]["ConfigurationValueDto"] | undefined;
       };
     };
   };
