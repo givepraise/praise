@@ -113,7 +113,7 @@ export const CustomReportDialog = ({
                 icon={faFileDownload}
                 size="1x"
               />
-              Run report
+              Load report
             </Button>
           </div>
         </div>
