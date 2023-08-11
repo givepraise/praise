@@ -10,6 +10,16 @@ import { Button } from '@/components/ui/Button';
 import { makeClient } from '../../../utils/axios';
 import { ReportManifestDto } from '../../../model/report/dto/report-manifest.dto';
 import { isResponseAxiosError } from '../../../model/api';
+import { recoilPersist } from 'recoil-persist';
+import { atom, useRecoilState } from 'recoil';
+
+const { persistAtom } = recoilPersist();
+
+export const CustomReportUrl = atom<string>({
+  key: 'CustomReportUrl',
+  default: undefined,
+  effects: [persistAtom],
+});
 
 interface ReportConfigDialogProps {
   onClose(): void;
@@ -20,8 +30,11 @@ export const CustomReportDialog = ({
   onClose,
   onRun,
 }: ReportConfigDialogProps): JSX.Element => {
-  const [url, setUrl] = React.useState('');
+  // Local state
   const [error, setError] = React.useState('');
+
+  // Global state
+  const [url, setUrl] = useRecoilState(CustomReportUrl);
 
   const handleUrlChange = (event): void => {
     setUrl(event.target.value);
