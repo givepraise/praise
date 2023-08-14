@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faPrayingHands } from '@fortawesome/free-solid-svg-icons';
 import { ActiveUserId } from '../../../model/auth/auth';
+import { UserAvatarAndName } from '../../../components/user/UserAvatarAndName';
 
 type CreateAttestationsButtonProps = {
   onClick: () => void;
@@ -27,11 +28,12 @@ export function CreateAttestationsButton({
 
   // Local state
   const [isOwner, setIsOwner] = useState<boolean>();
-
+  const [owners, setOwners] = useState<string[]>();
   useEffect(() => {
     if (!safe || !address) return;
     const isOwner = async (): Promise<void> => {
       setIsOwner(await safe.isOwner(address));
+      setOwners(await safe.getOwners());
     };
     void isOwner();
   }, [safe, address]);
@@ -62,5 +64,17 @@ export function CreateAttestationsButton({
     );
   }
 
-  return <div>Only Safe owners can create attestations.</div>;
+  return (
+    <div className="flex flex-col gap-5">
+      Only Safe owners can create attestations.
+      <div>
+        Owners:
+        {owners?.map((owner) => (
+          <div key={owner}>
+            <UserAvatarAndName identityEthAddress={owner} />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 }
