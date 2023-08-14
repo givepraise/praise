@@ -8,6 +8,7 @@ import { useRef, useState } from 'react';
 import { Dialog } from '@headlessui/react';
 import { useNetwork } from 'wagmi';
 import { ETH_CHAIN_ID } from '../../../model/eth/eth.constants';
+import { SwitchNetworkButton } from './SwitchNetworkButton';
 
 const Attestations = (): JSX.Element | null => {
   // Hooks
@@ -70,7 +71,10 @@ const Attestations = (): JSX.Element | null => {
           <AttestationsDetailBox />
         )}
         {period?.attestationsTxHash && chain?.id !== ETH_CHAIN_ID && (
-          <div>Connect to Optimism to view attestation information.</div>
+          <div className="flex flex-col items-start gap-5">
+            Connect to Optimism to create or view attestations.
+            <SwitchNetworkButton />
+          </div>
         )}
       </div>
       <Dialog
