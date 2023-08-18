@@ -989,17 +989,13 @@ export interface components {
       /** @example true */
       isPublic: boolean;
       /** @enum {string} */
-<<<<<<< HEAD
-      discordLinkState: "NOT_SET" | "PENDING" | "ACTIVE" | "DEACTIVE";
+      discordLinkState: 'NOT_SET' | 'PENDING' | 'ACTIVE' | 'DEACTIVE';
       /**
        * @example {
        *   "attestations": true
        * }
        */
       features: Record<string, never>;
-=======
-      discordLinkState: 'NOT_SET' | 'PENDING' | 'ACTIVE' | 'DEACTIVE';
->>>>>>> 8d479c24884d5dbd1a5a7573a3080e800de81cdc
     };
     UpdateCommunityInputDto: {
       /** @example banklessdao.givepraise.xyz */
