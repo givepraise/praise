@@ -247,22 +247,14 @@ export class PraiseController {
   ): Promise<Praise[]> {
     const praise = await this.praiseService.createPraiseItem(data);
 
-    let giver: string;
-    const praiseItem = praise[0];
-    if (praiseItem.giver && praiseItem.giver instanceof UserAccount) {
-      if (praiseItem.giver.user && praiseItem.giver.user instanceof User) {
-        giver = praiseItem.giver.user.username;
-      } else {
-        giver = String(praiseItem.giver._id);
-      }
-    } else {
-      giver = String(praiseItem.giver);
-    }
-
     await this.eventLogService.logEventWithAuthContext({
       authContext: request.authContext,
       typeKey: EventLogTypeKey.PRAISE,
-      description: `Giver ${giver} created an Praise item with receiver IDS ${data.receiverIds}`,
+      description: `User ${data.giver.name}, accountId: ${
+        data.giver.accountId
+      }, created praise items: ${praise.map((p) => p._id)}, platform: ${
+        data.giver.platform
+      }`,
     });
 
     return praise;
