@@ -907,6 +907,12 @@ export interface components {
       isPublic: boolean;
       /** @enum {string} */
       discordLinkState: "NOT_SET" | "PENDING" | "ACTIVE" | "DEACTIVE";
+      /**
+       * @example {
+       *   "attestations": true
+       * }
+       */
+      features: Record<string, never>;
     };
     UpdateCommunityInputDto: {
       /** @example banklessdao.givepraise.xyz */
