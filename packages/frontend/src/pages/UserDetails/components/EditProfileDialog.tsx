@@ -24,12 +24,12 @@ const validate = (
 
   // username validation
   if (values.username) {
-    if (values.username.length < 4) {
-      errors.username = 'Min 4 characters';
-    } else if (values.username.length > 20) {
-      errors.username = 'Max 20 characters';
+    if (values.username.length < 2) {
+      errors.username = 'Min 2 characters';
+    } else if (values.username.length > 32) {
+      errors.username = 'Max 32 characters';
     } else {
-      const pattern = /^[a-z0-9][a-z0-9_.-]{1,18}[a-z0-9]$/;
+      const pattern = /^[a-z0-9][a-z0-9_.-]{0,30}[a-z0-9]$/;
       if (!pattern.test(values.username)) {
         errors.username =
           'Usernames can only contain lowercase letters, numbers, dots, dashes and underscores';
