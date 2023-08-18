@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **API:** Decreased the amount of information logged when praising. Full praise is available in praise feed, now logging user id and praise ids only.
 - **Frontend**: User pages can now be accessed with the username instead of the user id. #1128
 - **Frontend**: Upgraded to the latest version of RainbowKit. This should fix some issues with the WalletConnect login flow.
 - **API**: Backup restore script now supports specifying which database to import from and restore to
