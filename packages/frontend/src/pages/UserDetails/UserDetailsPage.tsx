@@ -29,8 +29,8 @@ const UserDetailsPage = (): JSX.Element | null => {
   const dialogRef = React.useRef(null);
   const { userName } = useParams<SingleUserByUsernameParams>();
 
-  useLoadSingleUserDetails(userName);
   const user = useRecoilValue(SingleUserByUsername(userName));
+  useLoadSingleUserDetails(user?._id);
 
   const [isDialogOpen, setIsDialogOpen] = React.useState<boolean>(false);
 

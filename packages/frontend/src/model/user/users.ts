@@ -305,10 +305,8 @@ const DetailedSingleUserQuery = selectorFamily({
  * Update user cached in global state.
  */
 export const useLoadSingleUserDetails = (
-  username: string
+  userId?: string
 ): AxiosResponse<User> | AxiosError | undefined => {
-  const userId = useRecoilValue(SingleUser(username))?._id;
-
   const response = useRecoilValue(DetailedSingleUserQuery(userId));
   const user = useRecoilValue(SingleUser(userId));
   const setUser = useSetRecoilState(SingleUser(userId));
