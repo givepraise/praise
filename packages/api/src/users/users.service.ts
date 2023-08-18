@@ -242,7 +242,7 @@ export class UsersService {
   /**
    * A valid username is:
    * - is lowercase
-   * - minimum 3 characters
+   * - minimum 2 characters
    * - maximum 50 characters
    * - only alphanumeric characters, underscores, dots, and hyphens
    * - cannot start with a dot or hyphen
@@ -251,7 +251,7 @@ export class UsersService {
    * - should not already be taken
    */
   async generateValidUsername(username: string): Promise<string> {
-    let newUsername = username
+    const newUsername = username
       .toLowerCase()
       .replace(/\s/g, '_')
       .replace(/[^a-z0-9_.-]/g, '')
@@ -259,13 +259,6 @@ export class UsersService {
       .replace(/^[^a-z0-9]+/g, '')
       .replace(/[^a-z0-9]+$/g, '')
       .substring(0, 50);
-
-    // If the new username is less than 4 characters, pad it with a random number to ensure a minimum length of 4
-    while (newUsername.length < 4) {
-      newUsername = `${newUsername}${Math.floor(
-        Math.random() * 900 + 100,
-      )}`.substring(0, 50);
-    }
 
     // Check if the username already exists
     const exists = await this.userModel.find({ username: newUsername }).lean();

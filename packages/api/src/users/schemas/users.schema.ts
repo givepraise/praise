@@ -65,7 +65,7 @@ export class User {
   @Prop({
     required: true,
     unique: true,
-    minlength: 4,
+    minlength: 2,
     maxlength: 50,
     validate: {
       validator: (username: string) =>
