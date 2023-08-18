@@ -3,8 +3,7 @@ import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { Connection, Types } from 'mongoose';
 import { ApiException } from '../shared/exceptions/api-exception';
 import { Community } from './schemas/community.schema';
-import { PaginatedQueryDto } from '../shared/dto/pagination-query.dto';
-import { CommunityPaginatedResponseDto } from './dto/community-pagination-model.dto';
+import { CommunityFindAllResponseDto } from './dto/find-all-response.dto';
 import { CreateCommunityInputDto } from './dto/create-community-input.dto';
 import { UpdateCommunityInputDto } from './dto/update-community-input.dto';
 import { LinkDiscordBotDto } from './dto/link-discord-bot.dto';
@@ -20,6 +19,7 @@ import { databaseExists } from '../database/utils/database-exists';
 import { hostNameToDbName } from '../database/utils/host-name-to-db-name';
 import { PaginateModel } from '../shared/interfaces/paginate-model.interface';
 import { IsNameAvailableResponseDto } from './dto/is-name-available-response-dto';
+import { CommunityFindAllQueryDto } from './dto/find-all-query.dto';
 
 @Injectable()
 export class CommunityService {
@@ -56,10 +56,11 @@ export class CommunityService {
    * @returns
    */
   async findAllPaginated(
-    options: PaginatedQueryDto,
-  ): Promise<CommunityPaginatedResponseDto> {
+    options: CommunityFindAllQueryDto,
+  ): Promise<CommunityFindAllResponseDto> {
     const { sortColumn, sortType } = options;
-    const query = {} as any;
+    const { hostname } = options;
+    const query = options.hostname ? { hostname } : {};
 
     // Sorting - defaults to descending
     const sort =
