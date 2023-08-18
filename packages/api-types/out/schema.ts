@@ -215,6 +215,9 @@ export interface paths {
   '/api/communities/isNameAvailable': {
     get: operations['CommunityController_isNameAvailable'];
   };
+  '/api/communities/current': {
+    get: operations['CommunityController_current'];
+  };
   '/api/communities/{id}/discord/link': {
     /** Link discord to community */
     patch: operations['CommunityController_linkDiscord'];
@@ -987,6 +990,12 @@ export interface components {
       isPublic: boolean;
       /** @enum {string} */
       discordLinkState: 'NOT_SET' | 'PENDING' | 'ACTIVE' | 'DEACTIVE';
+      /**
+       * @example {
+       *   "attestations": true
+       * }
+       */
+      features: Record<string, never>;
     };
     UpdateCommunityInputDto: {
       /** @example banklessdao.givepraise.xyz */
@@ -1003,7 +1012,7 @@ export interface components {
        */
       owners?: string[];
     };
-    CommunityPaginatedResponseDto: {
+    CommunityFindAllResponseDto: {
       /** @example 1200 */
       totalDocs: number;
       /** @example 10 */
@@ -2113,13 +2122,15 @@ export interface operations {
         page: number;
         sortColumn?: string;
         sortType?: 'asc' | 'desc';
+        /** @example hostname.givepraise.xyz */
+        hostname?: string;
       };
     };
     responses: {
       /** @description All communities */
       200: {
         content: {
-          'application/json': components['schemas']['CommunityPaginatedResponseDto'];
+          'application/json': components['schemas']['CommunityFindAllResponseDto'];
         };
       };
     };
@@ -2188,6 +2199,16 @@ export interface operations {
       200: {
         content: {
           'application/json': components['schemas']['IsNameAvailableResponseDto'];
+        };
+      };
+    };
+  };
+  CommunityController_current: {
+    responses: {
+      /** @description Returns the current community, based on hostname */
+      200: {
+        content: {
+          'application/json': components['schemas']['Community'];
         };
       };
     };
