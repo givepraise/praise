@@ -9,11 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **Frontend**: Custom reporst can now be confihured using an interactive form. #1131
+- **Frontend**: Custom reports can now be configured using an interactive form. #1131
 - **Frontend**: New feature: Run custom reports from the reports page. #1050
 
 ### Fixed
 
+- **Frontend**: Fix bug that caused praise score details etc go missing from the user details page.
 - **API:** Praise now allows for usernames that are two characters to align with Discord requirements #1132
 - **Frontend:** JWT token is now refreshed when it expires. If the refresh token has expired as well, user has to login again. #1120
 - **Frontend:** Fix styling bug that caused the login button to be hidden on short screens. #1107
