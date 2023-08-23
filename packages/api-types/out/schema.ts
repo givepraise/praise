@@ -215,6 +215,9 @@ export interface paths {
   '/api/communities/isNameAvailable': {
     get: operations['CommunityController_isNameAvailable'];
   };
+  '/api/communities/current': {
+    get: operations['CommunityController_current'];
+  };
   '/api/communities/{id}/discord/link': {
     /** Link discord to community */
     patch: operations['CommunityController_linkDiscord'];
@@ -997,6 +1000,12 @@ export interface components {
       isPublic: boolean;
       /** @enum {string} */
       discordLinkState: 'NOT_SET' | 'PENDING' | 'ACTIVE' | 'DEACTIVE';
+      /**
+       * @example {
+       *   "attestations": true
+       * }
+       */
+      features: Record<string, never>;
     };
     UpdateCommunityInputDto: {
       /** @example banklessdao.givepraise.xyz */
@@ -1013,7 +1022,7 @@ export interface components {
        */
       owners?: string[];
     };
-    CommunityPaginatedResponseDto: {
+    CommunityFindAllResponseDto: {
       /** @example 1200 */
       totalDocs: number;
       /** @example 10 */
@@ -1060,7 +1069,15 @@ export interface components {
        */
       praiseIds: string[];
     };
-    SettingDto: {
+    ConfigurationValueItemsDto: {
+      /**
+       * @description Allowed array types
+       * @example string
+       * @enum {string}
+       */
+      type: 'string' | 'number';
+    };
+    ConfigurationValueDto: {
       /**
        * @description Type of the setting
        * @example string
@@ -1069,9 +1086,9 @@ export interface components {
       type: 'string' | 'number' | 'boolean' | 'array';
       /**
        * @description Default value for the setting
-       * @example Some string
+       * @example 666
        */
-      default: Record<string, never>;
+      default: number | string | boolean | number[] | string[];
       /**
        * @description Description of the setting
        * @example Description of the string setting
@@ -1081,7 +1098,7 @@ export interface components {
        * @description Markdown description of the setting
        * @example Description of the string setting
        */
-      markdownDescription: string;
+      markdownDescription?: string;
       /**
        * @description Edit presentation style
        * @example multiline
@@ -1092,7 +1109,7 @@ export interface components {
        * @description Order of the setting
        * @example 1
        */
-      order: number;
+      order?: number;
       /**
        * @description Enum values for string type settings
        * @example [
@@ -1101,9 +1118,8 @@ export interface components {
        * ]
        */
       enum?: string[];
-      items: {
-        type?: Record<string, never>;
-      };
+      /** @description Defines the type of items for array settings */
+      items?: components['schemas']['ConfigurationValueItemsDto'];
     };
     ReportManifestDto: {
       /** @example https://raw.githubusercontent.com/givepraise/reports/main/reports/disperse-dist-straight-curve-with-ceiling/manifest.json */
@@ -1141,7 +1157,9 @@ export interface components {
       keywords: string[];
       /** @description Configuration settings for the report */
       configuration: {
-        [key: string]: components['schemas']['SettingDto'] | undefined;
+        [key: string]:
+          | components['schemas']['ConfigurationValueDto']
+          | undefined;
       };
     };
   };
@@ -2122,7 +2140,7 @@ export interface operations {
       /** @description All communities */
       200: {
         content: {
-          'application/json': components['schemas']['CommunityPaginatedResponseDto'];
+          'application/json': components['schemas']['CommunityFindAllResponseDto'];
         };
       };
     };
@@ -2191,6 +2209,16 @@ export interface operations {
       200: {
         content: {
           'application/json': components['schemas']['IsNameAvailableResponseDto'];
+        };
+      };
+    };
+  };
+  CommunityController_current: {
+    responses: {
+      /** @description Returns the current community, based on hostname */
+      200: {
+        content: {
+          'application/json': components['schemas']['Community'];
         };
       };
     };

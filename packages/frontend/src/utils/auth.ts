@@ -7,21 +7,41 @@ import { ActivateInputDto } from '@/model/activate/dto/activate-input.dto';
 import { TokenSet } from '@/model/auth/interfaces/token-set.interface';
 import { LoginResponseDto } from '@/model/auth/dto/login-response.dto';
 import { NonceResponseDto } from '@/model/auth/dto/nonce-response.dto';
+import { RefreshTokenInputDto } from '@/model/auth/dto/refresh-token-input-dto';
+import { isResponseOk } from '../model/api';
 
 export const requestApiAuth = async (
   params: LoginInputDto
 ): Promise<TokenSet | undefined> => {
   const apiClient = makeApiClient();
   const response = await apiClient.post('/auth/eth-signature/login', params);
-  if (!response) throw Error('Failed to request authorization');
+  if (isResponseOk<LoginResponseDto>(response)) {
+    const { accessToken, refreshToken } = response.data;
 
-  const { accessToken } = response.data as unknown as LoginResponseDto;
+    setRecoil(ActiveTokenSet, {
+      accessToken,
+      refreshToken,
+    });
 
-  setRecoil(ActiveTokenSet, {
-    accessToken,
-  });
+    return getRecoil(ActiveTokenSet);
+  }
+};
 
-  return getRecoil(ActiveTokenSet);
+export const requestApiRefreshToken = async (
+  params: RefreshTokenInputDto
+): Promise<TokenSet | undefined> => {
+  const apiClient = makeApiClient(false);
+  const response = await apiClient.post('/auth/eth-signature/refresh', params);
+  if (isResponseOk<LoginResponseDto>(response)) {
+    const { accessToken, refreshToken } = response.data;
+
+    setRecoil(ActiveTokenSet, {
+      accessToken,
+      refreshToken,
+    });
+
+    return getRecoil(ActiveTokenSet);
+  }
 };
 
 export const requestNonce = async (

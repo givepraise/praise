@@ -9,14 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Frontend**: Custom reports can now be configured using an interactive form. #1131
 - **Frontend**: New feature: Run custom reports from the reports page. #1050
 
 ### Fixed
 
+- **Frontend**: Fix bug that caused praise score details etc go missing from the user details page.
+- **API:** Praise now allows for usernames that are two characters to align with Discord requirements #1132
+- **Frontend:** JWT token is now refreshed when it expires. If the refresh token has expired as well, user has to login again. #1120
 - **Frontend:** Fix styling bug that caused the login button to be hidden on short screens. #1107
 
 ### Changed
 
+- **API:** Decreased the amount of information logged when praising. Full praise is available in praise feed, now logging user id and praise ids only.
+- **Frontend**: User pages can now be accessed with the username instead of the user id. #1128
 - **Frontend**: Upgraded to the latest version of RainbowKit. This should fix some issues with the WalletConnect login flow.
 - **API**: Backup restore script now supports specifying which database to import from and restore to
 - **API**: Refactors the API to use request scoped services and simplifies the database connection logic. We no longer attempt to cache db connections ourselves but instead rely on the MongoDb node.js package #1103

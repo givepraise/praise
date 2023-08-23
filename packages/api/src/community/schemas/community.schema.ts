@@ -17,6 +17,7 @@ import { isValidCommunityName } from '../utils/is-valid-community-name';
 import { isValidOwners } from '../utils/is-valid-owners';
 import { isValidHostname } from '../utils/is-valid-hostname';
 import mongoosePaginate from 'mongoose-paginate-v2';
+import { Features } from '../types/features.type';
 
 export type CommunityDocument = Community & Document;
 
@@ -144,6 +145,21 @@ export class Community {
     required: true,
   })
   discordLinkState: string;
+
+  @ApiProperty({
+    example: {
+      attestations: true,
+    },
+  })
+  @IsOptional()
+  @Prop({
+    type: Object,
+    required: false,
+    default: {
+      attestations: false,
+    },
+  })
+  features?: Features;
 }
 
 export const CommunitySchema = SchemaFactory.createForClass(Community);

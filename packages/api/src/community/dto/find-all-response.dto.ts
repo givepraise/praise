@@ -3,7 +3,7 @@ import { Type } from 'class-transformer';
 import { PaginatedResponseDto } from '../../shared/dto/paginated-response.dto';
 import { Community } from '../schemas/community.schema';
 
-export class CommunityPaginatedResponseDto extends PaginatedResponseDto {
+export class CommunityFindAllResponseDto extends PaginatedResponseDto {
   @ApiResponseProperty({
     type: [Community],
   })

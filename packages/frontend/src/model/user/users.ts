@@ -122,6 +122,11 @@ export const PseudonymForUser = selectorFamily({
 export type SingleUserParams = {
   userId: string;
 };
+
+export type SingleUserByUsernameParams = {
+  userName: string;
+};
+
 /**
  * Selector that returns one individual User by id.
  */
@@ -300,8 +305,9 @@ export const useUserProfile = (): useUserProfileReturn => {
 const DetailedSingleUserQuery = selectorFamily({
   key: 'DetailedSingleUserQuery',
   get:
-    (userId: string) =>
-    ({ get }): AxiosResponse<User> | AxiosError => {
+    (userId: string | undefined) =>
+    ({ get }): AxiosResponse<User> | AxiosError | undefined => {
+      if (!userId) return undefined;
       return get(
         ApiGet({
           url: `/users/${userId}`,
@@ -315,8 +321,8 @@ const DetailedSingleUserQuery = selectorFamily({
  * Update user cached in global state.
  */
 export const useLoadSingleUserDetails = (
-  userId: string
-): AxiosResponse<User> | AxiosError => {
+  userId?: string
+): AxiosResponse<User> | AxiosError | undefined => {
   const response = useRecoilValue(DetailedSingleUserQuery(userId));
   const user = useRecoilValue(SingleUser(userId));
   const setUser = useSetRecoilState(SingleUser(userId));

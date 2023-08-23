@@ -8,6 +8,9 @@ const SettingsPage = React.lazy(() => import('@/pages/Settings/SettingsPage'));
 const UserDetailsPage = React.lazy(
   () => import('@/pages/UserDetails/UserDetailsPage')
 );
+const UserDetailsPageRedirect = React.lazy(
+  () => import('@/pages/UserDetails/UserDetailsPageRedirect')
+);
 const UsersPage = React.lazy(() => import('@/pages/Users/UsersPage'));
 
 const AnalyticsPage = React.lazy(
@@ -83,7 +86,7 @@ const AuthRoute = ({
         ) : (
           <Redirect
             to={{
-              pathname: '/404',
+              pathname: '/',
             }}
           />
         )
@@ -120,7 +123,7 @@ export const MainRoutes = ({ userRoles }: Props): JSX.Element | null => {
       </Route>
 
       <Route path={'/users/:userId'}>
-        <UserDetailsPage />
+        <UserDetailsPageRedirect />
       </Route>
 
       <Route exact path={'/periods'}>
@@ -189,6 +192,10 @@ export const MainRoutes = ({ userRoles }: Props): JSX.Element | null => {
 
       <Route exact path="/">
         <StartPage />
+      </Route>
+
+      <Route path={'/:userName'}>
+        <UserDetailsPage />
       </Route>
 
       <Route path="/*">

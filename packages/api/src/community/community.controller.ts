@@ -6,6 +6,7 @@ import {
   Patch,
   Post,
   Query,
+  Req,
   SerializeOptions,
   UseInterceptors,
 } from '@nestjs/common';
@@ -15,7 +16,7 @@ import { Permission } from '../auth/enums/permission.enum';
 import { Community } from './schemas/community.schema';
 import { MongooseClassSerializerInterceptor } from '../shared/interceptors/mongoose-class-serializer.interceptor';
 import { ObjectIdPipe } from '../shared/pipes/object-id.pipe';
-import { CommunityPaginatedResponseDto } from './dto/community-pagination-model.dto';
+import { CommunityFindAllResponseDto } from './dto/find-all-response.dto';
 import { ObjectId, Types } from 'mongoose';
 import { Permissions } from '../auth/decorators/permissions.decorator';
 import { CreateCommunityInputDto } from './dto/create-community-input.dto';
@@ -28,8 +29,9 @@ import { IsNameAvailableResponseDto } from './dto/is-name-available-response-dto
 import { IsNameAvailableRequestDto } from './dto/is-name-available-request-dto';
 import { EventLogService } from '../event-log/event-log.service';
 import { EventLogTypeKey } from '../event-log/enums/event-log-type-key';
-import { FindAllCommunitiesQueryDto } from './dto/find-all-communities-query.dto';
+import { CommunityFindAllQueryDto } from './dto/find-all-query.dto';
 import { Public } from '../shared/decorators/public.decorator';
+import { Request } from 'express';
 
 @Controller('communities')
 @ApiTags('Communities')
@@ -75,16 +77,16 @@ export class CommunityController {
   }
 
   @Get()
-  @Public() // Public access, no auth required
+  @Permissions(Permission.CommunitiesView)
   @ApiResponse({
     status: 200,
     description: 'All communities',
-    type: CommunityPaginatedResponseDto,
+    type: CommunityFindAllResponseDto,
   })
   @UseInterceptors(MongooseClassSerializerInterceptor(Community))
   async findAll(
-    @Query() options: FindAllCommunitiesQueryDto,
-  ): Promise<CommunityPaginatedResponseDto> {
+    @Query() options: CommunityFindAllQueryDto,
+  ): Promise<CommunityFindAllResponseDto> {
     return this.communityService.findAllPaginated(options);
   }
 
@@ -100,8 +102,20 @@ export class CommunityController {
     return await this.communityService.isCommunityNameAvailable(options.name);
   }
 
+  @Get('/current')
+  @Public()
+  @ApiResponse({
+    status: 200,
+    description: 'Returns the current community, based on hostname',
+    type: Community,
+  })
+  @UseInterceptors(MongooseClassSerializerInterceptor(Community))
+  async current(@Req() req: Request): Promise<Community> {
+    return this.communityService.findOne({ host: req.hostname });
+  }
+
   @Get(':id')
-  @Public() // Public access, no auth required
+  @Permissions(Permission.CommunitiesView)
   @ApiResponse({
     status: 200,
     description: 'A single Community',

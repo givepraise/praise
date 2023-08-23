@@ -8,9 +8,14 @@ export const dmTargetMenu = new StringSelectMenuBuilder()
   .setPlaceholder('Select user group')
   .addOptions([
     {
-      label: 'All users',
+      label: 'All activated users',
       description: 'Send to all activated Praise users',
-      value: 'USERS',
+      value: 'ACTIVATED-USERS',
+    },
+    {
+      label: 'All unactivated users',
+      description: 'Send to all unactivated Praise users',
+      value: 'UNACTIVATED-USERS',
     },
     {
       label: 'All quantifiers',
