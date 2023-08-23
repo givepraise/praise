@@ -1,12 +1,12 @@
 export type Attestation = {
-  useraccounts_name: string;
-  users_identityEthAddress: string;
-  total_received_praise_score: number;
-  top_10_receiver: boolean;
-  top_50_receiver: boolean;
-  top_100_receiver: boolean;
-  total_given_praise_score: number;
-  top_10_giver: boolean;
-  top_50_giver: boolean;
-  top_100_giver: boolean;
+  period: string;
+  received_score: string;
+  given_score: string;
+  top_10_receiver: string;
+  top_50_receiver: string;
+  top_100_receiver: string;
+  top_10_giver: string;
+  top_50_giver: string;
+  top_100_giver: string;
+  recipient: string;
 };

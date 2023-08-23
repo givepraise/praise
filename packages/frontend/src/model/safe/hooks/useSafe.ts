@@ -1,9 +1,9 @@
+import { ReactSafeContext } from '../components/SafeContextProvider';
+import { SafeContext } from '../types/use-safe-return';
 import { useContext } from 'react';
-import { UseSafeReturn } from '../types/use-safe-return';
-import { SafeContext } from '../components/SafeProvider';
 
-export function useSafe(): UseSafeReturn {
-  const context = useContext(SafeContext);
+export function useSafe(): SafeContext {
+  const context = useContext(ReactSafeContext);
   if (!context) {
     throw new Error('useSafe must be used within a SafeProvider');
   }

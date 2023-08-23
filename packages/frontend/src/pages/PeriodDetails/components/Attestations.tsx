@@ -9,6 +9,8 @@ import { Dialog } from '@headlessui/react';
 import { useNetwork } from 'wagmi';
 import { ETH_CHAIN_ID } from '../../../model/eth/eth.constants';
 import { SwitchNetworkButton } from './SwitchNetworkButton';
+import { EasContextProvider } from '../../../model/eas/components/EasContextProvider';
+import { ATTESTATION_SCHEMA_UID } from '../../../model/eas/eas.constants';
 
 const Attestations = (): JSX.Element | null => {
   // Hooks
@@ -41,7 +43,7 @@ const Attestations = (): JSX.Element | null => {
   }
 
   return (
-    <>
+    <EasContextProvider schemaUid={ATTESTATION_SCHEMA_UID}>
       <div className="flex flex-col gap-5 px-5">
         <div className="flex justify-between">
           <h2>Attestations</h2>
@@ -89,7 +91,7 @@ const Attestations = (): JSX.Element | null => {
           />
         </div>
       </Dialog>
-    </>
+    </EasContextProvider>
   );
 };
 

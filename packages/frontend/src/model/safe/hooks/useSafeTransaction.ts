@@ -1,36 +1,16 @@
-// External package imports
-import { useState, useEffect } from 'react';
-import { SafeMultisigTransactionResponse } from '@safe-global/safe-core-sdk-types';
-
 // Internal imports
-import { useAccount } from 'wagmi';
-import { atom, atomFamily, useRecoilState } from 'recoil';
-import { SignSafeTransactionStateType } from '../types/sign-safe-transaction-state.type';
-import { useSafe } from './useSafe';
-import { toast } from 'react-hot-toast';
-import { errorHasReason } from '../../eth/util/errorHasReason';
-import { errorHasMessage } from '../../eth/util/errorHasMessage';
+import { useAccount, useNetwork } from 'wagmi';
+// External package imports
+import { useEffect, useState } from 'react';
+
 import { ExecuteSafeTransactionStateType } from '../types/execute-safe-transaction-state.type';
-import { SAFE_TX_SERVICE_URL } from '../safe.constants';
-
-const SafeTransaction = atomFamily<SafeMultisigTransactionResponse, string>({
-  key: 'SafeTransaction',
-  default: undefined,
-});
-
-const SignSafeTransactionState = atom<SignSafeTransactionStateType>({
-  key: 'SignSafeTransactionState',
-  default: undefined,
-});
-
-const ExecuteSafeTransactionState = atom<ExecuteSafeTransactionStateType>({
-  key: 'ExecuteSafeTransactionState',
-  default: undefined,
-});
-
-type UseSafeTransactionProps = {
-  safeTxHash?: string;
-};
+import { SafeMultisigTransactionResponse } from '@safe-global/safe-core-sdk-types';
+import { SignSafeTransactionStateType } from '../types/sign-safe-transaction-state.type';
+import { errorHasMessage } from '../../eth/util/errorHasMessage';
+import { errorHasReason } from '../../eth/util/errorHasReason';
+import { toast } from 'react-hot-toast';
+import { useSafe } from './useSafe';
+import { useSafeConfig } from './useSafeConfig';
 
 type UseSafeTransactionReturn = {
   transaction?: SafeMultisigTransactionResponse;
@@ -40,8 +20,12 @@ type UseSafeTransactionReturn = {
   signTransaction?: () => void;
   executeState?: ExecuteSafeTransactionStateType;
   executeTransaction?: () => void;
+  explorerUrl?: string;
 };
 
+type UseSafeTransactionProps = {
+  safeTxHash?: string;
+};
 /**
  * Custom hook to interface with Safe transactions.
  * @returns An object containing Safe transaction information and utilities.
@@ -52,27 +36,31 @@ export function useSafeTransaction({
   // Hooks
   const { address: userAddress } = useAccount();
   const { safe, safeApiKit } = useSafe();
+  const { chain } = useNetwork();
+  const safeConfig = useSafeConfig(chain?.id);
 
   // Local state
   const [mySignatureAwaited, setMySignatureAwaited] = useState<boolean>();
+  const [transaction, setTransaction] =
+    useState<SafeMultisigTransactionResponse>();
+  const [signState, setSignState] = useState<SignSafeTransactionStateType>();
+  const [executeState, setExecuteState] =
+    useState<ExecuteSafeTransactionStateType>();
 
-  // Global state
-  const [transaction, setTransaction] = useRecoilState(
-    SafeTransaction(safeTxHash ?? '')
-  );
-  const [signState, setSignState] = useRecoilState(SignSafeTransactionState);
-  const [executeState, setExecuteState] = useRecoilState(
-    ExecuteSafeTransactionState
-  );
-
-  /**
-   * Load the Safe transaction details.
-   */
   function loadTransaction(): void {
-    if (transaction || !safeApiKit || !safeTxHash) return;
+    if (!safeTxHash || !safeApiKit) return;
     void (async (): Promise<void> => {
-      const tx = await safeApiKit.getTransaction(safeTxHash);
-      setTransaction(tx);
+      try {
+        const tx = await safeApiKit.getTransaction(safeTxHash);
+        setTransaction(tx);
+      } catch (e) {
+        console.error('Unable to load transaction', e);
+        if (errorHasReason(e) && e.reason) {
+          toast.error(e.reason);
+        } else if (errorHasMessage(e) && e.message) {
+          toast.error(e.message);
+        }
+      }
     })();
   }
 
@@ -90,19 +78,6 @@ export function useSafeTransaction({
     })();
   }
 
-  useEffect(loadTransaction, [
-    safeApiKit,
-    safeTxHash,
-    transaction,
-    setTransaction,
-  ]);
-  useEffect(checkIfMySignatureAwaited, [userAddress, safe, transaction]);
-
-  const moreConfirmationsRequired =
-    transaction?.confirmations &&
-    transaction?.confirmationsRequired > 0 &&
-    transaction.confirmations.length < transaction.confirmationsRequired;
-
   function signTransaction(): void {
     if (!safe || !safeTxHash || !safeApiKit) {
       return;
@@ -112,8 +87,6 @@ export function useSafeTransaction({
       try {
         const signature = await safe.signTransactionHash(safeTxHash);
         await safeApiKit.confirmTransaction(safeTxHash, signature.data);
-        const tx = await safeApiKit.getTransaction(safeTxHash);
-        setTransaction(tx);
         setSignState({ state: 'signed' });
       } catch (e) {
         if (errorHasReason(e) && e.reason) {
@@ -131,8 +104,9 @@ export function useSafeTransaction({
    */
   function awaitTransactionIndexing(): void {
     void (async (): Promise<void> => {
+      if (!transaction) return;
       const response = await fetch(
-        `${SAFE_TX_SERVICE_URL}/api/v1/multisig-transactions/${transaction.safeTxHash}`
+        `${safeConfig?.serviceUrl}/api/v1/multisig-transactions/${transaction.safeTxHash}`
       );
       if (response.ok) {
         const tx = (await response.json()) as SafeMultisigTransactionResponse;
@@ -153,6 +127,7 @@ export function useSafeTransaction({
       return;
     }
     void (async (): Promise<void> => {
+      if (!transaction) return;
       setExecuteState({ state: 'executing' });
       try {
         const txResponse = await safe.executeTransaction(transaction);
@@ -171,6 +146,16 @@ export function useSafeTransaction({
     })();
   }
 
+  const moreConfirmationsRequired =
+    transaction?.confirmations &&
+    transaction?.confirmationsRequired > 0 &&
+    transaction.confirmations.length < transaction.confirmationsRequired;
+
+  const explorerUrl = `${safeConfig?.explorerUrl}/tx/${transaction?.transactionHash}`;
+
+  useEffect(loadTransaction, [safeTxHash, safeApiKit]);
+  useEffect(checkIfMySignatureAwaited, [userAddress, safe, transaction]);
+
   return {
     transaction,
     moreConfirmationsRequired,
@@ -179,5 +164,6 @@ export function useSafeTransaction({
     signTransaction,
     executeState,
     executeTransaction,
+    explorerUrl,
   };
 }

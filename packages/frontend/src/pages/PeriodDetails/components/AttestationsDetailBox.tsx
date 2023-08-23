@@ -13,11 +13,13 @@ import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { SignAttestationsButton } from './SignAttestationsButton';
 import { ExecuteAttestationsButton } from './ExecuteAttestationsButton';
+import { useSafeConfig } from '../../../model/safe/hooks/useSafeConfig';
+import { useNetwork } from 'wagmi';
 
 export function AttestationsDetailBox(): JSX.Element | null {
   const { periodId } = useParams<PeriodPageParams>();
   const period = useRecoilValue(SinglePeriod(periodId));
-  const { SAFE_ADDRESS, isCurrentUserOwner } = useSafe();
+  const { isCurrentUserOwner } = useSafe();
   const {
     transaction,
     moreConfirmationsRequired,
@@ -29,6 +31,8 @@ export function AttestationsDetailBox(): JSX.Element | null {
   } = useSafeTransaction({
     safeTxHash: period?.attestationsTxHash,
   });
+  const { chain } = useNetwork();
+  const safeConfig = useSafeConfig(chain?.id);
 
   const reportUrl = period
     ? `/reports/run?${objectToQs({
@@ -42,7 +46,6 @@ export function AttestationsDetailBox(): JSX.Element | null {
     !period ||
     !period?.attestationsTxHash ||
     !transaction ||
-    !SAFE_ADDRESS ||
     typeof moreConfirmationsRequired === 'undefined' ||
     typeof mySignatureAwaited === 'undefined'
   ) {
@@ -71,7 +74,7 @@ export function AttestationsDetailBox(): JSX.Element | null {
             <div className="flex items-center">
               Safe transaction hash:{' '}
               <a
-                href={`https://app.safe.global/transactions/tx?id=multisig_${SAFE_ADDRESS}_${period?.attestationsTxHash}&safe=oeth:${SAFE_ADDRESS}`}
+                href={`https://app.safe.global/transactions/tx?id=multisig_${transaction?.safe}_${period?.attestationsTxHash}&safe=${safeConfig?.safeChainAbbreviation}:${transaction?.safe}`}
                 target="_blank"
                 rel="noreferrer"
                 className="ml-1"

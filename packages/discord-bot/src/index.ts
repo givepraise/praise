@@ -66,7 +66,6 @@ discordClient.on('interactionCreate', async (interaction): Promise<void> => {
       discordClient,
       interaction.guild.id
     );
-    console.log(community);
 
     if (community) {
       await command.execute(discordClient, interaction, community.hostname);

@@ -15,7 +15,7 @@ import { AwaitMetamaskInit } from './components/AwaitMetaMaskInit';
 import { LightDarkTheme } from './components/LightDarkTheme';
 import { ErrorBoundaryTopLevel } from './components/ErrorBoundaryTopLevel';
 import PlausibleAnalytics from '@/components/PlausibleAnalytics';
-import { SafeProvider } from './model/safe/components/SafeProvider';
+import { SafeContextProvider } from './model/safe/components/SafeContextProvider';
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const root = createRoot(document.getElementById('root')!);
@@ -24,7 +24,7 @@ root.render(
     <RecoilRoot>
       <RecoilNexus />
       <Web3Provider>
-        <SafeProvider>
+        <SafeContextProvider>
           <Router>
             <main>
               <AwaitMetamaskInit>
@@ -44,7 +44,7 @@ root.render(
               />
             </main>
           </Router>
-        </SafeProvider>
+        </SafeContextProvider>
       </Web3Provider>
     </RecoilRoot>
   </React.StrictMode>

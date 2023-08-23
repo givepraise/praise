@@ -1,16 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
+import { Parser } from '@json2csv/plainjs';
+
 import { Dialog } from '@headlessui/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faPrayingHands,
-  faReceipt,
-  faTimes,
-} from '@fortawesome/free-solid-svg-icons';
+import { faReceipt, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { Button } from '@/components/ui/Button';
 import { useSafe } from '../../../model/safe/hooks/useSafe';
-import { useAttestations } from '../../../model/eas/hooks/useAttestations';
 import {
   getPeriodDatesConfig,
   PeriodDates,
@@ -23,6 +20,9 @@ import {
 import { useReportRunReturn } from '../../../model/report/types/use-report-run-return.type';
 import { ATTESTATION_REPORT_MANIFEST_URL } from '../../../model/eas/eas.constants';
 import { GenerateAttestationsData } from './GenerateAttestationsData';
+import { useEas } from '../../../model/eas/hooks/useEas';
+import { Attestation } from '../../../model/eas/types/attestation.type';
+import { CreateAttestationsDialogSubmitButton } from './CreateAttestationsDialogSubmitButton';
 
 type CreateAttestationsDialogProps = {
   onClose(): void;
@@ -35,16 +35,16 @@ export function CreateAttestationsDialog({
   const { periodId } = useParams<PeriodPageParams>();
   const periods = useRecoilValue(AllPeriods);
   const { owners, threshold } = useSafe();
-  const {
-    createAttestationsTransaction: createAttestations,
-    creating,
-    txHash,
-  } = useAttestations();
+
+  const { createAttestationsTransaction, safeTransactionState } = useEas();
+
   const { updatePeriod } = useUpdatePeriod();
 
   // Local state
   const [periodDates, setPeriodDates] = useState<PeriodDates>();
-  const [attestationData, setAttestationData] = useState<useReportRunReturn>();
+  const [attestationReportData, setAttestationReportData] =
+    useState<useReportRunReturn>();
+  const [attestationCsv, setAttestationCsv] = useState<string>();
 
   // Effects
   function loadPeriodDates(): void {
@@ -53,13 +53,48 @@ export function CreateAttestationsDialog({
   }
 
   function saveTransactionHash(): void {
-    if (!txHash) return;
-    void updatePeriod(periodId, { attestationsTxHash: txHash });
+    if (
+      !safeTransactionState?.txHash ||
+      safeTransactionState?.status !== 'created'
+    )
+      return;
+    void updatePeriod(periodId, {
+      attestationsTxHash: safeTransactionState.txHash,
+    });
     onClose();
   }
 
+  function createAttestationCsv(): void {
+    if (!attestationReportData) return;
+    const csvObjects: Attestation[] = [];
+    for (const attestation of attestationReportData.rows) {
+      csvObjects.push({
+        period: periodId,
+        received_score: attestation.total_received_praise_score,
+        given_score: attestation.total_given_praise_score,
+        top_10_receiver: attestation.top_10_receiver,
+        top_50_receiver: attestation.top_50_receiver,
+        top_100_receiver: attestation.top_100_receiver,
+        top_10_giver: attestation.top_10_giver,
+        top_50_giver: attestation.top_50_giver,
+        top_100_giver: attestation.top_100_giver,
+        recipient: attestation.users_identityEthAddress,
+      });
+    }
+    const parser = new Parser();
+    const csv = parser.parse(csvObjects);
+    setAttestationCsv(csv);
+  }
+
   useEffect(loadPeriodDates, [periods, periodId]);
-  useEffect(saveTransactionHash, [txHash, periodId, updatePeriod, onClose]);
+  useEffect(saveTransactionHash, [
+    safeTransactionState?.txHash,
+    safeTransactionState?.status,
+    updatePeriod,
+    periodId,
+    onClose,
+  ]);
+  useEffect(createAttestationCsv, [attestationReportData, periodId]);
 
   if (!periodDates) return null;
 
@@ -89,12 +124,12 @@ export function CreateAttestationsDialog({
                 manifestUrl={ATTESTATION_REPORT_MANIFEST_URL}
                 done={(result): void => {
                   if (!result) return;
-                  setAttestationData(result);
+                  setAttestationReportData(result);
                 }}
               />
             </div>
 
-            {attestationData && (
+            {attestationReportData && (
               <>
                 <div className="text-center">
                   This transaction requires the signature of:
@@ -108,29 +143,18 @@ export function CreateAttestationsDialog({
               </>
             )}
             <div className="flex justify-center gap-5 mt-5">
-              <Button onClick={onClose} disabled={creating}>
+              <Button
+                onClick={onClose}
+                disabled={safeTransactionState?.status === 'creating'}
+              >
                 Cancel
               </Button>
-              <Button
-                onClick={(): void => {
-                  if (!attestationData) return;
-                  void createAttestations(attestationData, periodId);
-                }}
-                disabled={!attestationData || creating}
-              >
-                {creating ? (
-                  <>
-                    <FontAwesomeIcon
-                      icon={faPrayingHands}
-                      className="w-4 mr-2"
-                      spin
-                    />
-                    Creating...
-                  </>
-                ) : (
-                  'Submit'
-                )}
-              </Button>
+
+              <CreateAttestationsDialogSubmitButton
+                attestationCsv={attestationCsv}
+                createAttestationsTransaction={createAttestationsTransaction}
+                safeTransactionState={safeTransactionState}
+              />
             </div>
           </div>
         </div>
