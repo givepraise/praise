@@ -38,9 +38,11 @@ export function CreateAttestationsButton({
     void isOwner();
   }, [safe, address]);
 
-  if (!address || !userId || !period || period.attestationsTxHash) {
+  if (!period || period.attestationsTxHash) {
     return null;
   }
+
+  const disabled = !userId || !address;
 
   if (address && typeof isOwner === 'undefined') {
     return (
@@ -56,7 +58,7 @@ export function CreateAttestationsButton({
   if (isOwner) {
     return (
       <div>
-        <Button onClick={onClick}>
+        <Button onClick={onClick} disabled={disabled}>
           <FontAwesomeIcon icon={faPlus} className="w-4 mr-2" />
           Create Attestations
         </Button>
