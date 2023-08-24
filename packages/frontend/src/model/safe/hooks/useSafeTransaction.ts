@@ -88,6 +88,8 @@ export function useSafeTransaction({
         const signature = await safe.signTransactionHash(safeTxHash);
         await safeApiKit.confirmTransaction(safeTxHash, signature.data);
         setSignState({ state: 'signed' });
+        // Wait 2 seconds, then reload the transaction
+        setTimeout(loadTransaction, 2000);
       } catch (e) {
         if (errorHasReason(e) && e.reason) {
           toast.error(e.reason);
