@@ -1,6 +1,6 @@
 import { apiGet } from './api';
 import Keyv from 'keyv';
-import { Community, CommunityPaginatedResponseDto } from './api-schema';
+import { Community, CommunityFindAllResponseDto } from './api-schema';
 import { DiscordClient } from '../interfaces/DiscordClient';
 
 /**
@@ -11,7 +11,7 @@ export const buildCommunityCache = async (cache: Keyv): Promise<void> => {
   let currPage = 1;
   let totalPages = 1;
   while (currPage <= totalPages) {
-    const communityList = await apiGet<CommunityPaginatedResponseDto>(
+    const communityList = await apiGet<CommunityFindAllResponseDto>(
       `/communities?page=${currPage}`
     ).then((res) => res.data);
 

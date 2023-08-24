@@ -24,8 +24,8 @@ export type PraiseForwardInputDto =
 
 export type Setting = components['schemas']['Setting'];
 
-export type CommunityPaginatedResponseDto =
-  components['schemas']['CommunityPaginatedResponseDto'];
+export type CommunityFindAllResponseDto =
+  components['schemas']['CommunityFindAllResponseDto'];
 export type Community = components['schemas']['Community'];
 
 export type PeriodPaginatedResponseDto =
