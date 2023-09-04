@@ -15,6 +15,7 @@ import { SignAttestationsButton } from './SignAttestationsButton';
 import { ExecuteAttestationsButton } from './ExecuteAttestationsButton';
 import { useSafeConfig } from '../../../model/safe/hooks/useSafeConfig';
 import { useNetwork } from 'wagmi';
+import { useEas } from '../../../model/eas/hooks/useEas';
 
 export function AttestationsDetailBox(): JSX.Element | null {
   const { periodId } = useParams<PeriodPageParams>();
@@ -33,6 +34,7 @@ export function AttestationsDetailBox(): JSX.Element | null {
   });
   const { chain } = useNetwork();
   const safeConfig = useSafeConfig(chain?.id);
+  const { schemaUid } = useEas();
 
   const reportUrl = period
     ? `/reports/run?${objectToQs({
@@ -180,6 +182,15 @@ export function AttestationsDetailBox(): JSX.Element | null {
                     {shortenEthAddress(transaction.executor || '')}
                   </a>
                   <CopyButton textToCopy={transaction?.executor || ''} />
+                </div>
+                <div className="flex items-center">
+                  <a
+                    href={`https://optimism.easscan.org/schema/view/${schemaUid}`}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    View on easscan.org
+                  </a>
                 </div>
               </div>
             </LineListItem>
