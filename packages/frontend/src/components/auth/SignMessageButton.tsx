@@ -1,6 +1,7 @@
 import { useSignMessage } from 'wagmi';
-import { LoaderSpinner } from '@/components/ui/LoaderSpinner';
 import { Button } from '../ui/Button';
+import { faPrayingHands } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 interface Props {
   text: string;
@@ -26,7 +27,10 @@ const SignMessageButton = ({
   });
 
   return isLoading || isSuccess ? (
-    <LoaderSpinner />
+    <Button disabled>
+      <FontAwesomeIcon icon={faPrayingHands} spin className="w-4 mr-2" />
+      Signing in...
+    </Button>
   ) : (
     <Button onClick={(): void => signMessage()}>{text}</Button>
   );

@@ -15,6 +15,7 @@ import { AwaitMetamaskInit } from './components/AwaitMetaMaskInit';
 import { LightDarkTheme } from './components/LightDarkTheme';
 import { ErrorBoundaryTopLevel } from './components/ErrorBoundaryTopLevel';
 import PlausibleAnalytics from '@/components/PlausibleAnalytics';
+import { SafeContextProvider } from './model/safe/components/SafeContextProvider';
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const root = createRoot(document.getElementById('root')!);
@@ -23,25 +24,27 @@ root.render(
     <RecoilRoot>
       <RecoilNexus />
       <Web3Provider>
-        <Router>
-          <main>
-            <AwaitMetamaskInit>
-              <LightDarkTheme>
-                <React.Suspense fallback={<LoadScreen />}>
-                  <ErrorBoundaryTopLevel>
-                    <Routes />
-                  </ErrorBoundaryTopLevel>
-                  <PlausibleAnalytics />
-                </React.Suspense>
-              </LightDarkTheme>
-            </AwaitMetamaskInit>
-            <Toaster
-              position="bottom-right"
-              reverseOrder={false}
-              toastOptions={{ duration: 3000 }}
-            />
-          </main>
-        </Router>
+        <SafeContextProvider>
+          <Router>
+            <main>
+              <AwaitMetamaskInit>
+                <LightDarkTheme>
+                  <React.Suspense fallback={<LoadScreen />}>
+                    <ErrorBoundaryTopLevel>
+                      <Routes />
+                    </ErrorBoundaryTopLevel>
+                    <PlausibleAnalytics />
+                  </React.Suspense>
+                </LightDarkTheme>
+              </AwaitMetamaskInit>
+              <Toaster
+                position="bottom-right"
+                reverseOrder={false}
+                toastOptions={{ duration: 3000 }}
+              />
+            </main>
+          </Router>
+        </SafeContextProvider>
       </Web3Provider>
     </RecoilRoot>
   </React.StrictMode>

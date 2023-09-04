@@ -8,6 +8,13 @@ type ReportsTableProps = {
   data: row[];
 };
 
+function formatValue(value: unknown): string {
+  if (typeof value === 'boolean') return value ? 'true' : 'false';
+  if (typeof value === 'number') return value.toLocaleString();
+  if (typeof value === 'string') return value;
+  return '';
+}
+
 export const ReportsTable = ({ data }: ReportsTableProps): JSX.Element => {
   const columns = React.useMemo(
     () =>
@@ -15,6 +22,10 @@ export const ReportsTable = ({ data }: ReportsTableProps): JSX.Element => {
         Header: key,
         accessor: key,
         className: 'px-5 text-left',
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        Cell: (data: any): JSX.Element => {
+          return <div>{formatValue(data.value)}</div>;
+        },
       })),
     [data]
   );

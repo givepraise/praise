@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import {
-  faSpinner,
   faKey,
   faTimes,
   faCheck,
+  faPrayingHands,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Dialog } from '@headlessui/react';
@@ -115,9 +115,8 @@ const ApplicationSettingsApiKeyForm = ({
                                   disabled={loading}
                                 >
                                   <FontAwesomeIcon
-                                    className="mr-2"
-                                    icon={loading ? faSpinner : faCheck}
-                                    size="1x"
+                                    className="w-4 mr-2"
+                                    icon={loading ? faPrayingHands : faCheck}
                                   />
                                   {loading ? 'Saving' : 'Save'}
                                 </Button>

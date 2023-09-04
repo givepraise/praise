@@ -173,6 +173,22 @@ export const SingleUserByUsername = selectorFamily({
     },
 });
 
+/**
+ * Selector that returns one individual User by username.
+ */
+export const SingleUserByIdentityEthAddress = selectorFamily({
+  key: 'SingleUserByIdentityEthAddress',
+  get:
+    (identityEthAddress: string | undefined) =>
+    ({ get }): User | undefined => {
+      const allUsers = get(AllUsers);
+      if (!allUsers || !identityEthAddress) return undefined;
+      return allUsers.filter(
+        (user) => user.identityEthAddress === identityEthAddress
+      )[0];
+    },
+});
+
 export const ManyUsers = selectorFamily({
   key: 'ManyUsers',
   get:

@@ -53,16 +53,7 @@ const PERMISSIONS_ADMIN = [
   Permission.PeriodAssign,
 ];
 
-/**
- * Root users are users that are allowed to manage the system.
- * In addition to the admin permissions, they can also manage communities.
- */
-const PERMISSIONS_ROOT = [
-  ...PERMISSIONS_ADMIN,
-  Permission.CommunitiesCreate,
-  Permission.CommunitiesView,
-  Permission.CommunitiesUpdate,
-];
+const PERMISSIONS_ROOT = [...PERMISSIONS_ADMIN];
 
 /**
  * API keys can be used to access the API. They can be created with different

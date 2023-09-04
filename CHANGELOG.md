@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Frontend/API**: Attestations! Communities can now create attestations based on Praise data using the Ethereum Attestation Service. Attest to top receivers, givers etc.
 - **Frontend**: Custom reports can now be configured using an interactive form. #1131
 - **Frontend**: New feature: Run custom reports from the reports page. #1050
 

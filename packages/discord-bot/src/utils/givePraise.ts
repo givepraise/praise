@@ -105,7 +105,6 @@ export const givePraise = async (
 
   await Promise.all(
     praiseItems.map(async (praise) => {
-      console.log(praiseItems, receivers);
       await sendReceiverDM(
         praise._id,
         receivers.filter(

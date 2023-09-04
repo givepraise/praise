@@ -9,13 +9,9 @@ import {
 import merge from 'lodash/merge';
 import { WagmiConfig, configureChains, createConfig } from 'wagmi';
 import { publicProvider } from 'wagmi/providers/public';
-import { mainnet } from 'wagmi/chains';
+import { optimism } from 'wagmi/chains';
 import { alchemyProvider } from 'wagmi/providers/alchemy';
-
-interface WindowWithEnv extends Window {
-  REACT_APP_ALCHEMY_KEY?: string;
-  REACT_APP_WALLETCONNECT_PROJECT_ID?: string;
-}
+import { WindowWithEnv } from './types/window-with-env.type';
 
 const win = window as WindowWithEnv;
 
@@ -28,7 +24,7 @@ const REACT_APP_WALLETCONNECT_PROJECT_ID =
   '';
 
 const { chains, publicClient } = configureChains(
-  [mainnet],
+  [optimism],
   [
     alchemyProvider({
       apiKey: REACT_APP_ALCHEMY_KEY || '',

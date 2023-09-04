@@ -73,8 +73,8 @@ export const errorMessages: { [key: string]: ErrorMessage } = {
     httpStatusCode: 500,
     code: 1013,
   },
-  UPDATE_PERIOD_NAME_OR_END_DATE_MUST_BE_SPECIFIED: {
-    message: 'Updated name or endDate to must be specified',
+  UPDATE_PERIOD_SOME_PROP_MUST_BE_SPECIFIED: {
+    message: 'At least one property must be specified',
     httpStatusCode: 400,
     code: 1013,
   },

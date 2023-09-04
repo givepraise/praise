@@ -11,11 +11,6 @@ export const praiseSuccessEmbed = async (
     .replace('{@receivers}', `${receivers.join(', ')}`)
     .replace('{reason}', reason);
 
-  try {
-    const embed = new EmbedBuilder().setColor(0xe6007e).setDescription(msg);
-    return embed;
-  } catch (error) {
-    console.log(error);
-    throw error;
-  }
+  const embed = new EmbedBuilder().setColor(0xe6007e).setDescription(msg);
+  return embed;
 };

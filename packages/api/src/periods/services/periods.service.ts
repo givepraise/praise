@@ -66,7 +66,7 @@ export class PeriodsService {
     options: PaginatedQueryDto,
   ): Promise<PeriodPaginatedResponseDto> {
     const {
-      sortColumn = 'createdAt',
+      sortColumn = 'endDate',
       sortType = 'desc',
       page = 1,
       limit = 100,
@@ -77,11 +77,26 @@ export class PeriodsService {
       page,
       limit,
       sort: sortColumn && sortType ? { [sortColumn]: sortType } : undefined,
+      lean: true,
     });
 
     if (!periodPagination)
       throw new ApiException(errorMessages.FAILED_TO_PAGINATE_PERIOD_DATA);
 
+    const periods = periodPagination.docs;
+
+    // Sort the periods by endDate in ascending order
+    periods.sort((a, b) => a.endDate.getTime() - b.endDate.getTime());
+
+    // Iterate through the periods and set the startDate based on the previous period's endDate
+    for (let i = 1; i < periods.length; i++) {
+      periods[i].startDate = periods[i - 1].endDate;
+    }
+
+    // Set the startDate for the first period, if needed
+    if (periods.length > 0 && !periods[0].startDate) {
+      periods[0].startDate = new Date('2000-01-01T00:00:00.000Z');
+    }
     return periodPagination;
   }
 
@@ -168,9 +183,9 @@ export class PeriodsService {
     const period = await this.periodModel.findById(_id);
     if (!period) throw new ApiException(errorMessages.PERIOD_NOT_FOUND);
 
-    const { name, endDate } = data;
+    const { name, endDate, attestationsTxHash } = data;
 
-    if (!name && !endDate)
+    if (!name && !endDate && !attestationsTxHash)
       throw new ApiException(
         errorMessages.UPDATE_PERIOD_NAME_OR_END_DATE_MUST_BE_SPECIFIED,
       );
@@ -204,6 +219,14 @@ export class PeriodsService {
       );
 
       period.endDate = newEndDate;
+    }
+
+    if (attestationsTxHash) {
+      eventLogMessages.push(
+        `Updated the transaction hash of period "${period.name}" to "${attestationsTxHash}"`,
+      );
+
+      period.attestationsTxHash = attestationsTxHash;
     }
 
     await period.save();
@@ -414,6 +437,7 @@ export class PeriodsService {
 
     const periodDetails = {
       ...period,
+      startDate: previousPeriodEndDate,
       numberOfPraise,
       receivers,
       givers,

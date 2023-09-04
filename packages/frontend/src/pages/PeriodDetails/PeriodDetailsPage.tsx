@@ -17,6 +17,7 @@ import {
   faBalanceScaleLeft,
   faCog,
   faChartBar,
+  faReceipt,
 } from '@fortawesome/free-solid-svg-icons';
 import React, { Suspense } from 'react';
 import {
@@ -33,6 +34,8 @@ import { QuantifierMessage } from './components/QuantifierMessage';
 import { Box } from '@/components/ui/Box';
 import { LoadPlaceholder } from '@/components/LoadPlaceholder';
 import { PeriodStatusType } from '@/model/periods/enums/period-status-type.enum';
+import Attestations from './components/Attestations';
+import { CurrentCommunity } from '../../model/community/community';
 
 const QuantifierTable = React.lazy(
   () => import('./components/QuantifierTable')
@@ -51,16 +54,19 @@ const PeriodDetailsHeadFallback = (): JSX.Element => {
 };
 
 export const PeriodDetailsPage = (): JSX.Element | null => {
+  // Hooks
   const { periodId } = useParams<PeriodPageParams>();
   const detailsResponse = useLoadSinglePeriodDetails(periodId); // Load additional period details
+  const { path, url } = useRouteMatch();
+
+  // Global state
   const period = useRecoilValue(SinglePeriod(periodId));
   const activeUserId = useRecoilValue(ActiveUserId);
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
-  const { path, url } = useRouteMatch();
+  const community = useRecoilValue(CurrentCommunity);
 
   usePeriodQuantifierPraise(periodId, activeUserId || '');
 
-  // if (!detailsResponse || !period || !periodQuantifierPraise) return null;
   if (!detailsResponse || !period) return null;
 
   return (
@@ -117,6 +123,15 @@ export const PeriodDetailsPage = (): JSX.Element | null => {
                 replace
                 rounded
               />
+              {community?.features?.attestations && (
+                <NavItem
+                  to={`${url}/attestations`}
+                  description="Attestations"
+                  icon={faReceipt}
+                  replace
+                  rounded
+                />
+              )}
             </ul>
           </SubPageNav>
         </div>
@@ -124,35 +139,26 @@ export const PeriodDetailsPage = (): JSX.Element | null => {
         <Box className="px-0">
           <Suspense fallback={null}>
             <Switch>
+              <Route path={`${path}/attestations`}>
+                <Attestations />
+              </Route>
               <Route path={`${path}/analytics`}>
-                <Suspense fallback={null}>
-                  <Analytics />
-                </Suspense>
+                <Analytics />
               </Route>
               <Route path={`${path}/receivers`}>
-                <Suspense fallback={null}>
-                  <GiverReceiverTable type="receiver" />
-                </Suspense>
+                <GiverReceiverTable type="receiver" />
               </Route>
               <Route path={`${path}/givers`}>
-                <Suspense fallback={null}>
-                  <GiverReceiverTable type="giver" />
-                </Suspense>
+                <GiverReceiverTable type="giver" />
               </Route>
               <Route path={`${path}/quantifiers`}>
-                <Suspense fallback={null}>
-                  <QuantifierTable />
-                </Suspense>
+                <QuantifierTable />
               </Route>
               <Route path={`${path}/settings`}>
-                <Suspense fallback={null}>
-                  <PeriodSettingsForm
-                    periodId={periodId}
-                    disabled={
-                      period.status !== PeriodStatusType.OPEN || !isAdmin
-                    }
-                  />
-                </Suspense>
+                <PeriodSettingsForm
+                  periodId={periodId}
+                  disabled={period.status !== PeriodStatusType.OPEN || !isAdmin}
+                />
               </Route>
               <Route path={`${path}`}>
                 <Redirect to={`${url}/receivers`} />

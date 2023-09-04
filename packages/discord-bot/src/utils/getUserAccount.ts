@@ -67,15 +67,11 @@ export const getUserAccount = async (
     .then((res) => res.data.filter((acc) => acc.platform === 'DISCORD'))
     .catch(() => undefined);
 
-  try {
-    if (!data || !data.length) {
-      return await createUserAccount(user, host);
-    } else {
-      return await updateUserAccount(data[0], user, host);
-    }
-  } catch (e) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    console.log((e as any).data);
-    throw e;
+  if (!data || !data.length) {
+    return await createUserAccount(user, host);
+  } else {
+    return await updateUserAccount(data[0], user, host);
   }
+  // No console.log please
+  // console.log((e as any).data);
 };
