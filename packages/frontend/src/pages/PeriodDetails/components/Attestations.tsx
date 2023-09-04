@@ -76,7 +76,7 @@ const Attestations = (): JSX.Element | null => {
         {period?.attestationsTxHash && chain?.id === ETH_CHAIN_ID && (
           <AttestationsDetailBox />
         )}
-        {period?.attestationsTxHash && chain?.id !== ETH_CHAIN_ID && (
+        {chain?.id !== ETH_CHAIN_ID && (
           <div className="flex flex-col items-start gap-5">
             Connect to Optimism to create or view attestations.
             <SwitchNetworkButton />
