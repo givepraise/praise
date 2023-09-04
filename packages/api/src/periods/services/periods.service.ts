@@ -27,7 +27,6 @@ import {
   UserAccount,
   UserAccountSchema,
 } from '../../useraccounts/schemas/useraccounts.schema';
-import { forEach } from 'lodash';
 
 @Injectable({ scope: Scope.REQUEST })
 export class PeriodsService {
