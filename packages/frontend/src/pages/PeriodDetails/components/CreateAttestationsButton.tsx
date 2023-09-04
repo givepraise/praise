@@ -20,7 +20,7 @@ export function CreateAttestationsButton({
   // Hooks
   const { periodId } = useParams<PeriodPageParams>();
   const { address } = useAccount();
-  const { safe } = useSafe();
+  const { safe, safeError } = useSafe();
 
   // Global state
   const period = useRecoilValue(SinglePeriod(periodId));
@@ -43,6 +43,19 @@ export function CreateAttestationsButton({
   }
 
   const disabled = !userId || !address;
+
+  if (safeError) {
+    return (
+      <div>
+        <div>
+          <strong>Error:</strong> {safeError.message}
+        </div>
+        <div>
+          Make sure the community creator address is valid Safe account address.
+        </div>
+      </div>
+    );
+  }
 
   if (address && typeof isOwner === 'undefined') {
     return (
