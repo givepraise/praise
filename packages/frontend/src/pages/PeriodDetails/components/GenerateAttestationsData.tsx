@@ -6,29 +6,29 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useEffect, useState } from 'react';
 import { useReport } from '../../../model/report/hooks/use-report.hook';
-import { PeriodDates } from '../../../model/report/util/get-period-dates-config';
 import { useReportRunReturn } from '../../../model/report/types/use-report-run-return.type';
 import { objectToQs } from '../../../utils/querystring';
 import { Link } from 'react-router-dom';
+import { useRecoilValue } from 'recoil';
+import { SinglePeriod } from '../../../model/periods/periods';
 
 type GenerateAttestationsDataProps = {
   periodId: string;
-  periodDates: PeriodDates;
   manifestUrl: string;
   done: (result: useReportRunReturn | undefined) => void;
 };
 
 export function GenerateAttestationsData({
   periodId,
-  periodDates,
   manifestUrl,
   done,
 }: GenerateAttestationsDataProps): JSX.Element {
+  const period = useRecoilValue(SinglePeriod(periodId));
   const report = useReport({
     manifestUrl,
     periodId,
-    startDate: periodDates.startDate,
-    endDate: periodDates.endDate,
+    startDate: period?.startDate,
+    endDate: period?.endDate,
   });
   const [data, setData] = useState<useReportRunReturn | undefined>(undefined);
 
@@ -60,8 +60,8 @@ export function GenerateAttestationsData({
 
   const reportUrl = `/reports/run?${objectToQs({
     manifestUrl,
-    startDate: periodDates.startDate,
-    endDate: periodDates.endDate,
+    startDate: period?.startDate || '',
+    endDate: period?.endDate || '',
   })}`;
 
   return (
