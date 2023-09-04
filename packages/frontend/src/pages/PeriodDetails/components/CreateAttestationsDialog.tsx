@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { useRecoilValue } from 'recoil';
 import { Parser } from '@json2csv/plainjs';
 
 import { Dialog } from '@headlessui/react';
@@ -9,11 +8,6 @@ import { faReceipt, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { Button } from '@/components/ui/Button';
 import { useSafe } from '../../../model/safe/hooks/useSafe';
 import {
-  getPeriodDatesConfig,
-  PeriodDates,
-} from '../../../model/report/util/get-period-dates-config';
-import {
-  AllPeriods,
   PeriodPageParams,
   useUpdatePeriod,
 } from '../../../model/periods/periods';
@@ -33,7 +27,6 @@ export function CreateAttestationsDialog({
 }: CreateAttestationsDialogProps): JSX.Element | null {
   // Hooks
   const { periodId } = useParams<PeriodPageParams>();
-  const periods = useRecoilValue(AllPeriods);
   const { owners, threshold } = useSafe();
 
   const { createAttestationsTransaction, safeTransactionState } = useEas();
@@ -41,17 +34,11 @@ export function CreateAttestationsDialog({
   const { updatePeriod } = useUpdatePeriod();
 
   // Local state
-  const [periodDates, setPeriodDates] = useState<PeriodDates>();
   const [attestationReportData, setAttestationReportData] =
     useState<useReportRunReturn>();
   const [attestationCsv, setAttestationCsv] = useState<string>();
 
   // Effects
-  function loadPeriodDates(): void {
-    if (!periods) return;
-    setPeriodDates(getPeriodDatesConfig(periods, periodId));
-  }
-
   function saveTransactionHash(): void {
     if (
       !safeTransactionState?.txHash ||
@@ -86,7 +73,6 @@ export function CreateAttestationsDialog({
     setAttestationCsv(csv);
   }
 
-  useEffect(loadPeriodDates, [periods, periodId]);
   useEffect(saveTransactionHash, [
     safeTransactionState?.txHash,
     safeTransactionState?.status,
@@ -95,8 +81,6 @@ export function CreateAttestationsDialog({
     onClose,
   ]);
   useEffect(createAttestationCsv, [attestationReportData, periodId]);
-
-  if (!periodDates) return null;
 
   return (
     <div className="flex items-center justify-center min-h-screen">
@@ -120,7 +104,6 @@ export function CreateAttestationsDialog({
             <div className="flex flex-col justify-center gap-5 p-10 text-center border border-black">
               <GenerateAttestationsData
                 periodId={periodId}
-                periodDates={periodDates}
                 manifestUrl={ATTESTATION_REPORT_MANIFEST_URL}
                 done={(result): void => {
                   if (!result) return;
