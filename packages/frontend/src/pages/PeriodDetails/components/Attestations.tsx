@@ -11,6 +11,7 @@ import { ETH_CHAIN_ID } from '../../../model/eth/eth.constants';
 import { SwitchNetworkButton } from './SwitchNetworkButton';
 import { EasContextProvider } from '../../../model/eas/components/EasContextProvider';
 import { ATTESTATION_SCHEMA_UID } from '../../../model/eas/eas.constants';
+import { CurrentCommunity } from '../../../model/community/community';
 
 const Attestations = (): JSX.Element | null => {
   // Hooks
@@ -22,7 +23,10 @@ const Attestations = (): JSX.Element | null => {
   // Local state
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  if (!period || !chain) {
+  // Global state
+  const community = useRecoilValue(CurrentCommunity);
+
+  if (!period || !chain || !community?.features.attestations) {
     return null;
   }
 

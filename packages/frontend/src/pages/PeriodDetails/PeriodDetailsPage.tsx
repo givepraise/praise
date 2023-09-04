@@ -35,6 +35,7 @@ import { Box } from '@/components/ui/Box';
 import { LoadPlaceholder } from '@/components/LoadPlaceholder';
 import { PeriodStatusType } from '@/model/periods/enums/period-status-type.enum';
 import Attestations from './components/Attestations';
+import { CurrentCommunity } from '../../model/community/community';
 
 const QuantifierTable = React.lazy(
   () => import('./components/QuantifierTable')
@@ -62,6 +63,7 @@ export const PeriodDetailsPage = (): JSX.Element | null => {
   const period = useRecoilValue(SinglePeriod(periodId));
   const activeUserId = useRecoilValue(ActiveUserId);
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
+  const community = useRecoilValue(CurrentCommunity);
 
   usePeriodQuantifierPraise(periodId, activeUserId || '');
 
@@ -121,13 +123,15 @@ export const PeriodDetailsPage = (): JSX.Element | null => {
                 replace
                 rounded
               />
-              <NavItem
-                to={`${url}/attestations`}
-                description="Attestations"
-                icon={faReceipt}
-                replace
-                rounded
-              />
+              {community?.features?.attestations && (
+                <NavItem
+                  to={`${url}/attestations`}
+                  description="Attestations"
+                  icon={faReceipt}
+                  replace
+                  rounded
+                />
+              )}
             </ul>
           </SubPageNav>
         </div>
