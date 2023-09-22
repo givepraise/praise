@@ -1,4 +1,5 @@
 export type Attestation = {
+  username: string;
   period: string;
   received_score: string;
   given_score: string;

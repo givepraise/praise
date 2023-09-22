@@ -9,7 +9,6 @@ import { useSigner } from '../../wagmi/hooks/useSigner';
 import { SafeContext } from '../types/use-safe-return';
 import { useRecoilValue } from 'recoil';
 import { CurrentCommunity } from '../../community/community';
-import { toast } from 'react-hot-toast';
 
 export const ReactSafeContext = React.createContext<SafeContext | undefined>(
   undefined
@@ -131,7 +130,6 @@ export const SafeContextProvider: React.FC<SafeProviderProps> = ({
           safe: undefined,
           safeError: error as Error,
         }));
-        toast.error('Could not initialize Safe instance');
         console.error(error);
       }
     })();

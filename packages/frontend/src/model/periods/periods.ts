@@ -159,9 +159,11 @@ export const SinglePeriodByDate = selectorFamily({
     ({ get }): PeriodDetailsDto | undefined => {
       const allPeriods = get(AllPeriods);
       if (!allPeriods || !anyDate) return undefined;
-      return allPeriods
-        .slice()
-        .reverse()
+
+      return [...allPeriods]
+        .sort((a, b) => {
+          return new Date(a.endDate).getTime() - new Date(b.endDate).getTime();
+        })
         .find((period) => new Date(period.endDate) > new Date(anyDate));
     },
 });

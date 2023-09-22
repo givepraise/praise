@@ -111,7 +111,7 @@ export class CommunityController {
   })
   @UseInterceptors(MongooseClassSerializerInterceptor(Community))
   async current(@Req() req: Request): Promise<Community> {
-    return this.communityService.findOne({ host: req.hostname });
+    return this.communityService.findOne({ hostname: req.hostname });
   }
 
   @Get(':id')

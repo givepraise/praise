@@ -56,6 +56,7 @@ export function CreateAttestationsDialog({
     const csvObjects: Attestation[] = [];
     for (const attestation of attestationReportData.rows) {
       csvObjects.push({
+        username: attestation.users_username,
         period: periodId,
         received_score: attestation.total_received_praise_score,
         given_score: attestation.total_given_praise_score,
