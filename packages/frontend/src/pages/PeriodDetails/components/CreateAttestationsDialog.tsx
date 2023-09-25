@@ -58,14 +58,14 @@ export function CreateAttestationsDialog({
       csvObjects.push({
         period: periodId,
         username: attestation.users_username,
-        received_score: attestation.total_received_praise_score,
-        given_score: attestation.total_given_praise_score,
-        top_10_receiver: attestation.top_10_receiver,
-        top_50_receiver: attestation.top_50_receiver,
-        top_100_receiver: attestation.top_100_receiver,
-        top_10_giver: attestation.top_10_giver,
-        top_50_giver: attestation.top_50_giver,
-        top_100_giver: attestation.top_100_giver,
+        received_score: attestation.total_received_praise_score.toString(),
+        given_score: attestation.total_given_praise_score.toString(),
+        top_10_receiver: attestation.top_10_receiver.toString(),
+        top_50_receiver: attestation.top_50_receiver.toString(),
+        top_100_receiver: attestation.top_100_receiver.toString(),
+        top_10_giver: attestation.top_10_giver.toString(),
+        top_50_giver: attestation.top_50_giver.toString(),
+        top_100_giver: attestation.top_100_giver.toString(),
         recipient: attestation.users_identityEthAddress,
       });
     }
