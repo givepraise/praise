@@ -58,6 +58,7 @@ export function CreateAttestationsDialog({
       csvObjects.push({
         period: periodId,
         username: attestation.users_username,
+        quantifier: attestation.quantifier.toString(),
         received_score: attestation.total_received_praise_score.toString(),
         given_score: attestation.total_given_praise_score.toString(),
         top_10_receiver: attestation.top_10_receiver.toString(),
