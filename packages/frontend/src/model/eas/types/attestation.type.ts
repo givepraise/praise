@@ -1,6 +1,7 @@
 export type Attestation = {
   username: string;
   period: string;
+  quantifier: string;
   received_score: string;
   given_score: string;
   top_10_receiver: string;
