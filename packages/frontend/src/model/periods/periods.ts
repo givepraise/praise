@@ -89,7 +89,7 @@ export const AllPeriods = atom<PeriodDetailsDto[]>({
               response.data as PeriodPaginatedResponseDto;
             const periods = paginatedResponse.docs;
             if (Array.isArray(periods) && periods.length > 0) {
-              return periods;
+              return periods.slice().reverse(); // Latest period first
             }
           }
           return [];
