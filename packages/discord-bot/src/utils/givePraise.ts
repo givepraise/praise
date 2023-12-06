@@ -103,23 +103,30 @@ export const givePraise = async (
       ? process.env?.FRONTEND_URL || 'undefined:/'
       : `https://${host}`;
 
-  await Promise.all(
-    praiseItems.map(async (praise) => {
-      await sendReceiverDM(
-        praise._id,
-        receivers.filter(
-          (receiver) =>
-            receiver.userAccount.accountId === praise.receiver.accountId
-        )[0],
-        member,
-        reason,
-        responseUrl,
-        host,
-        hostUrl,
-        interaction.channelId
-      );
-    })
-  );
+  const praiseNotificationsEnabled = (await getSetting(
+    'DISCORD_BOT_PRAISE_NOTIFICATIONS_ENABLED',
+    host
+  )) as boolean;
+
+  if (praiseNotificationsEnabled) {
+    await Promise.all(
+      praiseItems.map(async (praise) => {
+        await sendReceiverDM(
+          praise._id,
+          receivers.filter(
+            (receiver) =>
+              receiver.userAccount.accountId === praise.receiver.accountId
+          )[0],
+          member,
+          reason,
+          responseUrl,
+          host,
+          hostUrl,
+          interaction.channelId
+        );
+      })
+    );
+  }
 
   const warningMsgParts: string[] = [];
 
