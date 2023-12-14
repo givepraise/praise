@@ -3,257 +3,256 @@
  * Do not make direct changes to the file.
  */
 
-
 export interface paths {
-  "/api/activate": {
+  '/api/activate': {
     /** Activate a user account in order to be able to give praise and receive rewards. Activation a user account creates a new User object or adds user account to User if it already exists. */
-    post: operations["ActivateController_activate"];
+    post: operations['ActivateController_activate'];
   };
-  "/api/users/export/json": {
+  '/api/users/export/json': {
     /** Export users document to json */
-    get: operations["UsersController_exportJson"];
+    get: operations['UsersController_exportJson'];
   };
-  "/api/users/export/csv": {
+  '/api/users/export/csv': {
     /** Export users document to csv */
-    get: operations["UsersController_exportCsv"];
+    get: operations['UsersController_exportCsv'];
   };
-  "/api/users/export/parquet": {
+  '/api/users/export/parquet': {
     /** Export users document to parquet */
-    get: operations["UsersController_exportParquet"];
+    get: operations['UsersController_exportParquet'];
   };
-  "/api/users": {
-    get: operations["UsersController_findAll"];
+  '/api/users': {
+    get: operations['UsersController_findAll'];
   };
-  "/api/users/{id}": {
-    get: operations["UsersController_findOne"];
+  '/api/users/{id}': {
+    get: operations['UsersController_findOne'];
     /** Updates a user */
-    patch: operations["UsersController_update"];
+    patch: operations['UsersController_update'];
   };
-  "/api/users/{id}/addRole": {
-    patch: operations["UsersController_addRole"];
+  '/api/users/{id}/addRole': {
+    patch: operations['UsersController_addRole'];
   };
-  "/api/users/{id}/removeRole": {
-    patch: operations["UsersController_removeRole"];
+  '/api/users/{id}/removeRole': {
+    patch: operations['UsersController_removeRole'];
   };
-  "/api/periods/export/json": {
+  '/api/periods/export/json': {
     /** Export periods document to json */
-    get: operations["PeriodsController_exportJson"];
+    get: operations['PeriodsController_exportJson'];
   };
-  "/api/periods/export/csv": {
+  '/api/periods/export/csv': {
     /** Export periods document to csv */
-    get: operations["PeriodsController_exportCsv"];
+    get: operations['PeriodsController_exportCsv'];
   };
-  "/api/periods/export/parquet": {
+  '/api/periods/export/parquet': {
     /** Export periods document to parquet */
-    get: operations["PeriodsController_exportParquet"];
+    get: operations['PeriodsController_exportParquet'];
   };
-  "/api/periods": {
+  '/api/periods': {
     /** List all periods */
-    get: operations["PeriodsController_findAllPaginated"];
+    get: operations['PeriodsController_findAllPaginated'];
     /** Create a new period */
-    post: operations["PeriodsController_create"];
+    post: operations['PeriodsController_create'];
   };
-  "/api/periods/{id}": {
+  '/api/periods/{id}': {
     /** Find period by id */
-    get: operations["PeriodsController_findOne"];
+    get: operations['PeriodsController_findOne'];
     /** Update a period */
-    patch: operations["PeriodsController_update"];
+    patch: operations['PeriodsController_update'];
   };
-  "/api/periods/{id}/close": {
+  '/api/periods/{id}/close': {
     /** Close a period */
-    patch: operations["PeriodsController_close"];
+    patch: operations['PeriodsController_close'];
   };
-  "/api/periods/{id}/praise": {
+  '/api/periods/{id}/praise': {
     /** Fetch all Praise in a period */
-    get: operations["PeriodsController_praise"];
+    get: operations['PeriodsController_praise'];
   };
-  "/api/periods/{periodId}/praise/receiver/{receiverId}": {
+  '/api/periods/{periodId}/praise/receiver/{receiverId}': {
     /** Fetch all Praise in a period for a given receiver */
-    get: operations["PeriodsController_praiseByReceiver"];
+    get: operations['PeriodsController_praiseByReceiver'];
   };
-  "/api/periods/{periodId}/praise/giver/{giverId}": {
+  '/api/periods/{periodId}/praise/giver/{giverId}': {
     /** Fetch all Praise in a period for a given giver */
-    get: operations["PeriodsController_praiseByGiver"];
+    get: operations['PeriodsController_praiseByGiver'];
   };
-  "/api/periods/{periodId}/praise/quantifier/{quantifierId}": {
+  '/api/periods/{periodId}/praise/quantifier/{quantifierId}': {
     /** Fetch all Praise in a period for a given quantifier */
-    get: operations["PeriodsController_praiseByQuantifier"];
+    get: operations['PeriodsController_praiseByQuantifier'];
   };
-  "/api/periods/{id}/verifyQuantifierPoolSize": {
+  '/api/periods/{id}/verifyQuantifierPoolSize': {
     /** Verify quantifier pool size */
-    get: operations["PeriodsController_verifyQuantifierPoolSize"];
+    get: operations['PeriodsController_verifyQuantifierPoolSize'];
   };
-  "/api/periods/{id}/assignQuantifiers": {
+  '/api/periods/{id}/assignQuantifiers': {
     /** Assign quantifiers to period */
-    patch: operations["PeriodsController_assignQuantifiers"];
+    patch: operations['PeriodsController_assignQuantifiers'];
   };
-  "/api/periods/{id}/replaceQuantifier": {
+  '/api/periods/{id}/replaceQuantifier': {
     /** Replace quantifier in period */
-    patch: operations["PeriodsController_replaceQuantifier"];
+    patch: operations['PeriodsController_replaceQuantifier'];
   };
-  "/api/event-log": {
+  '/api/event-log': {
     /** List event logs, paginated results */
-    get: operations["EventLogController_findAllPaginated"];
+    get: operations['EventLogController_findAllPaginated'];
   };
-  "/api/event-log/types": {
+  '/api/event-log/types': {
     /** List event log types */
-    get: operations["EventLogController_types"];
+    get: operations['EventLogController_types'];
   };
-  "/api/settings": {
+  '/api/settings': {
     /** List all settings. */
-    get: operations["SettingsController_findAll"];
+    get: operations['SettingsController_findAll'];
   };
-  "/api/settings/{id}": {
+  '/api/settings/{id}': {
     /** Get a setting. */
-    get: operations["SettingsController_findOne"];
+    get: operations['SettingsController_findOne'];
     /** Set a value for a setting. */
-    patch: operations["SettingsController_set"];
+    patch: operations['SettingsController_set'];
   };
-  "/api/settings/{id}/upload": {
+  '/api/settings/{id}/upload': {
     /** Upload a file for a setting */
-    patch: operations["SettingsController_setWithUpload"];
+    patch: operations['SettingsController_setWithUpload'];
   };
-  "/api/settings/uploads/{file}": {
+  '/api/settings/uploads/{file}': {
     /** Serve an uploaded settings file. */
-    get: operations["SettingsController_serveUpload"];
+    get: operations['SettingsController_serveUpload'];
   };
-  "/api/periods/{periodId}/settings": {
+  '/api/periods/{periodId}/settings': {
     /** List all period settings. */
-    get: operations["PeriodSettingsController_findAll"];
+    get: operations['PeriodSettingsController_findAll'];
   };
-  "/api/periods/{periodId}/settings/{settingId}": {
+  '/api/periods/{periodId}/settings/{settingId}': {
     /** Get a period setting. */
-    get: operations["PeriodSettingsController_findOne"];
+    get: operations['PeriodSettingsController_findOne'];
     /** Set value for a period setting. */
-    patch: operations["PeriodSettingsController_set"];
+    patch: operations['PeriodSettingsController_set'];
   };
-  "/api/praise": {
+  '/api/praise': {
     /** List praise items, paginated results */
-    get: operations["PraiseController_findAllPaginated"];
+    get: operations['PraiseController_findAllPaginated'];
     /** Create praise item */
-    post: operations["PraiseController_praise"];
+    post: operations['PraiseController_praise'];
   };
-  "/api/praise/export/json": {
+  '/api/praise/export/json': {
     /** Export praise document to json */
-    get: operations["PraiseController_exportJson"];
+    get: operations['PraiseController_exportJson'];
   };
-  "/api/praise/export/csv": {
+  '/api/praise/export/csv': {
     /** Export praise document to csv */
-    get: operations["PraiseController_exportCsv"];
+    get: operations['PraiseController_exportCsv'];
   };
-  "/api/praise/export/parquet": {
+  '/api/praise/export/parquet': {
     /** Export praise document to parquet */
-    get: operations["PraiseController_exportParquet"];
+    get: operations['PraiseController_exportParquet'];
   };
-  "/api/praise/{id}": {
+  '/api/praise/{id}': {
     /** Find praise item by id */
-    get: operations["PraiseController_findOne"];
+    get: operations['PraiseController_findOne'];
   };
-  "/api/praise/forward": {
+  '/api/praise/forward': {
     /** Forward praise item */
-    post: operations["PraiseController_forward"];
+    post: operations['PraiseController_forward'];
   };
-  "/api/useraccounts": {
+  '/api/useraccounts': {
     /** UserAccount list */
-    get: operations["UserAccountsController_findAll"];
+    get: operations['UserAccountsController_findAll'];
     /** Create a UserAccount */
-    post: operations["UserAccountsController_create"];
+    post: operations['UserAccountsController_create'];
   };
-  "/api/useraccounts/export/json": {
+  '/api/useraccounts/export/json': {
     /** Export userAccounts document to json */
-    get: operations["UserAccountsController_exportJson"];
+    get: operations['UserAccountsController_exportJson'];
   };
-  "/api/useraccounts/export/csv": {
+  '/api/useraccounts/export/csv': {
     /** Export userAccounts document to csv */
-    get: operations["UserAccountsController_exportCsv"];
+    get: operations['UserAccountsController_exportCsv'];
   };
-  "/api/useraccounts/export/parquet": {
+  '/api/useraccounts/export/parquet': {
     /** Export userAccounts document to parquet */
-    get: operations["UserAccountsController_exportParquet"];
+    get: operations['UserAccountsController_exportParquet'];
   };
-  "/api/useraccounts/{id}": {
+  '/api/useraccounts/{id}': {
     /** Get a UserAccount. */
-    get: operations["UserAccountsController_findOne"];
+    get: operations['UserAccountsController_findOne'];
     /** Update UserAccount */
-    patch: operations["UserAccountsController_update"];
+    patch: operations['UserAccountsController_update'];
   };
-  "/api/api-key": {
+  '/api/api-key': {
     /** List all API keys */
-    get: operations["ApiKeyController_findAll"];
+    get: operations['ApiKeyController_findAll'];
     /** Create API key */
-    post: operations["ApiKeyController_createApiKey"];
+    post: operations['ApiKeyController_createApiKey'];
   };
-  "/api/api-key/{id}": {
+  '/api/api-key/{id}': {
     /** Get API key by ID */
-    get: operations["ApiKeyController_findOne"];
+    get: operations['ApiKeyController_findOne'];
     /** Update API key description */
-    put: operations["ApiKeyController_updateApiKeyDescription"];
+    put: operations['ApiKeyController_updateApiKeyDescription'];
     /** Revoke API key */
-    delete: operations["ApiKeyController_revokeApiKey"];
+    delete: operations['ApiKeyController_revokeApiKey'];
   };
-  "/api/auth/eth-signature/nonce": {
+  '/api/auth/eth-signature/nonce': {
     /** Generates a nonce for the user and returns it */
-    post: operations["EthSignatureController_nonce"];
+    post: operations['EthSignatureController_nonce'];
   };
-  "/api/auth/eth-signature/login": {
+  '/api/auth/eth-signature/login': {
     /** Verifies a user's signature and returns a JWT token */
-    post: operations["EthSignatureController_login"];
+    post: operations['EthSignatureController_login'];
   };
-  "/api/auth/eth-signature/refresh": {
+  '/api/auth/eth-signature/refresh': {
     /** Verifies a refreshToken  and returns a JWT token */
-    post: operations["EthSignatureController_token"];
+    post: operations['EthSignatureController_token'];
   };
-  "/api/communities": {
-    get: operations["CommunityController_findAll"];
+  '/api/communities': {
+    get: operations['CommunityController_findAll'];
     /** Create a new community */
-    post: operations["CommunityController_create"];
+    post: operations['CommunityController_create'];
   };
-  "/api/communities/{id}": {
-    get: operations["CommunityController_findOne"];
+  '/api/communities/{id}': {
+    get: operations['CommunityController_findOne'];
     /** Update community */
-    patch: operations["CommunityController_update"];
+    patch: operations['CommunityController_update'];
   };
-  "/api/communities/isNameAvailable": {
-    get: operations["CommunityController_isNameAvailable"];
+  '/api/communities/isNameAvailable': {
+    get: operations['CommunityController_isNameAvailable'];
   };
-  "/api/communities/current": {
-    get: operations["CommunityController_current"];
+  '/api/communities/current': {
+    get: operations['CommunityController_current'];
   };
-  "/api/communities/{id}/discord/link": {
+  '/api/communities/{id}/discord/link': {
     /** Link discord to community */
-    patch: operations["CommunityController_linkDiscord"];
+    patch: operations['CommunityController_linkDiscord'];
   };
-  "/api/quantifications/export/json": {
+  '/api/quantifications/export/json': {
     /** Export quantifications document to json */
-    get: operations["QuantificationsController_exportJson"];
+    get: operations['QuantificationsController_exportJson'];
   };
-  "/api/quantifications/export/csv": {
+  '/api/quantifications/export/csv': {
     /** Export quantifications document to csv */
-    get: operations["QuantificationsController_exportCsv"];
+    get: operations['QuantificationsController_exportCsv'];
   };
-  "/api/quantifications/export/parquet": {
+  '/api/quantifications/export/parquet': {
     /** Export quantifications document to parquet */
-    get: operations["QuantificationsController_exportParquet"];
+    get: operations['QuantificationsController_exportParquet'];
   };
-  "/api/quantifications/multiple": {
+  '/api/quantifications/multiple': {
     /** Quantify multiple praise items */
-    patch: operations["QuantificationsController_quantifyMultiple"];
+    patch: operations['QuantificationsController_quantifyMultiple'];
   };
-  "/api/quantifications/{id}": {
+  '/api/quantifications/{id}': {
     /** Quantify praise item by id */
-    patch: operations["QuantificationsController_quantify"];
+    patch: operations['QuantificationsController_quantify'];
   };
-  "/api/reports": {
+  '/api/reports': {
     /** List all report manifests */
-    get: operations["ReportsController_listAllReports"];
+    get: operations['ReportsController_listAllReports'];
   };
-  "/api/reports/receiverBio/{userAccountId}": {
+  '/api/reports/receiverBio/{userAccountId}': {
     /** Get one AI generated receiver bio */
-    get: operations["ReportsController_receiverBio"];
+    get: operations['ReportsController_receiverBio'];
   };
-  "/api/reports/receiverLabels/{userAccountId}": {
+  '/api/reports/receiverLabels/{userAccountId}': {
     /** AI generated labels describing a praise receiver. */
-    get: operations["ReportsController_receiverLabels"];
+    get: operations['ReportsController_receiverLabels'];
   };
 }
 
@@ -278,7 +277,17 @@ export interface components {
       rewardsEthAddress: string;
       /** @example darth */
       username: string;
-      roles: readonly ("USER" | "QUANTIFIER" | "FORWARDER" | "ADMIN" | "ROOT" | "API_KEY_READWRITE" | "API_KEY_READ" | "API_KEY_DISCORD_BOT" | "API_KEY_SETUP_WEB")[];
+      roles: readonly (
+        | 'USER'
+        | 'QUANTIFIER'
+        | 'FORWARDER'
+        | 'ADMIN'
+        | 'ROOT'
+        | 'API_KEY_READWRITE'
+        | 'API_KEY_READ'
+        | 'API_KEY_DISCORD_BOT'
+        | 'API_KEY_SETUP_WEB'
+      )[];
       /** Format: date-time */
       createdAt: string;
       /** Format: date-time */
@@ -287,7 +296,7 @@ export interface components {
     UserAccount: {
       /** @example 63b428f7d9ca4f6ff5370d05 */
       _id: string;
-      user?: components["schemas"]["UserNoUserAccountsDto"];
+      user?: components['schemas']['UserNoUserAccountsDto'];
       /** @example 098098098098098 */
       accountId: string;
       /** @example darth#6755 */
@@ -310,8 +319,18 @@ export interface components {
       rewardsEthAddress: string;
       /** @example darth */
       username: string;
-      roles: readonly ("USER" | "QUANTIFIER" | "FORWARDER" | "ADMIN" | "ROOT" | "API_KEY_READWRITE" | "API_KEY_READ" | "API_KEY_DISCORD_BOT" | "API_KEY_SETUP_WEB")[];
-      accounts: readonly (components["schemas"]["UserAccount"])[];
+      roles: readonly (
+        | 'USER'
+        | 'QUANTIFIER'
+        | 'FORWARDER'
+        | 'ADMIN'
+        | 'ROOT'
+        | 'API_KEY_READWRITE'
+        | 'API_KEY_READ'
+        | 'API_KEY_DISCORD_BOT'
+        | 'API_KEY_SETUP_WEB'
+      )[];
+      accounts: readonly components['schemas']['UserAccount'][];
       /** Format: date-time */
       createdAt: string;
       /** Format: date-time */
@@ -326,8 +345,18 @@ export interface components {
       rewardsEthAddress: string;
       /** @example darth */
       username: string;
-      roles: readonly ("USER" | "QUANTIFIER" | "FORWARDER" | "ADMIN" | "ROOT" | "API_KEY_READWRITE" | "API_KEY_READ" | "API_KEY_DISCORD_BOT" | "API_KEY_SETUP_WEB")[];
-      accounts: readonly (components["schemas"]["UserAccount"])[];
+      roles: readonly (
+        | 'USER'
+        | 'QUANTIFIER'
+        | 'FORWARDER'
+        | 'ADMIN'
+        | 'ROOT'
+        | 'API_KEY_READWRITE'
+        | 'API_KEY_READ'
+        | 'API_KEY_DISCORD_BOT'
+        | 'API_KEY_SETUP_WEB'
+      )[];
+      accounts: readonly components['schemas']['UserAccount'][];
       /** Format: date-time */
       createdAt: string;
       /** Format: date-time */
@@ -345,7 +374,16 @@ export interface components {
     };
     UpdateUserRoleInputDto: {
       /** @enum {string} */
-      role: "USER" | "QUANTIFIER" | "FORWARDER" | "ADMIN" | "ROOT" | "API_KEY_READWRITE" | "API_KEY_READ" | "API_KEY_DISCORD_BOT" | "API_KEY_SETUP_WEB";
+      role:
+        | 'USER'
+        | 'QUANTIFIER'
+        | 'FORWARDER'
+        | 'ADMIN'
+        | 'ROOT'
+        | 'API_KEY_READWRITE'
+        | 'API_KEY_READ'
+        | 'API_KEY_DISCORD_BOT'
+        | 'API_KEY_SETUP_WEB';
     };
     Period: {
       /** @example 621f802b813dbdba9eeaf7d7 */
@@ -353,7 +391,7 @@ export interface components {
       /** @example June 2021 */
       name: string;
       /** @enum {string} */
-      status: "OPEN" | "QUANTIFY" | "CLOSED";
+      status: 'OPEN' | 'QUANTIFY' | 'CLOSED';
       /** Format: date-time */
       startDate: string;
       /** Format: date-time */
@@ -384,7 +422,7 @@ export interface components {
       prevPage?: Record<string, never>;
       /** @example 3 */
       nextPage?: Record<string, never>;
-      docs: readonly (components["schemas"]["Period"])[];
+      docs: readonly components['schemas']['Period'][];
       meta?: Record<string, never>;
     };
     Quantification: {
@@ -403,12 +441,12 @@ export interface components {
       /** @example 639b178f19296ee0f2d0585d */
       praise: string;
       /**
-       * Format: date-time 
+       * Format: date-time
        * @example 2021-06-01T00:00:00.000Z
        */
       createdAt: string;
       /**
-       * Format: date-time 
+       * Format: date-time
        * @example 2021-06-01T00:00:00.000Z
        */
       updatedAt: string;
@@ -428,7 +466,7 @@ export interface components {
       finishedCount: number;
       /** @example 1 */
       praiseCount: number;
-      quantifications: (components["schemas"]["Quantification"])[];
+      quantifications: components['schemas']['Quantification'][];
     };
     PeriodDetailsGiverReceiverDto: {
       /** @example 63b428f7d9ca4f6ff5370d05 */
@@ -458,7 +496,7 @@ export interface components {
       /** @example June 2021 */
       name: string;
       /** @enum {string} */
-      status: "OPEN" | "QUANTIFY" | "CLOSED";
+      status: 'OPEN' | 'QUANTIFY' | 'CLOSED';
       /** Format: date-time */
       startDate: string;
       /** Format: date-time */
@@ -469,9 +507,9 @@ export interface components {
       createdAt: string;
       /** Format: date-time */
       updatedAt: string;
-      quantifiers?: readonly (components["schemas"]["PeriodDetailsQuantifierDto"])[];
-      givers?: readonly (components["schemas"]["PeriodDetailsGiverReceiverDto"])[];
-      receivers?: readonly (components["schemas"]["PeriodDetailsGiverReceiverDto"])[];
+      quantifiers?: readonly components['schemas']['PeriodDetailsQuantifierDto'][];
+      givers?: readonly components['schemas']['PeriodDetailsGiverReceiverDto'][];
+      receivers?: readonly components['schemas']['PeriodDetailsGiverReceiverDto'][];
       /** @example 543 */
       numberOfPraise: number;
     };
@@ -518,10 +556,10 @@ export interface components {
       sourceName: string;
       /** @example 144 */
       score: number;
-      receiver: components["schemas"]["UserAccountWithUserRefDto"];
-      giver: components["schemas"]["UserAccountWithUserRefDto"];
-      forwarder?: components["schemas"]["UserAccountWithUserRefDto"];
-      quantifications: readonly (components["schemas"]["Quantification"])[];
+      receiver: components['schemas']['UserAccountWithUserRefDto'];
+      giver: components['schemas']['UserAccountWithUserRefDto'];
+      forwarder?: components['schemas']['UserAccountWithUserRefDto'];
+      quantifications: readonly components['schemas']['Quantification'][];
       /** Format: date-time */
       createdAt: string;
       /** Format: date-time */
@@ -529,12 +567,12 @@ export interface components {
     };
     VerifyQuantifierPoolSizeDto: {
       /**
-       * @description The number of quantifiers in the pool 
+       * @description The number of quantifiers in the pool
        * @example 10
        */
       quantifierPoolSize: number;
       /**
-       * @description The number of quantifiers needed in the pool 
+       * @description The number of quantifiers needed in the pool
        * @example 10
        */
       quantifierPoolSizeNeeded: number;
@@ -560,18 +598,18 @@ export interface components {
       sourceName: string;
       /** @example 144 */
       score: number;
-      receiver: components["schemas"]["UserAccount"];
-      giver: components["schemas"]["UserAccount"];
-      forwarder?: components["schemas"]["UserAccount"];
-      quantifications: readonly (components["schemas"]["Quantification"])[];
+      receiver: components['schemas']['UserAccount'];
+      giver: components['schemas']['UserAccount'];
+      forwarder?: components['schemas']['UserAccount'];
+      quantifications: readonly components['schemas']['Quantification'][];
       /** Format: date-time */
       createdAt: string;
       /** Format: date-time */
       updatedAt: string;
     };
     ReplaceQuantifierResponseDto: {
-      praises: readonly (components["schemas"]["Praise"])[];
-      period: components["schemas"]["PeriodDetailsDto"];
+      praises: readonly components['schemas']['Praise'][];
+      period: components['schemas']['PeriodDetailsDto'];
     };
     UserAccountNoUserId: {
       /** @example 63b428f7d9ca4f6ff5370d05 */
@@ -591,7 +629,15 @@ export interface components {
     };
     EventLogType: {
       /** @enum {string} */
-      key: "PERMISSION" | "AUTHENTICATION" | "PERIOD" | "PRAISE" | "QUANTIFICATION" | "SETTING" | "USER_ACCOUNT" | "COMMUNITY";
+      key:
+        | 'PERMISSION'
+        | 'AUTHENTICATION'
+        | 'PERIOD'
+        | 'PRAISE'
+        | 'QUANTIFICATION'
+        | 'SETTING'
+        | 'USER_ACCOUNT'
+        | 'COMMUNITY';
       /** @example An action that changes user permissions */
       label: string;
       /** @example A user's permissions were changed */
@@ -600,22 +646,22 @@ export interface components {
     EventLog: {
       /** @example 621f802b813dbdba9eeaf7d7 */
       _id: string;
-      user?: components["schemas"]["User"];
-      useraccount?: components["schemas"]["UserAccountNoUserId"];
+      user?: components['schemas']['User'];
+      useraccount?: components['schemas']['UserAccountNoUserId'];
       /** @example 621f802b813dbdba9eeaf7d7 */
       apiKey?: string;
       /** @example 621f802b813dbdba9eeaf7d7 */
       period?: string;
-      type: components["schemas"]["EventLogType"];
+      type: components['schemas']['EventLogType'];
       /** @example A description of the event */
       description: string;
       /**
-       * Format: date-time 
+       * Format: date-time
        * @example 2023-03-01T22:51:20.012Z
        */
       createdAt: string;
       /**
-       * Format: date-time 
+       * Format: date-time
        * @example 2023-03-01T22:51:20.012Z
        */
       updatedAt: string;
@@ -639,7 +685,7 @@ export interface components {
       prevPage?: Record<string, never>;
       /** @example 3 */
       nextPage?: Record<string, never>;
-      docs: readonly (components["schemas"]["EventLog"])[];
+      docs: readonly components['schemas']['EventLog'][];
       meta?: Record<string, never>;
     };
     Setting: {
@@ -650,11 +696,21 @@ export interface components {
       /** @example 666 */
       value: string;
       /** @example 666 */
-      valueRealized: string | (string)[] | boolean | number | (number)[];
+      valueRealized: string | string[] | boolean | number | number[];
       /** @example 555 */
       defaultValue: string;
       /** @enum {string} */
-      type: "Integer" | "Float" | "String" | "Textarea" | "Boolean" | "IntegerList" | "StringList" | "Image" | "Radio" | "JSON";
+      type:
+        | 'Integer'
+        | 'Float'
+        | 'String'
+        | 'Textarea'
+        | 'Boolean'
+        | 'IntegerList'
+        | 'StringList'
+        | 'Image'
+        | 'Radio'
+        | 'JSON';
       /** @example Quantifiers Per Praise */
       label: string;
       /** @example How many redundant quantifications are assigned to each praise? */
@@ -674,12 +730,12 @@ export interface components {
     PeriodSetting: {
       /** @example 62291b7ea8b1619f78818524 */
       _id: string;
-      period: components["schemas"]["Period"];
-      setting: components["schemas"]["Setting"];
+      period: components['schemas']['Period'];
+      setting: components['schemas']['Setting'];
       /** @example 666 */
       value: string;
       /** @example 666 */
-      valueRealized: string | (string)[] | boolean | number | (number)[];
+      valueRealized: string | string[] | boolean | number | number[];
     };
     SetPeriodSettingDto: {
       /** @example 666 */
@@ -704,7 +760,7 @@ export interface components {
       prevPage?: Record<string, never>;
       /** @example 3 */
       nextPage?: Record<string, never>;
-      docs: readonly (components["schemas"]["Praise"])[];
+      docs: readonly components['schemas']['Praise'][];
       meta?: Record<string, never>;
     };
     PraiseCreateInputDto: {
@@ -716,8 +772,8 @@ export interface components {
       sourceId: string;
       /** @example DISCORD:Token%20Engineering%20Commons:%F0%9F%99%8F%EF%BD%9Cpraise */
       sourceName: string;
-      receiverIds: (string)[];
-      giver: components["schemas"]["UserAccount"];
+      receiverIds: string[];
+      giver: components['schemas']['UserAccount'];
       score?: number;
     };
     PraiseForwardInputDto: {
@@ -729,9 +785,9 @@ export interface components {
       sourceId: string;
       /** @example DISCORD:Token%20Engineering%20Commons:%F0%9F%99%8F%EF%BD%9Cpraise */
       sourceName: string;
-      receiverIds: (string)[];
-      giver: components["schemas"]["UserAccount"];
-      forwarder: components["schemas"]["UserAccount"];
+      receiverIds: string[];
+      giver: components['schemas']['UserAccount'];
+      forwarder: components['schemas']['UserAccount'];
       score?: number;
     };
     CreateUserAccountInputDto: {
@@ -751,7 +807,7 @@ export interface components {
     CreateUserAccountResponseDto: {
       /** @example 63b428f7d9ca4f6ff5370d05 */
       _id: string;
-      user?: components["schemas"]["UserNoUserAccountsDto"];
+      user?: components['schemas']['UserNoUserAccountsDto'];
       /** @example 098098098098098 */
       accountId: string;
       /** @example darth#6755 */
@@ -784,7 +840,7 @@ export interface components {
     UpdateUserAccountResponseDto: {
       /** @example 63b428f7d9ca4f6ff5370d05 */
       _id: string;
-      user?: components["schemas"]["UserNoUserAccountsDto"];
+      user?: components['schemas']['UserNoUserAccountsDto'];
       /** @example 098098098098098 */
       accountId: string;
       /** @example darth#6755 */
@@ -804,7 +860,16 @@ export interface components {
       /** @example My API Key */
       description: string;
       /** @enum {string} */
-      role: "USER" | "QUANTIFIER" | "FORWARDER" | "ADMIN" | "ROOT" | "API_KEY_READWRITE" | "API_KEY_READ" | "API_KEY_DISCORD_BOT" | "API_KEY_SETUP_WEB";
+      role:
+        | 'USER'
+        | 'QUANTIFIER'
+        | 'FORWARDER'
+        | 'ADMIN'
+        | 'ROOT'
+        | 'API_KEY_READWRITE'
+        | 'API_KEY_READ'
+        | 'API_KEY_DISCORD_BOT'
+        | 'API_KEY_SETUP_WEB';
     };
     CreateApiKeyResponseDto: {
       /** @example 639b178f19296ee0f2d0585d */
@@ -816,7 +881,16 @@ export interface components {
       /** @example $2b$10$hfRNI.V7ewuN/K.5eSt6oelaQ.FDj6irfUNR9wkKnL/qsNT23aE4i */
       hash: string;
       /** @enum {string} */
-      role: "USER" | "QUANTIFIER" | "FORWARDER" | "ADMIN" | "ROOT" | "API_KEY_READWRITE" | "API_KEY_READ" | "API_KEY_DISCORD_BOT" | "API_KEY_SETUP_WEB";
+      role:
+        | 'USER'
+        | 'QUANTIFIER'
+        | 'FORWARDER'
+        | 'ADMIN'
+        | 'ROOT'
+        | 'API_KEY_READWRITE'
+        | 'API_KEY_READ'
+        | 'API_KEY_DISCORD_BOT'
+        | 'API_KEY_SETUP_WEB';
       /** Format: date-time */
       createdAt: string;
       /** Format: date-time */
@@ -834,7 +908,16 @@ export interface components {
       /** @example $2b$10$hfRNI.V7ewuN/K.5eSt6oelaQ.FDj6irfUNR9wkKnL/qsNT23aE4i */
       hash: string;
       /** @enum {string} */
-      role: "USER" | "QUANTIFIER" | "FORWARDER" | "ADMIN" | "ROOT" | "API_KEY_READWRITE" | "API_KEY_READ" | "API_KEY_DISCORD_BOT" | "API_KEY_SETUP_WEB";
+      role:
+        | 'USER'
+        | 'QUANTIFIER'
+        | 'FORWARDER'
+        | 'ADMIN'
+        | 'ROOT'
+        | 'API_KEY_READWRITE'
+        | 'API_KEY_READ'
+        | 'API_KEY_DISCORD_BOT'
+        | 'API_KEY_SETUP_WEB';
       /** Format: date-time */
       createdAt: string;
       /** Format: date-time */
@@ -868,7 +951,7 @@ export interface components {
       identityEthAddress: string;
       /** @example bearer */
       tokenType: string;
-      user: components["schemas"]["User"];
+      user: components['schemas']['User'];
     };
     GenerateTokenDto: {
       /** @example eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MmIwNmY3NjU1ODA0YjE2MjllODQxNTkiLCJpZGVudGl0eUV0aEFkZHJlc3MiOiIweGEzMmFFQ2RhNzUyY0Y0RUY4OTk1NmU4M2Q2MEMwNDgzNWQ0RkE4NjciLCJyb2xlcyI6WyJVU0VSIiwiQURNSU4iXSwiaXNSZWZyZXNoIjpmYWxzZSwiaWF0IjoxNjcwMzE1OTk4LCJleHAiOjE2NzAzMTk1OTh9.qKvucMZLVbz_1TnsxaSqYX1i5CSpver6fFJTf3pABVA */
@@ -889,7 +972,7 @@ export interface components {
        *   "0x345.."
        * ]
        */
-      owners: (string)[];
+      owners: string[];
       /** @example 0980987846534 */
       discordGuildId?: string;
     };
@@ -910,7 +993,7 @@ export interface components {
        *   "0x345.."
        * ]
        */
-      owners: (string)[];
+      owners: string[];
       /** @example 0980987846534 */
       discordGuildId?: string;
       /** @example oiujoiuoo8u */
@@ -918,7 +1001,7 @@ export interface components {
       /** @example true */
       isPublic: boolean;
       /** @enum {string} */
-      discordLinkState: "NOT_SET" | "PENDING" | "ACTIVE" | "DEACTIVE";
+      discordLinkState: 'NOT_SET' | 'PENDING' | 'ACTIVE' | 'DEACTIVE';
       /**
        * @example {
        *   "attestations": true
@@ -939,7 +1022,7 @@ export interface components {
        *   "0x345.."
        * ]
        */
-      owners?: (string)[];
+      owners?: string[];
     };
     CommunityFindAllResponseDto: {
       /** @example 1200 */
@@ -960,7 +1043,7 @@ export interface components {
       prevPage?: Record<string, never>;
       /** @example 3 */
       nextPage?: Record<string, never>;
-      docs: readonly (components["schemas"]["Community"])[];
+      docs: readonly components['schemas']['Community'][];
       meta?: Record<string, never>;
     };
     IsNameAvailableResponseDto: {
@@ -978,7 +1061,7 @@ export interface components {
       duplicatePraise?: string;
     };
     QuantifyMultipleInputDto: {
-      params: components["schemas"]["QuantifyInputDto"];
+      params: components['schemas']['QuantifyInputDto'];
       /**
        * @example [
        *   "639b178f19296ee0f2d0585d",
@@ -986,59 +1069,59 @@ export interface components {
        *   "639b178f19296ee0f2d0585f"
        * ]
        */
-      praiseIds: (string)[];
+      praiseIds: string[];
     };
     ConfigurationValueItemsDto: {
       /**
-       * @description Allowed array types 
-       * @example string 
+       * @description Allowed array types
+       * @example string
        * @enum {string}
        */
-      type: "string" | "number";
+      type: 'string' | 'number';
     };
     ConfigurationValueDto: {
       /**
-       * @description Type of the setting 
-       * @example string 
+       * @description Type of the setting
+       * @example string
        * @enum {string}
        */
-      type: "string" | "number" | "boolean" | "array";
+      type: 'string' | 'number' | 'boolean' | 'array';
       /**
-       * @description Default value for the setting 
+       * @description Default value for the setting
        * @example 666
        */
-      default: number | string | boolean | (number)[] | (string)[];
+      default: number | string | boolean | number[] | string[];
       /**
-       * @description Description of the setting 
+       * @description Description of the setting
        * @example Description of the string setting
        */
       description: string;
       /**
-       * @description Markdown description of the setting 
+       * @description Markdown description of the setting
        * @example Description of the string setting
        */
       markdownDescription?: string;
       /**
-       * @description Edit presentation style 
-       * @example multiline 
+       * @description Edit presentation style
+       * @example multiline
        * @enum {string}
        */
-      editPresentation?: "multiline";
+      editPresentation?: 'multiline';
       /**
-       * @description Order of the setting 
+       * @description Order of the setting
        * @example 1
        */
       order?: number;
       /**
-       * @description Enum values for string type settings 
+       * @description Enum values for string type settings
        * @example [
        *   "left",
        *   "right"
        * ]
        */
-      enum?: (string)[];
+      enum?: string[];
       /** @description Defines the type of items for array settings */
-      items?: components["schemas"]["ConfigurationValueItemsDto"];
+      items?: components['schemas']['ConfigurationValueItemsDto'];
     };
     ReportManifestDto: {
       /** @example https://raw.githubusercontent.com/givepraise/reports/main/reports/disperse-dist-straight-curve-with-ceiling/manifest.json */
@@ -1067,16 +1150,18 @@ export interface components {
        *   "Praise receiver reports"
        * ]
        */
-      categories: (string)[];
+      categories: string[];
       /**
        * @example [
        *   "toplist"
        * ]
        */
-      keywords: (string)[];
+      keywords: string[];
       /** @description Configuration settings for the report */
       configuration: {
-        [key: string]: components["schemas"]["ConfigurationValueDto"] | undefined;
+        [key: string]:
+          | components['schemas']['ConfigurationValueDto']
+          | undefined;
       };
     };
   };
@@ -1090,24 +1175,23 @@ export interface components {
 export type external = Record<string, never>;
 
 export interface operations {
-
   /** Activate a user account in order to be able to give praise and receive rewards. Activation a user account creates a new User object or adds user account to User if it already exists. */
   ActivateController_activate: {
     requestBody: {
       content: {
-        "application/json": components["schemas"]["ActivateInputDto"];
+        'application/json': components['schemas']['ActivateInputDto'];
       };
     };
     responses: {
       /** @description The created (or updated) user. */
       200: {
         content: {
-          "application/json": components["schemas"]["User"];
+          'application/json': components['schemas']['User'];
         };
       };
       201: {
         content: {
-          "application/json": components["schemas"]["User"];
+          'application/json': components['schemas']['User'];
         };
       };
     };
@@ -1117,7 +1201,7 @@ export interface operations {
     responses: {
       200: {
         content: {
-          "application/json": string;
+          'application/json': string;
         };
       };
     };
@@ -1127,7 +1211,7 @@ export interface operations {
     responses: {
       200: {
         content: {
-          "text/csv": string;
+          'text/csv': string;
         };
       };
     };
@@ -1137,7 +1221,7 @@ export interface operations {
     responses: {
       200: {
         content: {
-          "application/octet-stream": string;
+          'application/octet-stream': string;
         };
       };
     };
@@ -1147,7 +1231,7 @@ export interface operations {
       /** @description All users */
       200: {
         content: {
-          "application/json": (components["schemas"]["User"])[];
+          'application/json': components['schemas']['User'][];
         };
       };
     };
@@ -1162,7 +1246,7 @@ export interface operations {
       /** @description A single user */
       200: {
         content: {
-          "application/json": components["schemas"]["UserWithStatsDto"];
+          'application/json': components['schemas']['UserWithStatsDto'];
         };
       };
     };
@@ -1176,14 +1260,14 @@ export interface operations {
     };
     requestBody: {
       content: {
-        "application/json": components["schemas"]["UpdateUserRequestDto"];
+        'application/json': components['schemas']['UpdateUserRequestDto'];
       };
     };
     responses: {
       /** @description Updated user */
       200: {
         content: {
-          "application/json": components["schemas"]["UserWithStatsDto"];
+          'application/json': components['schemas']['UserWithStatsDto'];
         };
       };
     };
@@ -1196,14 +1280,14 @@ export interface operations {
     };
     requestBody: {
       content: {
-        "application/json": components["schemas"]["UpdateUserRoleInputDto"];
+        'application/json': components['schemas']['UpdateUserRoleInputDto'];
       };
     };
     responses: {
       /** @description The updated user */
       200: {
         content: {
-          "application/json": components["schemas"]["UserWithStatsDto"];
+          'application/json': components['schemas']['UserWithStatsDto'];
         };
       };
     };
@@ -1216,14 +1300,14 @@ export interface operations {
     };
     requestBody: {
       content: {
-        "application/json": components["schemas"]["UpdateUserRoleInputDto"];
+        'application/json': components['schemas']['UpdateUserRoleInputDto'];
       };
     };
     responses: {
       /** @description The updated user */
       200: {
         content: {
-          "application/json": components["schemas"]["UserWithStatsDto"];
+          'application/json': components['schemas']['UserWithStatsDto'];
         };
       };
     };
@@ -1233,7 +1317,7 @@ export interface operations {
     responses: {
       200: {
         content: {
-          "application/json": string;
+          'application/json': string;
         };
       };
     };
@@ -1243,7 +1327,7 @@ export interface operations {
     responses: {
       200: {
         content: {
-          "text/csv": string;
+          'text/csv': string;
         };
       };
     };
@@ -1253,7 +1337,7 @@ export interface operations {
     responses: {
       200: {
         content: {
-          "application/octet-stream": string;
+          'application/octet-stream': string;
         };
       };
     };
@@ -1267,14 +1351,14 @@ export interface operations {
         /** @example 1 */
         page: number;
         sortColumn?: string;
-        sortType?: "asc" | "desc";
+        sortType?: 'asc' | 'desc';
       };
     };
     responses: {
       /** @description Periods */
       200: {
         content: {
-          "application/json": components["schemas"]["PeriodPaginatedResponseDto"];
+          'application/json': components['schemas']['PeriodPaginatedResponseDto'];
         };
       };
     };
@@ -1283,19 +1367,19 @@ export interface operations {
   PeriodsController_create: {
     requestBody: {
       content: {
-        "application/json": components["schemas"]["CreatePeriodInputDto"];
+        'application/json': components['schemas']['CreatePeriodInputDto'];
       };
     };
     responses: {
       /** @description Period */
       200: {
         content: {
-          "application/json": components["schemas"]["PeriodDetailsDto"];
+          'application/json': components['schemas']['PeriodDetailsDto'];
         };
       };
       201: {
         content: {
-          "application/json": components["schemas"]["PeriodDetailsDto"];
+          'application/json': components['schemas']['PeriodDetailsDto'];
         };
       };
     };
@@ -1311,7 +1395,7 @@ export interface operations {
       /** @description Period */
       200: {
         content: {
-          "application/json": components["schemas"]["PeriodDetailsDto"];
+          'application/json': components['schemas']['PeriodDetailsDto'];
         };
       };
     };
@@ -1325,14 +1409,14 @@ export interface operations {
     };
     requestBody: {
       content: {
-        "application/json": components["schemas"]["UpdatePeriodInputDto"];
+        'application/json': components['schemas']['UpdatePeriodInputDto'];
       };
     };
     responses: {
       /** @description Period */
       200: {
         content: {
-          "application/json": components["schemas"]["PeriodDetailsDto"];
+          'application/json': components['schemas']['PeriodDetailsDto'];
         };
       };
     };
@@ -1348,7 +1432,7 @@ export interface operations {
       /** @description Period */
       200: {
         content: {
-          "application/json": components["schemas"]["PeriodDetailsDto"];
+          'application/json': components['schemas']['PeriodDetailsDto'];
         };
       };
     };
@@ -1364,7 +1448,7 @@ export interface operations {
       /** @description Period Praise items */
       200: {
         content: {
-          "application/json": (components["schemas"]["PraiseWithUserAccountsWithUserRefDto"])[];
+          'application/json': components['schemas']['PraiseWithUserAccountsWithUserRefDto'][];
         };
       };
     };
@@ -1381,7 +1465,7 @@ export interface operations {
       /** @description Period Praise items */
       200: {
         content: {
-          "application/json": (components["schemas"]["PraiseWithUserAccountsWithUserRefDto"])[];
+          'application/json': components['schemas']['PraiseWithUserAccountsWithUserRefDto'][];
         };
       };
     };
@@ -1398,7 +1482,7 @@ export interface operations {
       /** @description Period Praise items */
       200: {
         content: {
-          "application/json": (components["schemas"]["PraiseWithUserAccountsWithUserRefDto"])[];
+          'application/json': components['schemas']['PraiseWithUserAccountsWithUserRefDto'][];
         };
       };
     };
@@ -1415,7 +1499,7 @@ export interface operations {
       /** @description Period Praise items */
       200: {
         content: {
-          "application/json": (components["schemas"]["PraiseWithUserAccountsWithUserRefDto"])[];
+          'application/json': components['schemas']['PraiseWithUserAccountsWithUserRefDto'][];
         };
       };
     };
@@ -1431,7 +1515,7 @@ export interface operations {
       /** @description Period */
       200: {
         content: {
-          "application/json": components["schemas"]["VerifyQuantifierPoolSizeDto"];
+          'application/json': components['schemas']['VerifyQuantifierPoolSizeDto'];
         };
       };
     };
@@ -1447,7 +1531,7 @@ export interface operations {
       /** @description Period */
       200: {
         content: {
-          "application/json": components["schemas"]["PeriodDetailsDto"];
+          'application/json': components['schemas']['PeriodDetailsDto'];
         };
       };
     };
@@ -1461,14 +1545,14 @@ export interface operations {
     };
     requestBody: {
       content: {
-        "application/json": components["schemas"]["ReplaceQuantifierInputDto"];
+        'application/json': components['schemas']['ReplaceQuantifierInputDto'];
       };
     };
     responses: {
       /** @description Period */
       200: {
         content: {
-          "application/json": components["schemas"]["ReplaceQuantifierResponseDto"];
+          'application/json': components['schemas']['ReplaceQuantifierResponseDto'];
         };
       };
     };
@@ -1482,16 +1566,16 @@ export interface operations {
         /** @example 1 */
         page: number;
         sortColumn?: string;
-        sortType?: "asc" | "desc";
+        sortType?: 'asc' | 'desc';
         search?: string;
-        types?: (string)[];
+        types?: string[];
       };
     };
     responses: {
       /** @description Paginated event logs */
       200: {
         content: {
-          "application/json": components["schemas"]["EventLogPaginatedResponseDto"];
+          'application/json': components['schemas']['EventLogPaginatedResponseDto'];
         };
       };
     };
@@ -1502,7 +1586,7 @@ export interface operations {
       /** @description Event log types */
       200: {
         content: {
-          "application/json": (components["schemas"]["EventLogType"])[];
+          'application/json': components['schemas']['EventLogType'][];
         };
       };
     };
@@ -1513,7 +1597,17 @@ export interface operations {
       query?: {
         /** @example SETTING_KEY */
         key?: string;
-        type?: "Integer" | "Float" | "String" | "Textarea" | "Boolean" | "IntegerList" | "StringList" | "Image" | "Radio" | "JSON";
+        type?:
+          | 'Integer'
+          | 'Float'
+          | 'String'
+          | 'Textarea'
+          | 'Boolean'
+          | 'IntegerList'
+          | 'StringList'
+          | 'Image'
+          | 'Radio'
+          | 'JSON';
         /** @example 0 */
         group?: number;
         /** @example 0 */
@@ -1524,7 +1618,7 @@ export interface operations {
       /** @description All settings. */
       200: {
         content: {
-          "application/json": (components["schemas"]["Setting"])[];
+          'application/json': components['schemas']['Setting'][];
         };
       };
     };
@@ -1540,7 +1634,7 @@ export interface operations {
       /** @description Setting. */
       200: {
         content: {
-          "application/json": components["schemas"]["Setting"];
+          'application/json': components['schemas']['Setting'];
         };
       };
     };
@@ -1554,14 +1648,14 @@ export interface operations {
     };
     requestBody: {
       content: {
-        "application/json": components["schemas"]["SetSettingDto"];
+        'application/json': components['schemas']['SetSettingDto'];
       };
     };
     responses: {
       /** @description Updated setting. */
       200: {
         content: {
-          "application/json": components["schemas"]["Setting"];
+          'application/json': components['schemas']['Setting'];
         };
       };
     };
@@ -1577,7 +1671,7 @@ export interface operations {
       /** @description Updated setting. */
       200: {
         content: {
-          "application/json": components["schemas"]["Setting"];
+          'application/json': components['schemas']['Setting'];
         };
       };
     };
@@ -1592,7 +1686,7 @@ export interface operations {
     responses: {
       200: {
         content: {
-          "application/json": Record<string, never>;
+          'application/json': Record<string, never>;
         };
       };
     };
@@ -1608,7 +1702,7 @@ export interface operations {
       /** @description All period settings */
       200: {
         content: {
-          "application/json": (components["schemas"]["PeriodSetting"])[];
+          'application/json': components['schemas']['PeriodSetting'][];
         };
       };
     };
@@ -1625,7 +1719,7 @@ export interface operations {
       /** @description Period setting */
       200: {
         content: {
-          "application/json": components["schemas"]["PeriodSetting"];
+          'application/json': components['schemas']['PeriodSetting'];
         };
       };
     };
@@ -1640,14 +1734,14 @@ export interface operations {
     };
     requestBody: {
       content: {
-        "application/json": components["schemas"]["SetPeriodSettingDto"];
+        'application/json': components['schemas']['SetPeriodSettingDto'];
       };
     };
     responses: {
       /** @description Updated period setting */
       200: {
         content: {
-          "application/json": components["schemas"]["PeriodSetting"];
+          'application/json': components['schemas']['PeriodSetting'];
         };
       };
     };
@@ -1661,7 +1755,7 @@ export interface operations {
         /** @example 1 */
         page: number;
         sortColumn?: string;
-        sortType?: "asc" | "desc";
+        sortType?: 'asc' | 'desc';
         giver?: string;
         receiver?: string;
       };
@@ -1670,7 +1764,7 @@ export interface operations {
       /** @description Paginated praise items */
       200: {
         content: {
-          "application/json": components["schemas"]["PraisePaginatedResponseDto"];
+          'application/json': components['schemas']['PraisePaginatedResponseDto'];
         };
       };
     };
@@ -1679,19 +1773,19 @@ export interface operations {
   PraiseController_praise: {
     requestBody: {
       content: {
-        "application/json": components["schemas"]["PraiseCreateInputDto"];
+        'application/json': components['schemas']['PraiseCreateInputDto'];
       };
     };
     responses: {
       /** @description Praise item */
       200: {
         content: {
-          "application/json": components["schemas"]["Praise"];
+          'application/json': components['schemas']['Praise'];
         };
       };
       201: {
         content: {
-          "application/json": (components["schemas"]["Praise"])[];
+          'application/json': components['schemas']['Praise'][];
         };
       };
     };
@@ -1707,7 +1801,7 @@ export interface operations {
     responses: {
       200: {
         content: {
-          "application/json": string;
+          'application/json': string;
         };
       };
     };
@@ -1723,7 +1817,7 @@ export interface operations {
     responses: {
       200: {
         content: {
-          "text/csv": string;
+          'text/csv': string;
         };
       };
     };
@@ -1739,7 +1833,7 @@ export interface operations {
     responses: {
       200: {
         content: {
-          "application/octet-stream": string;
+          'application/octet-stream': string;
         };
       };
     };
@@ -1755,7 +1849,7 @@ export interface operations {
       /** @description Praise item */
       200: {
         content: {
-          "application/json": components["schemas"]["Praise"];
+          'application/json': components['schemas']['Praise'];
         };
       };
     };
@@ -1764,19 +1858,19 @@ export interface operations {
   PraiseController_forward: {
     requestBody: {
       content: {
-        "application/json": components["schemas"]["PraiseForwardInputDto"];
+        'application/json': components['schemas']['PraiseForwardInputDto'];
       };
     };
     responses: {
       /** @description Praise item */
       200: {
         content: {
-          "application/json": components["schemas"]["Praise"];
+          'application/json': components['schemas']['Praise'];
         };
       };
       201: {
         content: {
-          "application/json": (components["schemas"]["Praise"])[];
+          'application/json': components['schemas']['Praise'][];
         };
       };
     };
@@ -1796,7 +1890,7 @@ export interface operations {
     responses: {
       200: {
         content: {
-          "application/json": components["schemas"]["UserAccount"];
+          'application/json': components['schemas']['UserAccount'];
         };
       };
     };
@@ -1805,13 +1899,13 @@ export interface operations {
   UserAccountsController_create: {
     requestBody: {
       content: {
-        "application/json": components["schemas"]["CreateUserAccountInputDto"];
+        'application/json': components['schemas']['CreateUserAccountInputDto'];
       };
     };
     responses: {
       201: {
         content: {
-          "application/json": components["schemas"]["CreateUserAccountResponseDto"];
+          'application/json': components['schemas']['CreateUserAccountResponseDto'];
         };
       };
     };
@@ -1821,7 +1915,7 @@ export interface operations {
     responses: {
       200: {
         content: {
-          "application/json": string;
+          'application/json': string;
         };
       };
     };
@@ -1831,7 +1925,7 @@ export interface operations {
     responses: {
       200: {
         content: {
-          "text/csv": string;
+          'text/csv': string;
         };
       };
     };
@@ -1841,7 +1935,7 @@ export interface operations {
     responses: {
       200: {
         content: {
-          "application/octet-stream": string;
+          'application/octet-stream': string;
         };
       };
     };
@@ -1857,7 +1951,7 @@ export interface operations {
       /** @description UserAccount */
       200: {
         content: {
-          "application/json": components["schemas"]["UserAccount"];
+          'application/json': components['schemas']['UserAccount'];
         };
       };
     };
@@ -1866,13 +1960,13 @@ export interface operations {
   UserAccountsController_update: {
     requestBody: {
       content: {
-        "application/json": components["schemas"]["UpdateUserAccountInputDto"];
+        'application/json': components['schemas']['UpdateUserAccountInputDto'];
       };
     };
     responses: {
       200: {
         content: {
-          "application/json": components["schemas"]["UpdateUserAccountResponseDto"];
+          'application/json': components['schemas']['UpdateUserAccountResponseDto'];
         };
       };
     };
@@ -1883,7 +1977,7 @@ export interface operations {
       /** @description Array of API keys */
       200: {
         content: {
-          "application/json": (components["schemas"]["ApiKey"])[];
+          'application/json': components['schemas']['ApiKey'][];
         };
       };
     };
@@ -1892,14 +1986,14 @@ export interface operations {
   ApiKeyController_createApiKey: {
     requestBody: {
       content: {
-        "application/json": components["schemas"]["CreateApiKeyInputDto"];
+        'application/json': components['schemas']['CreateApiKeyInputDto'];
       };
     };
     responses: {
       /** @description API key created */
       201: {
         content: {
-          "application/json": components["schemas"]["CreateApiKeyResponseDto"];
+          'application/json': components['schemas']['CreateApiKeyResponseDto'];
         };
       };
     };
@@ -1915,7 +2009,7 @@ export interface operations {
       /** @description An API key */
       200: {
         content: {
-          "application/json": components["schemas"]["ApiKey"];
+          'application/json': components['schemas']['ApiKey'];
         };
       };
     };
@@ -1929,19 +2023,19 @@ export interface operations {
     };
     requestBody: {
       content: {
-        "application/json": components["schemas"]["UpdateDescriptionInputDto"];
+        'application/json': components['schemas']['UpdateDescriptionInputDto'];
       };
     };
     responses: {
       200: {
         content: {
-          "application/json": components["schemas"]["ApiKey"];
+          'application/json': components['schemas']['ApiKey'];
         };
       };
       /** @description API key with updated description */
       201: {
         content: {
-          "application/json": components["schemas"]["ApiKey"];
+          'application/json': components['schemas']['ApiKey'];
         };
       };
     };
@@ -1956,13 +2050,13 @@ export interface operations {
     responses: {
       200: {
         content: {
-          "application/json": components["schemas"]["ApiKey"];
+          'application/json': components['schemas']['ApiKey'];
         };
       };
       /** @description Revoked API key */
       201: {
         content: {
-          "application/json": components["schemas"]["ApiKey"];
+          'application/json': components['schemas']['ApiKey'];
         };
       };
     };
@@ -1972,14 +2066,14 @@ export interface operations {
     /** @description A request containing the user identityEthAddress */
     requestBody: {
       content: {
-        "application/json": components["schemas"]["NonceInputDto"];
+        'application/json': components['schemas']['NonceInputDto'];
       };
     };
     responses: {
       /** @description Nonce generated successfully */
       201: {
         content: {
-          "application/json": components["schemas"]["NonceResponseDto"];
+          'application/json': components['schemas']['NonceResponseDto'];
         };
       };
     };
@@ -1992,20 +2086,20 @@ export interface operations {
       };
     };
     /**
-     * @description A request containing the user identityEthAddress and signedlogin message. The signed message should be structured as follows: 
-     * 
+     * @description A request containing the user identityEthAddress and signedlogin message. The signed message should be structured as follows:
+     *
      * ```SIGN THIS MESSAGE TO LOGIN TO PRAISE.\n\nADDRESS:\n[identityEthAddress]\n\nNONCE:\n[nonce]```
      */
     requestBody: {
       content: {
-        "application/json": components["schemas"]["LoginInputDto"];
+        'application/json': components['schemas']['LoginInputDto'];
       };
     };
     responses: {
       /** @description User authenticated successfully */
       201: {
         content: {
-          "application/json": components["schemas"]["LoginResponseDto"];
+          'application/json': components['schemas']['LoginResponseDto'];
         };
       };
     };
@@ -2019,14 +2113,14 @@ export interface operations {
     };
     requestBody: {
       content: {
-        "application/json": components["schemas"]["GenerateTokenDto"];
+        'application/json': components['schemas']['GenerateTokenDto'];
       };
     };
     responses: {
       /** @description Tokens generated successfully */
       201: {
         content: {
-          "application/json": components["schemas"]["LoginResponseDto"];
+          'application/json': components['schemas']['LoginResponseDto'];
         };
       };
     };
@@ -2039,7 +2133,7 @@ export interface operations {
         /** @example 1 */
         page: number;
         sortColumn?: string;
-        sortType?: "asc" | "desc";
+        sortType?: 'asc' | 'desc';
         /** @example hostname.givepraise.xyz */
         hostname?: string;
       };
@@ -2048,7 +2142,7 @@ export interface operations {
       /** @description All communities */
       200: {
         content: {
-          "application/json": components["schemas"]["CommunityFindAllResponseDto"];
+          'application/json': components['schemas']['CommunityFindAllResponseDto'];
         };
       };
     };
@@ -2057,19 +2151,19 @@ export interface operations {
   CommunityController_create: {
     requestBody: {
       content: {
-        "application/json": components["schemas"]["CreateCommunityInputDto"];
+        'application/json': components['schemas']['CreateCommunityInputDto'];
       };
     };
     responses: {
       /** @description Community */
       200: {
         content: {
-          "application/json": components["schemas"]["Community"];
+          'application/json': components['schemas']['Community'];
         };
       };
       201: {
         content: {
-          "application/json": components["schemas"]["Community"];
+          'application/json': components['schemas']['Community'];
         };
       };
     };
@@ -2084,7 +2178,7 @@ export interface operations {
       /** @description A single Community */
       200: {
         content: {
-          "application/json": components["schemas"]["Community"];
+          'application/json': components['schemas']['Community'];
         };
       };
     };
@@ -2093,14 +2187,14 @@ export interface operations {
   CommunityController_update: {
     requestBody: {
       content: {
-        "application/json": components["schemas"]["UpdateCommunityInputDto"];
+        'application/json': components['schemas']['UpdateCommunityInputDto'];
       };
     };
     responses: {
       /** @description Community */
       200: {
         content: {
-          "application/json": components["schemas"]["Community"];
+          'application/json': components['schemas']['Community'];
         };
       };
     };
@@ -2116,7 +2210,7 @@ export interface operations {
       /** @description Checking whether the community name is available */
       200: {
         content: {
-          "application/json": components["schemas"]["IsNameAvailableResponseDto"];
+          'application/json': components['schemas']['IsNameAvailableResponseDto'];
         };
       };
     };
@@ -2126,7 +2220,7 @@ export interface operations {
       /** @description Returns the current community, based on hostname */
       200: {
         content: {
-          "application/json": components["schemas"]["Community"];
+          'application/json': components['schemas']['Community'];
         };
       };
     };
@@ -2135,14 +2229,14 @@ export interface operations {
   CommunityController_linkDiscord: {
     requestBody: {
       content: {
-        "application/json": components["schemas"]["LinkDiscordBotDto"];
+        'application/json': components['schemas']['LinkDiscordBotDto'];
       };
     };
     responses: {
       /** @description Community */
       200: {
         content: {
-          "application/json": components["schemas"]["Community"];
+          'application/json': components['schemas']['Community'];
         };
       };
     };
@@ -2158,7 +2252,7 @@ export interface operations {
     responses: {
       200: {
         content: {
-          "application/json": string;
+          'application/json': string;
         };
       };
     };
@@ -2174,7 +2268,7 @@ export interface operations {
     responses: {
       200: {
         content: {
-          "text/csv": string;
+          'text/csv': string;
         };
       };
     };
@@ -2190,7 +2284,7 @@ export interface operations {
     responses: {
       200: {
         content: {
-          "application/octet-stream": string;
+          'application/octet-stream': string;
         };
       };
     };
@@ -2199,14 +2293,14 @@ export interface operations {
   QuantificationsController_quantifyMultiple: {
     requestBody: {
       content: {
-        "application/json": components["schemas"]["QuantifyMultipleInputDto"];
+        'application/json': components['schemas']['QuantifyMultipleInputDto'];
       };
     };
     responses: {
       /** @description Praise items */
       200: {
         content: {
-          "application/json": (components["schemas"]["Praise"])[];
+          'application/json': components['schemas']['Praise'][];
         };
       };
     };
@@ -2220,14 +2314,14 @@ export interface operations {
     };
     requestBody: {
       content: {
-        "application/json": components["schemas"]["QuantifyInputDto"];
+        'application/json': components['schemas']['QuantifyInputDto'];
       };
     };
     responses: {
       /** @description Praise items */
       200: {
         content: {
-          "application/json": (components["schemas"]["Praise"])[];
+          'application/json': components['schemas']['Praise'][];
         };
       };
     };
@@ -2238,7 +2332,7 @@ export interface operations {
       /** @description A list of report manifests */
       200: {
         content: {
-          "application/json": (components["schemas"]["ReportManifestDto"])[];
+          'application/json': components['schemas']['ReportManifestDto'][];
         };
       };
       /** @description An error occurred while fetching report manifests */
@@ -2256,7 +2350,7 @@ export interface operations {
       /** @description A receiver bio */
       200: {
         content: {
-          "application/json": string;
+          'application/json': string;
         };
       };
     };
@@ -2272,7 +2366,7 @@ export interface operations {
       /** @description Comma separated list of labels, 7 max */
       200: {
         content: {
-          "application/json": string;
+          'application/json': string;
         };
       };
     };
