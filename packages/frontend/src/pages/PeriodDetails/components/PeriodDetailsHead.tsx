@@ -14,6 +14,7 @@ import { CloseButton } from './CloseButton';
 import { PeriodDateForm } from './PeriodDateForm';
 import { PeriodNameForm } from './PeriodNameForm';
 import { AssignButton } from './AssignButton';
+import { SingleSetting } from '../../../model/settings/settings';
 
 export const PeriodDetailsHead = (): JSX.Element | null => {
   const { periodId } = useParams<PeriodPageParams>();
@@ -22,6 +23,9 @@ export const PeriodDetailsHead = (): JSX.Element | null => {
   useLoadSinglePeriodDetails(periodId); // Fetch additional period details
   const period = useRecoilValue(SinglePeriod(periodId));
   const isAdmin = useRecoilValue(HasRole(ROLE_ADMIN));
+  const directQuantEnabled = useRecoilValue(
+    SingleSetting('DISCORD_BOT_DIRECT_PRAISE_QUANTIFICATION_ENABLED')
+  );
 
   if (!period || !allPeriods) return null;
 
@@ -63,13 +67,22 @@ export const PeriodDetailsHead = (): JSX.Element | null => {
           <div>Number of praise: {period.numberOfPraise}</div>
           <div className="mt-5">
             {period.status === 'OPEN' || period.status === 'QUANTIFY' ? (
-              <div className="flex justify-between gap-4">
+              <div className="flex items-center justify-between gap-10">
                 {period.status === 'OPEN' &&
                 period.receivers &&
                 period?.receivers.length > 0 &&
                 hasPeriodEnded(period) ? (
-                  <AssignButton />
+                  directQuantEnabled?.valueRealized ? (
+                    <div className="max-w-md">
+                      Direct quantification is enabled for this community which
+                      means each praise is quantified by the praise giver at
+                      praise time. Regular quantifications are disabled.
+                    </div>
+                  ) : (
+                    <AssignButton />
+                  )
                 ) : null}
+
                 <CloseButton />
               </div>
             ) : null}
