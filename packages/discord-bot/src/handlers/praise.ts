@@ -3,6 +3,8 @@ import {
   GuildMember,
   ActionRowBuilder,
   ButtonBuilder,
+  StringSelectMenuBuilder,
+  StringSelectMenuOptionBuilder,
 } from 'discord.js';
 import { parseReceivers } from '../utils/parseReceivers';
 
@@ -15,6 +17,7 @@ import { getUserAccount } from '../utils/getUserAccount';
 import { logger } from '../utils/logger';
 import { sendActivationMessage } from '../utils/sendActivationMessage';
 import { givePraise } from '../utils/givePraise';
+import { getSetting } from '../utils/settingsUtil';
 
 /**
  * Execute command /praise
@@ -28,7 +31,7 @@ export const praiseHandler: CommandHandler = async (
   host,
   responseUrl
 ) => {
-  if (!responseUrl) return;
+  if (!responseUrl || !interaction) return;
 
   const { guild, member } = interaction;
 
@@ -160,17 +163,72 @@ export const praiseHandler: CommandHandler = async (
         );
       }
     } else {
-      await givePraise(
-        interaction,
-        guild,
-        member as GuildMember,
-        giverAccount,
-        parsedReceivers,
-        receiverOptions,
-        reason,
-        host,
-        responseUrl
+      const directQuantificationEnanbled = (await getSetting(
+        'DISCORD_BOT_DIRECT_PRAISE_QUANTIFICATION_ENABLED'
+      )) as boolean;
+
+      // If direct quantification is disabled, give praise directly
+      // This is the default behavior
+      if (!directQuantificationEnanbled) {
+        await givePraise(
+          interaction,
+          guild,
+          member as GuildMember,
+          giverAccount,
+          parsedReceivers,
+          receiverOptions,
+          reason,
+          host,
+          responseUrl
+        );
+        return;
+      }
+
+      // If direct quantification is enabled, allow user to select a score from a dropdown
+      const allowedScores = (await getSetting(
+        'PRAISE_QUANTIFY_ALLOWED_VALUES'
+      )) as number[];
+
+      const select = new StringSelectMenuBuilder()
+        .setCustomId('score')
+        .setPlaceholder('Select an impact score!')
+        .addOptions(
+          allowedScores.map((score) =>
+            new StringSelectMenuOptionBuilder()
+              .setLabel(score.toString())
+              .setValue(score.toString())
+          )
+        );
+
+      const row = new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(
+        select
       );
+
+      await interaction.followUp({
+        content: 'Select an impact score!',
+        components: [row],
+      });
+
+      const collector = interaction.channel?.createMessageComponentCollector({
+        componentType: ComponentType.StringSelect,
+        time: 15000,
+      });
+
+      collector?.on('collect', async (menuInteraction) => {
+        const score = Number(menuInteraction.values[0]);
+        await givePraise(
+          interaction,
+          guild,
+          member as GuildMember,
+          giverAccount,
+          parsedReceivers,
+          receiverOptions,
+          reason,
+          host,
+          responseUrl,
+          score
+        );
+      });
     }
   } catch (err) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
