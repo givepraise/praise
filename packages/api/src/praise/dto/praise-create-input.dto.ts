@@ -1,7 +1,7 @@
 import { UserAccount } from '../../useraccounts/schemas/useraccounts.schema';
 import { ApiProperty, PickType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsNotEmpty, ValidateNested } from 'class-validator';
+import { IsNotEmpty, IsOptional, ValidateNested } from 'class-validator';
 import { Praise } from '../schemas/praise.schema';
 
 export class PraiseCreateInputDto extends PickType(Praise, [
@@ -21,4 +21,8 @@ export class PraiseCreateInputDto extends PickType(Praise, [
   @Type(() => UserAccount)
   @IsNotEmpty()
   giver: UserAccount;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  score: number;
 }
