@@ -1,5 +1,6 @@
 import { Setting } from './api-schema';
 import { apiGet } from './api';
+import { logger } from './logger';
 
 export const getDefaultSetting = (
   key: string
@@ -49,6 +50,10 @@ export const getDefaultSetting = (
       return 'Forward Failed :(';
     case 'PRAISE_FAILED':
       return 'Praise Failed :(';
+    case 'DISCORD_BOT_DIRECT_PRAISE_QUANTIFICATION_ENABLED':
+      return false;
+    case 'DISCORD_BOT_PRAISE_NOTIFICATIONS_ENABLED':
+      return true;
   }
 };
 
@@ -59,8 +64,15 @@ export const getSetting = async (
   const setting = await apiGet<Setting[]>(`/settings?key=${key}`, {
     headers: host ? { host: host } : {},
   })
-    .then((res) => res.data[0].valueRealized)
+    .then((res) => {
+      return res.data[0].valueRealized
+        ? res.data[0].valueRealized
+        : getDefaultSetting(key);
+    })
     .catch(() => getDefaultSetting(key));
+
+  // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+  logger.debug(`Setting ${key} is ${setting}`);
 
   return setting;
 };
