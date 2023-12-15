@@ -220,8 +220,15 @@ export class PraiseService {
     data: PraiseCreateInputDto | PraiseForwardInputDto,
   ): Promise<Praise[]> => {
     let forwarder: UserAccount | undefined;
-    const { giver, receiverIds, reason, reasonRaw, sourceId, sourceName } =
-      data;
+    const {
+      giver,
+      receiverIds,
+      reason,
+      reasonRaw,
+      sourceId,
+      sourceName,
+      score,
+    } = data;
     if ('forwarder' in data) {
       const { forwarder: forwarderFromDto } = data as PraiseForwardInputDto;
       forwarder = forwarderFromDto;
@@ -274,6 +281,16 @@ export class PraiseService {
       })
       .lean();
 
+    const directQuantificationEnanbledSetting =
+      (await this.settingsService.findOneByKey(
+        'DISCORD_BOT_DIRECT_PRAISE_QUANTIFICATION_ENABLED',
+      )) as Setting;
+
+    const directQuantificationEnabled =
+      directQuantificationEnanbledSetting?.value === 'true' &&
+      score &&
+      score > 0;
+
     const newPraise = await this.praiseModel.insertMany(
       receivers.map((receiver) => ({
         reason,
@@ -283,6 +300,7 @@ export class PraiseService {
         sourceId,
         sourceName,
         receiver: receiver._id,
+        score: directQuantificationEnabled ? score : undefined,
       })),
     );
 
@@ -290,6 +308,19 @@ export class PraiseService {
       this.findOneById(praise._id),
     );
 
-    return Promise.all(findPraisePromises);
+    const createdPraise = Promise.all(findPraisePromises);
+
+    if (directQuantificationEnabled) {
+      await this.quantificationModel.insertMany(
+        newPraise.map((praise) => ({
+          score: data.score,
+          scoreRealized: data.score,
+          praise: praise._id,
+          quantifier: giverAccount.user,
+        })),
+      );
+    }
+
+    return createdPraise;
   };
 }

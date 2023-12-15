@@ -22,7 +22,8 @@ export const givePraise = async (
   receiverOptions: string,
   reason: string,
   host: string,
-  responseUrl: string
+  responseUrl: string,
+  score?: number
 ): Promise<void> => {
   if (
     !parsedReceivers.validReceiverIds ||
@@ -88,7 +89,8 @@ export const givePraise = async (
       giverAccount,
       receivers.map((receiver) => receiver.userAccount),
       reason,
-      host
+      host,
+      score
     );
   } else if (warnSelfPraise) {
     await ephemeralWarning(interaction, 'SELF_PRAISE_WARNING', host);

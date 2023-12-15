@@ -18,6 +18,7 @@ interface PraiseCreateInputDto {
   receiverIds: string[];
   sourceId: string;
   sourceName: string;
+  score?: number;
 }
 
 export const createPraise = async (
@@ -25,7 +26,8 @@ export const createPraise = async (
   giverAccount: UserAccount,
   receiverAccounts: UserAccount[],
   reason: string,
-  host: string
+  host: string,
+  score?: number
 ): Promise<Praise[]> => {
   const { channel, guild } = interaction;
   if (!channel || !guild || channel.type === ChannelType.DM) return [];
@@ -52,6 +54,7 @@ export const createPraise = async (
     sourceName: `DISCORD:${encodeURIComponent(guild.name)}:${encodeURIComponent(
       channelName
     )}`,
+    score: score,
   };
 
   const response = await apiPost<Praise[], PraiseCreateInputDto>(

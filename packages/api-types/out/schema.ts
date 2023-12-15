@@ -774,6 +774,7 @@ export interface components {
       sourceName: string;
       receiverIds: string[];
       giver: components['schemas']['UserAccount'];
+      score?: number;
     };
     PraiseForwardInputDto: {
       /** @example for making edits in the welcome text */
@@ -787,6 +788,7 @@ export interface components {
       receiverIds: string[];
       giver: components['schemas']['UserAccount'];
       forwarder: components['schemas']['UserAccount'];
+      score?: number;
     };
     CreateUserAccountInputDto: {
       /** @example 098098098098098 */

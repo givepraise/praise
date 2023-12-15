@@ -1,7 +1,7 @@
 import { UserAccount } from '../../useraccounts/schemas/useraccounts.schema';
 import { ApiProperty, PickType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsNotEmpty, ValidateNested } from 'class-validator';
+import { IsNotEmpty, IsOptional, ValidateNested } from 'class-validator';
 import { PraiseCreateInputDto } from './praise-create-input.dto';
 
 export class PraiseForwardInputDto extends PickType(PraiseCreateInputDto, [
@@ -19,4 +19,8 @@ export class PraiseForwardInputDto extends PickType(PraiseCreateInputDto, [
   @Type(() => UserAccount)
   @IsNotEmpty()
   forwarder: UserAccount;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  score: number;
 }
