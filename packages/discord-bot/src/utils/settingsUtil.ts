@@ -69,7 +69,13 @@ export const getSetting = async (
         ? res.data[0].valueRealized
         : getDefaultSetting(key);
     })
-    .catch(() => getDefaultSetting(key));
+    .catch((err) => {
+      logger.error(
+        `Error while fetching setting ${key} from API, using default value`,
+        err
+      );
+      return getDefaultSetting(key);
+    });
 
   // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
   logger.debug(`Setting ${key} is ${setting}`);
