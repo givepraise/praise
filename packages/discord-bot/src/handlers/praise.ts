@@ -218,6 +218,7 @@ export const praiseHandler: CommandHandler = async (
 
       collector?.on('collect', async (menuInteraction) => {
         const score = Number(menuInteraction.values[0]);
+        logger.debug(`Score selected: ${score}`);
         await givePraise(
           interaction,
           guild,
