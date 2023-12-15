@@ -59,13 +59,12 @@ export const getDefaultSetting = (
 
 export const getSetting = async (
   key: string,
-  host?: string
+  host: string
 ): Promise<string | string[] | boolean | number | number[] | undefined> => {
   const setting = await apiGet<Setting[]>(`/settings?key=${key}`, {
     headers: host ? { host: host } : {},
   })
     .then((res) => {
-      logger.debug(res.data);
       return res.data[0].valueRealized
         ? res.data[0].valueRealized
         : getDefaultSetting(key);

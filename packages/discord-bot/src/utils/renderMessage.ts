@@ -18,6 +18,8 @@ export const renderMessage = async (
   if (key === 'DM_ERROR' && !host)
     return "The bot can't be used in DMs, please use commands in the server.";
 
+  if (!host) return "Unknown host, can't render message";
+
   let msg = (await getSetting(key, host)) as string;
 
   if (subs) {

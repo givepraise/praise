@@ -164,7 +164,8 @@ export const praiseHandler: CommandHandler = async (
       }
     } else {
       const directQuantificationEnanbled = (await getSetting(
-        'DISCORD_BOT_DIRECT_PRAISE_QUANTIFICATION_ENABLED'
+        'DISCORD_BOT_DIRECT_PRAISE_QUANTIFICATION_ENABLED',
+        host
       )) as boolean;
 
       // If direct quantification is disabled, give praise directly
@@ -186,7 +187,8 @@ export const praiseHandler: CommandHandler = async (
 
       // If direct quantification is enabled, allow user to select a score from a dropdown
       const allowedScores = (await getSetting(
-        'PRAISE_QUANTIFY_ALLOWED_VALUES'
+        'PRAISE_QUANTIFY_ALLOWED_VALUES',
+        host
       )) as number[];
 
       const select = new StringSelectMenuBuilder()
