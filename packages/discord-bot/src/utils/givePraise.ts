@@ -69,6 +69,11 @@ export const givePraise = async (
     })
   );
 
+  const praiseNotificationsEnabled = (await getSetting(
+    'DISCORD_BOT_PRAISE_NOTIFICATIONS_ENABLED',
+    host
+  )) as boolean;
+
   let praiseItems: Praise[] = [];
   if (receivers.length !== 0) {
     await interaction.editReply({
@@ -78,7 +83,8 @@ export const givePraise = async (
           interaction.user,
           validReceiverIds.map((id) => `<@!${id}>`),
           reason,
-          host
+          host,
+          praiseNotificationsEnabled
         ),
       ],
       components: [],
@@ -104,11 +110,6 @@ export const givePraise = async (
     process.env.NODE_ENV === 'development'
       ? process.env?.FRONTEND_URL || 'undefined:/'
       : `https://${host}`;
-
-  const praiseNotificationsEnabled = (await getSetting(
-    'DISCORD_BOT_PRAISE_NOTIFICATIONS_ENABLED',
-    host
-  )) as boolean;
 
   if (praiseNotificationsEnabled) {
     await Promise.all(
