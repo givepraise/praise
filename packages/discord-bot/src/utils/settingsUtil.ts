@@ -65,10 +65,7 @@ export const getSetting = async (
     headers: host ? { host: host } : {},
   })
     .then((res) => {
-      logger.debug(res.data);
-      return res.data[0].valueRealized
-        ? res.data[0].valueRealized
-        : getDefaultSetting(key);
+      return res.data[0].valueRealized;
     })
     .catch((err) => {
       logger.error(
