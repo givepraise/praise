@@ -18,6 +18,7 @@ Community members interact with a Discord Praise bot to acknowledge each other's
 - [Commons Stack](https://praise.commonsstack.org)
 - [Giveth](https://praise.giveth.io)
 - [Gnosis](https://praisegnosisdao.com)
+- [AVADO] (https://praise-discord.ava.do/)
 
 
 ## Run Praise on a server
